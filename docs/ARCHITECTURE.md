@@ -8,15 +8,16 @@ Virastar is a Persian writing instrument. The browser is the whole product: writ
 EDITOR (write → pick a mode → ویرایش کن)
         ↓
 ENGINE DISPATCH (settings.engine)
-        ├── offline: deterministic Persian rules (no network, always works)
-        └── online:  OpenAI-compatible chat-completions POST, falls back to offline
+        ├── online:  a local model (Ollama → Gemma) genuinely rewrites the text;
+        │            any OpenAI-compatible endpoint works; falls back to offline
+        └── offline: deterministic Persian rules (no network, always works)
         ↓
 RESULT (output + Persian notes + engine/mode badges) → کپی / ذخیره
         ↓
 HISTORY (localStorage, 40 entries) → ادامهٔ ویرایش hands the draft back to the editor
 ```
 
-No server owns the text. Nothing is sent anywhere unless the user configures an online endpoint in تنظیمات.
+No server owns the text. The default engine targets `localhost` (Ollama), so the text never leaves the machine; a remote endpoint is only used if the user configures one in تنظیمات.
 
 ## Text core (`domain/persian.ts`)
 
@@ -29,11 +30,11 @@ The deterministic foundation, honest about what rules can do:
 
 ## Editing engines
 
-`domain/engines/offline.ts` — `editOffline(input, mode)` runs a fixed pipeline: normalize → نیمفاصله → register lexicon → sentence connectors → opener/closer wrappers → punctuation. It returns the output, a diff count, and Persian notes explaining what moved.
+`domain/engines/offline.ts` — `editOffline(input, mode)` runs a fixed pipeline: normalize → نیمفاصله → register lexicon → colloquial-interjection cleanup (formal registers) → sentence connectors (weaved sparingly, only into declarative sentences of a few words) → opener/closer wrappers → punctuation. It returns the output, a diff count, and Persian notes explaining what moved.
 
-`domain/engines/online.ts` — `editOnline(input, mode, opts)` posts the mode's `instruction` plus the text to an OpenAI-compatible `chat/completions` endpoint and returns the model's text.
+`domain/engines/online.ts` — `editOnline(input, mode, opts)` posts the mode's `instruction` plus the text to an OpenAI-compatible `chat/completions` endpoint and returns the model's text. The default settings point at `http://localhost:11434/v1/chat/completions` with `gemma2:9b` — real rewriting that never leaves the device.
 
-`domain/engine.ts` — `runEdit(input, modeId, settings)` dispatches: online when configured, catching failures and falling back to offline with a note; otherwise offline directly.
+`domain/engine.ts` — `runEdit(input, modeId, settings)` dispatches: online by default (local Ollama), catching failures and falling back to offline with an honest note; offline when the engine is set to offline or the endpoint is empty.
 
 ## Writing modes (`domain/modes.ts`)
 
@@ -63,6 +64,6 @@ Icons are custom geometric SVGs (`components/Star.tsx`, `components/Glyphs.tsx`,
 
 ## Future work
 
-- Offline model download: a downloadable on-device LLM (Qwen/Gemma class) so every mode runs fully offline.
+- Bundled on-device model: download a small Gemma quant into the browser (WebGPU) so real rewriting works even without Ollama installed.
 - Deeper literary engine for ادبی / شاعرانه.
 - PWA install polish and sync.

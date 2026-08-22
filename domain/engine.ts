@@ -13,10 +13,13 @@ export interface EngineSettings {
   model: string
 }
 
+// Default to the on-device model engine (Ollama → Qwen/Gemma). The request
+// goes to localhost, so nothing ever leaves the machine; if no local model is
+// running, runEdit falls back to the offline rules with an honest note.
 export const DEFAULT_SETTINGS: EngineSettings = {
-  engine: 'offline',
-  endpoint: '',
-  model: '',
+  engine: 'online',
+  endpoint: 'http://localhost:11434/v1/chat/completions',
+  model: 'gemma2:9b',
 }
 
 export interface EditResult {

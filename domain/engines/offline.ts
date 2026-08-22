@@ -33,25 +33,45 @@ function ensureFinalPunctuation(text: string): { text: string; changed: boolean 
   return { text: `${text}.`, changed: true }
 }
 
-/** Weave connective words between later sentences for structured registers. */
+/**
+ * Weave connective words sparingly — at most a couple per text, only into
+ * declarative sentences of a few words that don't already open with a
+ * conjunction. Connector spam («هم‌چنین، … از این‌رو، … بدین ترتیب، …» on
+ * every sentence) reads as fake formality and is worse than no connectors.
+ */
 function weaveConnectors(text: string, connectors: string[]): { text: string; changed: number } {
   // Word-boundary anchored so «و» matches only the standalone word and not
   // the prefix of «واقعا» — otherwise a «و»-initial sentence skips weaving.
-  const leading = /^(امّا|اما|ولی|بنابراین|هم‌چنین|همچنین|از این‌رو|از این رو|لیکن|پس|و|گویی|چون|خب|بابا|واقعاً|واقعا|بازم|فرموده|مقتضی است|خواهشمند است|به استحضار می‌رساند|بدین‌سان|به‌طور کلی)(?![؀-ۿ‌])/
+  const leading = /^(امّا|اما|ولی|بنابراین|هم‌چنین|از این‌رو|از این رو|لیکن|پس|و|گویی|چون|خب|بابا|واقعاً|واقعا|بازم|فرموده|مقتضی است|خواهشمند است|به استحضار می‌رساند|بدین‌سان|به‌طور کلی)(?![؀-ۿ‌])/
   const sentences = text.split(/(?<=[.!؟…]) +/)
-  if (sentences.length < 2) return { text, changed: 0 }
+  if (sentences.length < 3) return { text, changed: 0 }
   let changed = 0
   let ci = 0
+  const budget = Math.min(2, sentences.length - 2)
   const out = sentences.map((s, i) => {
-    if (i === 0) return s
+    if (i === 0 || changed >= budget) return s
     const t = s.trim()
     if (!t || leading.test(t)) return s
+    if (/[؟!…]$/.test(t)) return s
+    if (t.split(/\s+/).length < 3) return s
     const conn = connectors[ci % connectors.length]
     ci++
     changed++
     return ` ${conn}، ${t}`
   })
   return { text: out.join(' '), changed }
+}
+
+/** Colloquial sentence-openers have no place in formal registers. */
+const INTERJECTION = /^(ای بابا|آخه|بابا|وای|خب|عجب|بیخیال)[،,]?\s*/
+
+function stripColloquialInterjections(text: string): string {
+  const sentences = text.split(/(?<=[.!؟…]) +/)
+  const out = sentences
+    .map((s) => s.replace(INTERJECTION, ''))
+    // Drop sentences that became pure punctuation («ای بابا.» → «.»).
+    .filter((s) => /[؀-ۿ]/.test(s))
+  return out.join(' ')
 }
 
 function applyOpeners(text: string, mode: WritingMode): { text: string; changed: number } {
@@ -108,9 +128,17 @@ export function editOffline(input: string, mode: WritingMode): OfflineResult {
     }
   }
 
+  if (mode.register === 'formal' || mode.register === 'academic' || mode.register === 'admin') {
+    const stripped = stripColloquialInterjections(text)
+    if (stripped !== text) {
+      notes.push('کلمات محاوره‌ای ابتدای جمله‌ها حذف شد.')
+      text = stripped
+    }
+  }
+
   if (mode.connectors && mode.connectors.length > 0) {
     const woven = weaveConnectors(text, mode.connectors)
-    if (woven.changed > 0) notes.push('پیوندهای جمله‌ها پررنگ شد.')
+    if (woven.changed > 0) notes.push('پیوند جمله‌ها تقویت شد.')
     text = woven.text
   }
 

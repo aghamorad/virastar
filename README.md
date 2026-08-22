@@ -51,10 +51,10 @@ npm run typecheck
 
 The editing engine has two halves:
 
-- **Offline (default):** deterministic Persian rules that run anywhere with no network — character normalization, نیمفاصله repair, punctuation spacing, register lexicons, sentence connectors, and openers/closers for the polite modes. It is the honest, always-works fallback.
-- **Online:** pluggable — point it at any OpenAI-compatible chat-completions endpoint and the same modes get real rewriting. If the endpoint is unreachable, the app falls back to the offline engine and says so.
+- **Online (default):** a real language model rewrites the text. The default is a Gemma model served by local Ollama — the request goes to `localhost`, so the text never leaves your computer, and the same eleven modes get genuine rewriting. The settings screen can point the engine at any OpenAI-compatible `chat/completions` service instead.
+- **Offline (fallback):** deterministic Persian rules that run anywhere with no network — character normalization, نیمفاصله repair, punctuation spacing, register lexicons, and openers/closers for the polite modes. If the model service is unreachable, the app falls back to it and says so.
 
-Choose the engine and endpoint in **تنظیمات**. Same eleven modes either way.
+To use the default local engine, install [Ollama](https://ollama.com) and pull a model: `ollama pull gemma2:9b`. Everything else is configured in **تنظیمات**. Same eleven modes either way.
 
 ## Themes
 
@@ -97,4 +97,4 @@ The visual identity is built from the graphic tradition of Ikko Tanaka, Paul Ran
 
 ## Privacy
 
-The offline engine never leaves the device. The online engine is only used if you configure an endpoint in settings — nothing is sent anywhere by default.
+The engine is on-device by default: the model runs locally (Ollama) and the offline rules run in the browser — nothing leaves your computer unless you point the online engine at a remote service in settings.

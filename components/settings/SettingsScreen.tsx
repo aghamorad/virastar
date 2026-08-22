@@ -81,13 +81,16 @@ export function SettingsScreen() {
           {settings.engine === 'offline' ? (
             <p className="mt-3 text-sm leading-7 text-ink-soft">
               موتور آفلاین روی همین دستگاه کار می‌کند: اصلاح و نیم‌فاصله، و تغییر لحن با واژه‌نامه.
-              بدون اینترنت، بی‌نهایت و با حریم خصوصی. برای بازنویسی سنگین، موتور آنلاین را وصل کن.
+              بدون اینترنت و با حریم خصوصی کامل. برای بازنویسی واقعی، موتور آنلاین را وصل کن.
             </p>
           ) : (
             <p className="mt-3 text-sm leading-7 text-ink-soft">
-              موتور آنلاین یک مدل زبان را به کار می‌گیرد — هر سرویسی که با
+              موتور آنلاین یک مدل زبان واقعی (Qwen یا Gemma) را به کار می‌گیرد و واقعاً بازنویسی
+              می‌کند. پیش‌فرض آن مدل محلی اولاما روی همین دستگاه است — متن هیچ‌وقت از کامپیوترت
+              خارج نمی‌شود. هر سرویس دیگری که با
               <span dir="ltr" className="mx-1 font-bold">chat/completions</span>
-              سازگار باشد (مثل Qwen یا Gemma). اگر در دسترس نباشد، ویراستار خودش به موتور آفلاین برمی‌گردد.
+              سازگار باشد هم کار می‌کند. اگر سرویس در دسترس نباشد، ویراستار خودش به موتور آفلاین
+              برمی‌گردد.
             </p>
           )}
 
@@ -108,7 +111,7 @@ export function SettingsScreen() {
               <input
                 type="text"
                 dir="ltr"
-                placeholder="qwen2.5:7b"
+                placeholder="gemma2:9b"
                 value={settings.model}
                 onChange={(e) => setEngine({ model: e.target.value })}
                 className="v-field py-2.5 text-left font-mono text-sm"

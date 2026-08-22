@@ -13,7 +13,7 @@ export interface OnlineOptions {
 export const ONLINE_RULES = [
   'متن فارسی را ویرایش کن.',
   'معنای اصلی را حفظ کن و به لحن نویسنده احترام بگذار.',
-  'فقط متن ویرایش‌شده را برگردان؛ توضیح نده و نقل‌قول اضافه نکن.',
+  'فقط متن ویرایش‌شده را برگردان؛ توضیح نده، نقل‌قول اضافه نکن و متن را داخل گیومه نگذار.',
 ].join('\n')
 
 export async function editOnline(
@@ -23,7 +23,7 @@ export async function editOnline(
 ): Promise<string> {
   const endpoint = opts.endpoint.replace(/\/+$/, '')
   const body = {
-    model: opts.model || 'qwen2.5:7b',
+    model: opts.model || 'gemma2:9b',
     messages: [
       { role: 'system', content: `${mode.instruction}\n\n${ONLINE_RULES}` },
       { role: 'user', content: input },
