@@ -1,0 +1,403 @@
+@import 'tailwindcss';
+
+@theme {
+  /* ویراستار default — the paper table and the red star. Each color is a ROLE;
+     the [data-theme] blocks below swap the roles for the other three moods.
+     brand = the star, accent = a second voice, surface = cards/inputs. */
+  --color-paper: #f6efe1;
+  --color-paper-deep: #ece0c8;
+  --color-ink: #26211a;
+  --color-ink-soft: #7d7260;
+  --color-brand: #c7372c;
+  --color-brand-deep: #a82a21;
+  --color-accent: #d98a26;
+  --color-success: #3f7d5a;
+  --color-surface: #fffdf7;
+  --color-border: #ddd2bc;
+  --color-on-brand: #fff6e8;
+  --color-star: #c7372c;
+
+  --font-sans: 'Vazirmatn', 'Segoe UI', Tahoma, ui-sans-serif, system-ui, sans-serif;
+
+  --shadow-card: 0 12px 30px rgb(38 33 26 / 0.1), 0 2px 6px rgb(38 33 26 / 0.05);
+  --shadow-soft: 0 4px 14px rgb(38 33 26 / 0.06);
+  --shadow-float: 0 18px 44px rgb(38 33 26 / 0.16);
+}
+
+/* ---- شب‌نویس: the writer at night. Cold indigo, gold stars. ---- */
+[data-theme='shabnevis'] {
+  color-scheme: dark;
+  --color-paper: #12141f;
+  --color-paper-deep: #0b0d15;
+  --color-ink: #e8e6df;
+  --color-ink-soft: #8f93a5;
+  --color-brand: #e8b84b;
+  --color-brand-deep: #cf9c2c;
+  --color-accent: #6f7bd9;
+  --color-success: #7fc48c;
+  --color-surface: #1a1d2b;
+  --color-border: #2c3042;
+  --color-on-brand: #191a22;
+  --color-star: #f2e6c9;
+  --shadow-card: 0 12px 34px rgb(0 0 0 / 0.45), 0 2px 6px rgb(0 0 0 / 0.4);
+  --shadow-soft: 0 4px 16px rgb(0 0 0 / 0.35);
+  --shadow-float: 0 18px 48px rgb(0 0 0 / 0.55);
+}
+
+/* ---- کافه تهران: a 1960s-70s intellectual Tehran. Sepia paper, burnt
+   orange + olive, a literary magazine's masthead. ---- */
+[data-theme='cafe-tehran'] {
+  --color-paper: #e9dcc3;
+  --color-paper-deep: #d9c7a5;
+  --color-ink: #3a2c1c;
+  --color-ink-soft: #8a734f;
+  --color-brand: #b45a2a;
+  --color-brand-deep: #9c4a20;
+  --color-accent: #6f8c4f;
+  --color-success: #5f7d46;
+  --color-surface: #f2e8d2;
+  --color-border: #cdbb97;
+  --color-on-brand: #f7ecd8;
+  --color-star: #b45a2a;
+  --shadow-card: 0 10px 26px rgb(58 44 28 / 0.16), 0 2px 6px rgb(58 44 28 / 0.08);
+  --shadow-soft: 0 4px 12px rgb(58 44 28 / 0.08);
+  --shadow-float: 0 16px 40px rgb(58 44 28 / 0.22);
+}
+
+/* ---- جوهر بنفش: creative writing — purple ink on lavender paper. ---- */
+[data-theme='johar-benafsh'] {
+  --color-paper: #f1ecf7;
+  --color-paper-deep: #e4dcf0;
+  --color-ink: #2c2440;
+  --color-ink-soft: #7c7094;
+  --color-brand: #7c4ddb;
+  --color-brand-deep: #6a38c7;
+  --color-accent: #d9579b;
+  --color-success: #4f8f76;
+  --color-surface: #fbf8ff;
+  --color-border: #d8cde8;
+  --color-on-brand: #f7f1ff;
+  --color-star: #8f66e8;
+  --shadow-card: 0 12px 30px rgb(44 36 64 / 0.12), 0 2px 6px rgb(44 36 64 / 0.06);
+  --shadow-soft: 0 4px 14px rgb(44 36 64 / 0.07);
+  --shadow-float: 0 18px 44px rgb(44 36 64 / 0.18);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+  }
+
+  ::selection {
+    background-color: var(--color-brand);
+    color: var(--color-on-brand);
+  }
+
+  :focus-visible {
+    outline: 3px solid color-mix(in srgb, var(--color-brand) 45%, transparent);
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ---- Bespoke instrument classes. Plain (unlayered) so they beat Tailwind
+   utilities and re-read the role tokens at runtime. ---- */
+
+.shadow-card {
+  box-shadow: var(--shadow-card);
+}
+.shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+.shadow-float {
+  box-shadow: var(--shadow-float);
+}
+
+.v-card {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 22px;
+}
+
+.v-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.55rem;
+  background-color: var(--color-brand);
+  color: var(--color-on-brand);
+  font-weight: 800;
+  border: 1px solid var(--color-brand-deep);
+  border-radius: 999px;
+  padding: 0.9rem 1.6rem;
+  transition:
+    transform 0.15s ease,
+    background-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.v-btn-primary:hover:not(:disabled) {
+  background-color: var(--color-brand-deep);
+}
+.v-btn-primary:active:not(:disabled) {
+  transform: translateY(1px);
+}
+.v-btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.v-btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  background-color: transparent;
+  color: var(--color-ink);
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  padding: 0.62rem 1.15rem;
+  font-weight: 700;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+.v-btn-ghost:hover:not(:disabled) {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+  background-color: color-mix(in srgb, var(--color-brand) 7%, transparent);
+}
+.v-btn-ghost:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.v-field {
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  border: 1px solid var(--color-border);
+  border-radius: 18px;
+  padding: 1rem 1.15rem;
+  width: 100%;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+}
+.v-field::placeholder {
+  color: var(--color-ink-soft);
+  opacity: 0.7;
+}
+.v-field:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-brand) 14%, transparent);
+}
+
+.v-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background-color: var(--color-surface);
+  color: var(--color-ink);
+  font-weight: 700;
+  white-space: nowrap;
+  transition:
+    border-color 0.15s ease,
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.15s ease;
+}
+.v-chip:hover {
+  border-color: var(--color-brand);
+}
+.v-chip:active {
+  transform: translateY(1px);
+}
+.v-chip-active {
+  background-color: var(--color-brand);
+  border-color: var(--color-brand);
+  color: var(--color-on-brand);
+}
+
+.v-link {
+  color: var(--color-ink-soft);
+  font-weight: 700;
+  transition: color 0.15s ease;
+}
+.v-link:hover {
+  color: var(--color-brand);
+}
+
+.v-header {
+  border-bottom: 1px solid var(--color-border);
+  background-color: color-mix(in srgb, var(--color-paper) 82%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+
+.v-bottomnav {
+  border-top: 1px solid var(--color-border);
+  background-color: color-mix(in srgb, var(--color-surface) 88%, transparent);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+}
+.v-bottomnav a {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  color: var(--color-ink-soft);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.45rem 0.2rem;
+  transition: color 0.15s ease;
+}
+.v-bottomnav a:hover,
+.v-bottomnav a[aria-current='page'] {
+  color: var(--color-brand);
+}
+
+/* ---- Ambient textures — each mood dresses the whole page, not just the
+   palette. ---- */
+
+[data-theme='virastar'] body {
+  background-image: radial-gradient(rgb(38 33 26 / 0.035) 1px, transparent 1px);
+  background-size: 26px 26px;
+}
+
+[data-theme='shabnevis'] body {
+  background-image:
+    radial-gradient(1.4px 1.4px at 20% 30%, rgb(255 255 255 / 0.22), transparent 100%),
+    radial-gradient(1px 1px at 70% 18%, rgb(255 255 255 / 0.18), transparent 100%),
+    radial-gradient(1.2px 1.2px at 45% 62%, rgb(255 255 255 / 0.16), transparent 100%),
+    radial-gradient(1px 1px at 88% 70%, rgb(255 255 255 / 0.14), transparent 100%),
+    radial-gradient(1.1px 1.1px at 8% 80%, rgb(255 255 255 / 0.15), transparent 100%),
+    radial-gradient(120% 55% at 50% 0%, rgb(232 184 75 / 0.08), transparent 60%);
+}
+
+[data-theme='cafe-tehran'] body {
+  background-image:
+    radial-gradient(rgb(58 44 28 / 0.05) 1.2px, transparent 1.2px),
+    radial-gradient(90% 40% at 50% 0%, rgb(180 90 42 / 0.07), transparent 60%);
+  background-size:
+    14px 14px,
+    100% 100%;
+}
+
+[data-theme='johar-benafsh'] body {
+  background-image:
+    radial-gradient(rgb(124 77 219 / 0.05) 1px, transparent 1px),
+    radial-gradient(110% 50% at 50% 0%, rgb(124 77 219 / 0.09), transparent 55%);
+  background-size:
+    24px 24px,
+    100% 100%;
+}
+
+/* Mood dressing for the primary action. */
+[data-theme='shabnevis'] .v-btn-primary {
+  box-shadow: 0 6px 22px rgb(232 184 75 / 0.28);
+}
+[data-theme='shabnevis'] .v-btn-primary:hover:not(:disabled) {
+  box-shadow: 0 8px 26px rgb(232 184 75 / 0.38);
+}
+
+[data-theme='cafe-tehran'] .v-btn-primary {
+  border-radius: 12px;
+  border-width: 2px;
+}
+[data-theme='cafe-tehran'] .v-chip {
+  border-radius: 10px;
+}
+[data-theme='cafe-tehran'] .v-chip-active {
+  border-radius: 10px;
+}
+[data-theme='cafe-tehran'] .v-card {
+  border-radius: 14px;
+}
+[data-theme='cafe-tehran'] .v-field {
+  border-radius: 12px;
+}
+
+[data-theme='johar-benafsh'] .v-btn-primary {
+  box-shadow: 0 6px 20px rgb(124 77 219 / 0.3);
+}
+
+/* Selection + focus accents per mood. */
+[data-theme='shabnevis'] ::selection {
+  background-color: var(--color-brand);
+  color: var(--color-on-brand);
+}
+[data-theme='cafe-tehran'] ::selection {
+  background-color: var(--color-brand);
+  color: var(--color-on-brand);
+}
+[data-theme='johar-benafsh'] ::selection {
+  background-color: var(--color-brand);
+  color: var(--color-on-brand);
+}
+
+/* ---- Motion — slow, calm, never gimmicky. ---- */
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes star-turn {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes star-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.035);
+  }
+}
+
+.animate-fade-up {
+  animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.animate-star-turn {
+  animation: star-turn 28s linear infinite;
+}
+
+.animate-star-breathe {
+  animation: star-breathe 7s ease-in-out infinite;
+}
+
+/* Fast turn for the busy/loading star. */
+.animate-star-busy {
+  animation: star-turn 0.9s linear infinite;
+}

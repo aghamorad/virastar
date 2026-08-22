@@ -1,0 +1,144 @@
+// The offline editor engine — deterministic Persian rules that run anywhere
+// with no network. It corrects, repairs نیم‌فاصله, and shifts register through
+// curated lexicons. Heavy rewriting is the online engine's job; this is the
+// honest, always-works offline half.
+
+import type { Register, WritingMode } from '../modes'
+import {
+  COLLOQUIAL_TO_STANDARD,
+  TO_CASUAL,
+  TO_FLATTERY,
+  TO_FORMAL,
+  TO_GENZ,
+  TO_LITERARY,
+  TO_STREET,
+  TO_TAAROF,
+  fixSpacing,
+  fixZWNJ,
+  hasPersian,
+  normalizeChars,
+  replaceWords,
+} from '../persian'
+
+export interface OfflineResult {
+  output: string
+  changed: number
+  notes: string[]
+}
+
+const END_PUNCT = /[.!؟…»"'»]$/
+
+function ensureFinalPunctuation(text: string): { text: string; changed: boolean } {
+  if (!text || END_PUNCT.test(text)) return { text, changed: false }
+  return { text: `${text}.`, changed: true }
+}
+
+/** Weave connective words between later sentences for structured registers. */
+function weaveConnectors(text: string, connectors: string[]): { text: string; changed: number } {
+  // Word-boundary anchored so «و» matches only the standalone word and not
+  // the prefix of «واقعا» — otherwise a «و»-initial sentence skips weaving.
+  const leading = /^(امّا|اما|ولی|بنابراین|هم‌چنین|همچنین|از این‌رو|از این رو|لیکن|پس|و|گویی|چون|خب|بابا|واقعاً|واقعا|بازم|فرموده|مقتضی است|خواهشمند است|به استحضار می‌رساند|بدین‌سان|به‌طور کلی)(?![؀-ۿ‌])/
+  const sentences = text.split(/(?<=[.!؟…]) +/)
+  if (sentences.length < 2) return { text, changed: 0 }
+  let changed = 0
+  let ci = 0
+  const out = sentences.map((s, i) => {
+    if (i === 0) return s
+    const t = s.trim()
+    if (!t || leading.test(t)) return s
+    const conn = connectors[ci % connectors.length]
+    ci++
+    changed++
+    return ` ${conn}، ${t}`
+  })
+  return { text: out.join(' '), changed }
+}
+
+function applyOpeners(text: string, mode: WritingMode): { text: string; changed: number } {
+  let out = text
+  let changed = 0
+  if (mode.opener && !out.startsWith(mode.opener)) {
+    out = `${mode.opener}؛ ${out}`
+    changed++
+  }
+  if (mode.closer && !out.endsWith(mode.closer)) {
+    const end = ensureFinalPunctuation(out)
+    out = end.changed ? `${end.text} ${mode.closer}.` : `${out.trim()} ${mode.closer}.`
+    changed += end.changed ? 2 : 1
+  }
+  return { text: out, changed }
+}
+
+const REGISTER_LEXICON: Record<Register, Record<string, string> | null> = {
+  standard: COLLOQUIAL_TO_STANDARD,
+  formal: TO_FORMAL,
+  academic: TO_FORMAL,
+  admin: TO_FORMAL,
+  casual: TO_CASUAL,
+  literary: TO_LITERARY,
+  street: TO_STREET,
+  genz: TO_GENZ,
+  taarof: TO_TAAROF,
+  flattery: TO_FLATTERY,
+  poetic: TO_LITERARY,
+}
+
+export function editOffline(input: string, mode: WritingMode): OfflineResult {
+  const notes: string[] = []
+  const before = input
+  let text = normalizeChars(input)
+  if (!hasPersian(text)) {
+    return { output: text.trim(), changed: 0, notes: ['متن فارسی پیدا نکردم؛ اصلاح نشد.'] }
+  }
+
+  const znwjText = fixZWNJ(text)
+  if (znwjText !== text) notes.push('نیم‌فاصله‌ها و فاصله‌ها مرتب شد.')
+  text = znwjText
+
+  const lexicon = REGISTER_LEXICON[mode.register]
+  if (lexicon) {
+    const replaced = replaceWords(text, lexicon)
+    text = replaced.text
+    if (replaced.count > 0) {
+      const verb =
+        mode.register === 'casual' || mode.register === 'street' || mode.register === 'genz'
+          ? 'واژه‌ها به لحن روزمره نزدیک شد.'
+          : 'شکل استاندارد واژه‌ها جایگزین شد.'
+      notes.push(verb)
+    }
+  }
+
+  if (mode.connectors && mode.connectors.length > 0) {
+    const woven = weaveConnectors(text, mode.connectors)
+    if (woven.changed > 0) notes.push('پیوندهای جمله‌ها پررنگ شد.')
+    text = woven.text
+  }
+
+  if (mode.opener || mode.closer) {
+    const wrapped = applyOpeners(text, mode)
+    text = wrapped.text
+  }
+
+  const spaced = fixSpacing(text)
+  const ended = ensureFinalPunctuation(spaced)
+  if (ended.changed) notes.push('نشانه‌گذاری کامل شد.')
+  text = ended.text
+
+  // How much actually moved: count real token differences, capped.
+  const changed =
+    before === text ? 0 : Math.min(999, countDiffs(before, text))
+  if (notes.length === 0) notes.push('نوشته از قبل تمیز بود.')
+  return { output: text, changed, notes }
+}
+
+/** Cheap edit-distance-ish proxy: differing words + differing punctuation. */
+function countDiffs(a: string, b: string): number {
+  const aw = a.split(/\s+/)
+  const bw = b.split(/\s+/)
+  let n = 0
+  const len = Math.max(aw.length, bw.length)
+  for (let i = 0; i < len; i++) {
+    if (aw[i] !== bw[i]) n++
+  }
+  return n
+}
