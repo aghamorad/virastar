@@ -6,11 +6,14 @@
 import type { Register, WritingMode } from '../modes'
 import {
   COLLOQUIAL_TO_STANDARD,
+  TO_ACADEMIC,
+  TO_ADMIN,
   TO_CASUAL,
   TO_FLATTERY,
   TO_FORMAL,
   TO_GENZ,
   TO_LITERARY,
+  TO_POETIC,
   TO_STREET,
   TO_TAAROF,
   expandMiVariants,
@@ -44,7 +47,7 @@ function ensureFinalPunctuation(text: string): { text: string; changed: boolean 
 function weaveConnectors(text: string, connectors: string[]): { text: string; changed: number } {
   // Word-boundary anchored so «و» matches only the standalone word and not
   // the prefix of «واقعا» — otherwise a «و»-initial sentence skips weaving.
-  const leading = /^(امّا|اما|ولی|بنابراین|هم‌چنین|از این‌رو|از این رو|لیکن|پس|و|گویی|چون|خب|بابا|واقعاً|واقعا|بازم|فرموده|مقتضی است|خواهشمند است|به استحضار می‌رساند|بدین‌سان|به‌طور کلی)(?![؀-ۿ‌])/
+  const leading = /^(امّا|اما|ولی|بنابراین|هم‌چنین|از این‌رو|از این رو|لیکن|پس|و|گویی|چون|خب|بابا|واقعاً|واقعا|بازم|فرموده|مقتضی است|خواهشمند است|به استحضار می‌رساند|بدین‌سان|به‌طور کلی|لطفا|لطفاً|خواهش|ممنون|خواهشمندم)(?![؀-ۿ‌])/
   const sentences = text.split(/(?<=[.!؟…]) +/)
   if (sentences.length < 3) return { text, changed: 0 }
   let changed = 0
@@ -92,22 +95,25 @@ function applyOpeners(text: string, mode: WritingMode): { text: string; changed:
 }
 
 // The "clean" registers first fix colloquial spellings to standard, then apply
-// their register shift — so رسمى doesn't leave برم or خوبه standing.
+// their register shift — so رسمى doesn't leave برم or خوبه standing. Each
+// register now stacks its own lexicon so the tones read differently: رسمى
+// leans on سپاسگزارم/ارسال کنم, دانشگاهی on با تشکر/گمان میکنم/راهکاری,
+// اداری on قصد دارم/ارسال نمایم/اقدام لازم — not all one formal soup.
 const STANDARD_AND_FORMAL = { ...COLLOQUIAL_TO_STANDARD, ...TO_FORMAL }
 const STANDARD_AND_LITERARY = { ...COLLOQUIAL_TO_STANDARD, ...TO_LITERARY }
 
 const REGISTER_LEXICON: Record<Register, Record<string, string> | null> = {
   standard: COLLOQUIAL_TO_STANDARD,
   formal: STANDARD_AND_FORMAL,
-  academic: STANDARD_AND_FORMAL,
-  admin: STANDARD_AND_FORMAL,
+  academic: { ...COLLOQUIAL_TO_STANDARD, ...TO_FORMAL, ...TO_ACADEMIC },
+  admin: { ...COLLOQUIAL_TO_STANDARD, ...TO_FORMAL, ...TO_ADMIN },
   casual: TO_CASUAL,
   literary: STANDARD_AND_LITERARY,
   street: TO_STREET,
   genz: TO_GENZ,
   taarof: { ...COLLOQUIAL_TO_STANDARD, ...TO_TAAROF },
   flattery: { ...COLLOQUIAL_TO_STANDARD, ...TO_FLATTERY },
-  poetic: STANDARD_AND_LITERARY,
+  poetic: { ...COLLOQUIAL_TO_STANDARD, ...TO_LITERARY, ...TO_POETIC },
 }
 
 export function editOffline(input: string, mode: WritingMode): OfflineResult {

@@ -58,7 +58,7 @@ export async function runEdit(
         ...offline,
         engine: 'offline',
         notes: [
-          'موتور آنلاین در دسترس نبود؛ با موتور آفلاین ویرایش شد.',
+          'موتور آنلاین پاسخ درست نداد؛ با موتور آفلاین ویرایش شد.',
           ...offline.notes,
         ],
       }
