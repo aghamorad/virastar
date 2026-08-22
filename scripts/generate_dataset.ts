@@ -30,16 +30,19 @@ const TEACHER = 'gemma2:9b'
 const TEMPERATURE = Number(process.env.TEMPERATURE ?? 0.4)
 const OUT = process.env.OUTPUT ?? join(ROOT, 'data', 'distill', 'all.jsonl')
 const SYNTH = join(ROOT, 'data', 'distill', 'synth_sentences.jsonl')
+const WEB = join(ROOT, 'data', 'distill', 'web_sources.jsonl')
 
 const modeSubset = process.env.MODES_SUBSET?.split(',').filter(Boolean)
 const sourceLimit = process.env.SOURCES_LIMIT ? Number(process.env.SOURCES_LIMIT) : SOURCES.length
 const modes = modeSubset ? MODES.filter((m) => modeSubset.includes(m.id)) : MODES
 // Hand-written seeds first, then every synthesized sentence (from
-// synthesize_sentences.ts), so each one is edited under every mode. Keys are
-// `mode|sNN` and `mode|synthNNN` — distinct, so the resume set stays correct.
+// synthesize_sentences.ts) and the real fetched texts (from fetch_sources.ts),
+// so each one is edited under every mode. Keys are `mode|sNN`,
+// `mode|synthNNN` and `mode|newsNN` — distinct, so the resume set stays correct.
 const sources: SourceText[] = [
   ...SOURCES.slice(0, sourceLimit),
-  ...loadSynth(),
+  ...loadJsonLines<SynthRecord>(SYNTH),
+  ...loadJsonLines<WebRecord>(WEB),
 ]
 
 interface SynthRecord {
@@ -47,13 +50,18 @@ interface SynthRecord {
   text: string
 }
 
-function loadSynth(): SourceText[] {
-  if (!existsSync(SYNTH)) return []
+interface WebRecord {
+  id: string
+  text: string
+}
+
+function loadJsonLines<T extends { id: string; text: string }>(file: string): SourceText[] {
+  if (!existsSync(file)) return []
   const out: SourceText[] = []
-  for (const line of readFileSync(SYNTH, 'utf8').split('\n')) {
+  for (const line of readFileSync(file, 'utf8').split('\n')) {
     if (!line.trim()) continue
     try {
-      const r = JSON.parse(line) as SynthRecord
+      const r = JSON.parse(line) as T
       out.push({ id: r.id, text: r.text })
     } catch {
       /* skip malformed line */
