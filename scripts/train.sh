@@ -35,7 +35,10 @@ nt = nv = nte = 0
 for line in src.read_text().splitlines():
     if not line.strip():
         continue
-    r = json.loads(line)
+    try:
+        r = json.loads(line)
+    except ValueError:
+        continue  # truncated tail write; the generator will re-emit it
     sid = r["key"].split("|")[-1]
     if sid in test_hold:
         test.write(line + "\n"); nte += 1
