@@ -1,7 +1,16 @@
 import type { Metadata, Viewport } from 'next'
+import localFont from 'next/font/local'
 import type { ReactNode } from 'react'
-import 'vazirmatn/Vazirmatn-font-face.css'
 import './globals.css'
+
+// The Vazirmatn variable font — one ~109 KB woff2 for every weight, instead of
+// nine static weight files. Keeps the deployed app lean.
+const vazirmatn = localFont({
+  src: '../node_modules/vazirmatn/fonts/webfonts/Vazirmatn[wght].woff2',
+  weight: '100 900',
+  variable: '--font-vazirmatn',
+  display: 'swap',
+})
 import { ScreenShell } from '@/components/ScreenShell'
 import { THEME_STORAGE_KEY } from '@/domain/themes'
 
@@ -35,7 +44,7 @@ export const viewport: Viewport = {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="fa" dir="rtl" suppressHydrationWarning data-scroll-behavior="smooth">
-      <body className="min-h-dvh bg-paper font-sans text-ink antialiased">
+      <body className={`${vazirmatn.variable} min-h-dvh bg-paper font-sans text-ink antialiased`}>
         <script
           // Apply the saved theme before first paint so the page never flashes
           // in the wrong mood.

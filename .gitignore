@@ -23,3 +23,6 @@ next-env.d.ts
 
 # machine-local Claude Code settings
 .claude/settings.local.json
+
+# distillation artifacts — regenerable, and far too large for the repo
+/data/distill/
