@@ -13,6 +13,8 @@ import {
   TO_LITERARY,
   TO_STREET,
   TO_TAAROF,
+  expandMiVariants,
+  fixPunctuation,
   fixSpacing,
   fixZWNJ,
   hasPersian,
@@ -89,18 +91,23 @@ function applyOpeners(text: string, mode: WritingMode): { text: string; changed:
   return { text: out, changed }
 }
 
+// The "clean" registers first fix colloquial spellings to standard, then apply
+// their register shift — so رسمى doesn't leave برم or خوبه standing.
+const STANDARD_AND_FORMAL = { ...COLLOQUIAL_TO_STANDARD, ...TO_FORMAL }
+const STANDARD_AND_LITERARY = { ...COLLOQUIAL_TO_STANDARD, ...TO_LITERARY }
+
 const REGISTER_LEXICON: Record<Register, Record<string, string> | null> = {
   standard: COLLOQUIAL_TO_STANDARD,
-  formal: TO_FORMAL,
-  academic: TO_FORMAL,
-  admin: TO_FORMAL,
+  formal: STANDARD_AND_FORMAL,
+  academic: STANDARD_AND_FORMAL,
+  admin: STANDARD_AND_FORMAL,
   casual: TO_CASUAL,
-  literary: TO_LITERARY,
+  literary: STANDARD_AND_LITERARY,
   street: TO_STREET,
   genz: TO_GENZ,
-  taarof: TO_TAAROF,
-  flattery: TO_FLATTERY,
-  poetic: TO_LITERARY,
+  taarof: { ...COLLOQUIAL_TO_STANDARD, ...TO_TAAROF },
+  flattery: { ...COLLOQUIAL_TO_STANDARD, ...TO_FLATTERY },
+  poetic: STANDARD_AND_LITERARY,
 }
 
 export function editOffline(input: string, mode: WritingMode): OfflineResult {
@@ -115,9 +122,23 @@ export function editOffline(input: string, mode: WritingMode): OfflineResult {
   if (znwjText !== text) notes.push('نیم‌فاصله‌ها و فاصله‌ها مرتب شد.')
   text = znwjText
 
-  const lexicon = REGISTER_LEXICON[mode.register]
-  if (lexicon) {
-    const replaced = replaceWords(text, lexicon)
+  const punctText = fixPunctuation(text)
+  if (punctText !== text) notes.push('نشانه‌گذاری و گیومه‌ها اصلاح شد.')
+  text = punctText
+
+  // Strip sentence-opening interjections BEFORE the lexicon — otherwise آخه
+  // gets turned into زیرا and then can't be removed.
+  if (mode.register === 'formal' || mode.register === 'academic' || mode.register === 'admin') {
+    const stripped = stripColloquialInterjections(text)
+    if (stripped !== text) {
+      notes.push('کلمات محاوره‌ای ابتدای جمله‌ها حذف شد.')
+      text = stripped
+    }
+  }
+
+  const baseLexicon = REGISTER_LEXICON[mode.register]
+  if (baseLexicon) {
+    const replaced = replaceWords(text, expandMiVariants(baseLexicon))
     text = replaced.text
     if (replaced.count > 0) {
       const verb =
@@ -125,14 +146,6 @@ export function editOffline(input: string, mode: WritingMode): OfflineResult {
           ? 'واژه‌ها به لحن روزمره نزدیک شد.'
           : 'شکل استاندارد واژه‌ها جایگزین شد.'
       notes.push(verb)
-    }
-  }
-
-  if (mode.register === 'formal' || mode.register === 'academic' || mode.register === 'admin') {
-    const stripped = stripColloquialInterjections(text)
-    if (stripped !== text) {
-      notes.push('کلمات محاوره‌ای ابتدای جمله‌ها حذف شد.')
-      text = stripped
     }
   }
 
@@ -147,6 +160,9 @@ export function editOffline(input: string, mode: WritingMode): OfflineResult {
     text = wrapped.text
   }
 
+  // The dictionaries use the simple no-ZWNJ spellings; re-run the half-space
+  // pass so their outputs come out in the modern form too.
+  text = fixZWNJ(text)
   const spaced = fixSpacing(text)
   const ended = ensureFinalPunctuation(spaced)
   if (ended.changed) notes.push('نشانه‌گذاری کامل شد.')

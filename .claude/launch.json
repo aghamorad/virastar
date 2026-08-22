@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "virastar-dev",
+      "name": "virastar-local",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev"],
-      "port": 3001,
+      "port": 3002,
       "autoPort": true
     }
   ]

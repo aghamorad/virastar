@@ -21,81 +21,79 @@ export function normalizeChars(text: string): string {
     .replace(/ة/g, 'ه')
     .replace(/[ً-ْٰ]/g, '') // tashkeel / superscript alef
     .replace(/[٠-٩]/g, (d) => String.fromCharCode(d.charCodeAt(0) - 0x0630 + 0x06f0))
+    .replace(/ـ/g, '') // tatweel / kashida — "fake" justification marks
+    .replace(/[​‎‏]/g, '') // ZWSP / LRM / RLM, invisible but messy
+}
+
+/** Present-tense stems of the everyday verbs. ZWNJ joins are only ever applied
+ *  to these exact inflections (full word, never a bare stem), so look-alike
+ *  nouns like میدان or میوه are never touched. */
+const MI_STEMS = [
+  'خواه', 'رو', 'شو', 'کن', 'ده', 'دان', 'گوی', 'گیر', 'آ', 'آور', 'توان',
+  'خور', 'بین', 'رس', 'خواب', 'نشین', 'فهم', 'زن', 'انداز', 'پرس', 'نویس',
+  'خوان', 'گذار', 'شمار', 'خند', 'تاب', 'بند', 'شکن',
+]
+const MI_ENDINGS = ['م', 'ی', 'د', 'یم', 'ید', 'ند']
+const MI_FORMS = MI_STEMS.flatMap((s) => MI_ENDINGS.map((e) => s + e)).sort(
+  (a, b) => b.length - a.length,
+)
+const MI_RE = new RegExp(`(می|نمی)( ?)(${MI_FORMS.join('|')})(?![\\p{L}\\u200c])`, 'gu')
+
+/**
+ * Typographic cleanup a Persian editor should always do: ellipses, collapsing
+ * doubled marks, converting Latin ?/;/، into their Persian forms when they sit
+ * inside Persian text, and wrapping Persian speech in «…» guillemets.
+ */
+export function fixPunctuation(text: string): string {
+  let out = text
+  out = out.replace(/\.\.\.+/g, '…')
+  out = out.replace(/…{2,}/g, '…')
+  out = out.replace(/[؟]{2,}/g, '؟')
+  out = out.replace(/!{2,}/g, '!')
+  out = out.replace(/[،]{2,}/g, '،')
+  out = out.replace(/([؀-ۿ])\s*\?/g, '$1؟')
+  out = out.replace(/([؀-ۿ])\s*;/g, '$1؛')
+  out = out.replace(/([؀-ۿ]),/g, '$1،')
+  out = out.replace(/"([^"\n]*[؀-ۿ][^"\n]*)"/g, '«$1»')
+  out = out.replace(/'([^'\n]*[؀-ۿ][^'\n]*)'/g, '«$1»')
+  return out
+}
+
+/** Dict keys like میخوام are typed both with and without the نیم‌فاصله; add the
+ *  ZWNJ-joined variant of every می/نمی-prefixed key so either spelling matches. */
+export function expandMiVariants(dict: Record<string, string>): Record<string, string> {
+  const out: Record<string, string> = { ...dict }
+  for (const [k, v] of Object.entries(dict)) {
+    const m = k.match(/^(می|نمی)(?=[؀-ۿ])/)
+    if (m && !k.includes(ZWNJ)) out[`${m[1]}${ZWNJ}${k.slice(m[1].length)}`] = v
+  }
+  return out
 }
 
 /**
- * Repair the two most common spacing mistakes:
- *  - a full space where Persian wants a نیم‌فاصله ("می خواهم" → "می‌خواهم"),
- *  - a space before punctuation, or none after it.
+ * Repair the two most common spacing mistakes: a full space where Persian wants
+ * a نیم‌فاصله ("می خواهم" → "می‌خواهم", and the glued "میخواهم" → "می‌خواهم")
+ * plus the generic ها/های/تر/ترین suffix joins. Only exact verb inflections are
+ * touched, so nouns like میدان or میوه survive untouched.
  */
 export function fixZWNJ(text: string): string {
-  // Dictionary of the most-typed space-separated verbs + suffixes.
-  const pairs: Array<[string, string]> = [
-    ['می خواهم', 'میخواهم'],
-    ['می خواهی', 'میخواهی'],
-    ['می خواهد', 'میخواهد'],
-    ['می خواهیم', 'میخواهیم'],
-    ['می خواهید', 'میخواهید'],
-    ['می خواهند', 'میخواهند'],
-    ['می خوام', 'میخوام'],
-    ['می خوای', 'میخوای'],
-    ['می خواد', 'میخواد'],
-    ['می روم', 'میروم'],
-    ['می روی', 'میروی'],
-    ['می رود', 'میرود'],
-    ['می رویم', 'میرویم'],
-    ['می روید', 'میروید'],
-    ['می روند', 'میروند'],
-    ['می شود', 'میشود'],
-    ['می شوی', 'میشوی'],
-    ['می شویم', 'میشویم'],
-    ['می شوید', 'میشوید'],
-    ['می شوند', 'میشوند'],
-    ['می کنم', 'میکنم'],
-    ['می کنی', 'میکنی'],
-    ['می کند', 'میکند'],
-    ['می کنیم', 'میکنیم'],
-    ['می کنید', 'میکنید'],
-    ['می کنند', 'میکنند'],
-    ['می دهم', 'میدهم'],
-    ['می دهی', 'میدهی'],
-    ['می دهد', 'میدهد'],
-    ['می دهیم', 'میدهیم'],
-    ['می دهید', 'میدهید'],
-    ['می دهند', 'میدهند'],
-    ['می دانم', 'میدانم'],
-    ['می دانی', 'میدانی'],
-    ['می داند', 'میداند'],
-    ['می دانیم', 'میدانیم'],
-    ['می دانید', 'میدانید'],
-    ['می دانند', 'میدانند'],
-    ['می گویم', 'میگویم'],
-    ['می گویی', 'میگویی'],
-    ['می گوید', 'میگوید'],
-    ['می گوییم', 'میگوییم'],
-    ['می گویید', 'میگویید'],
-    ['می گویند', 'میگویند'],
-    ['می آید', 'میآید'],
-    ['می آیی', 'میآیی'],
-    ['می آیند', 'میآیند'],
-    ['می توانم', 'میتوانم'],
-    ['می توانی', 'میتوانی'],
-    ['می تواند', 'میتواند'],
-    ['می توانیم', 'میتوانیم'],
-    ['می توانید', 'میتوانید'],
-    ['می توانند', 'میتوانند'],
-    ['می گیرم', 'میگیرم'],
-    ['می گیرد', 'میگیرد'],
-    ['می گیرند', 'میگیرند'],
-  ]
   let out = text
-  for (const [from, to] of pairs) {
-    out = out.split(from).join(to)
-  }
-  // Generic joins that are almost always correct in Persian: plural ها/های
-  // and the comparative تر/ترین suffix attach to the noun with a نیم‌فاصله.
+  // Clean stray ZWNJs first: doubled half-spaces, or one glued to a real space.
+  out = out.replace(/‌{2,}/g, '‌')
+  out = out.replace(/‌ +/g, ' ')
+  out = out.replace(/ +‌(?=[؀-ۿ])/g, ' ')
+
+  // Every known inflection, joined whether typed with a space or glued.
+  out = out.replace(MI_RE, (_m, pre, _sp, form) => pre + ZWNJ + form)
+
+  // Generic space join for می/نمی + any other verb ("می رفت" → "می‌رفت").
+  // و/که guard keeps the noun می (wine) from joining its conjunction or the
+  // relative pronoun: "می که نوشیدم" must stay two words.
+  out = out.replace(/(می|نمی)( +)(?![وکه])(?=\p{L})/gu, '$1' + ZWNJ)
+
+  // Plural ها/های and comparative تر/ترین attach to the noun with a نیم‌فاصله.
   out = out.replace(
-    /([؀-ۿ]+) (ها|های|تر|ترین)(?=[\s.،؛؟!]|$)/g,
+    /([؀-ۿ]+) (ها|های|تر|ترین)(?=[\s.،؛؟!…]|$)/g,
     (_, w, sfx) => w + ZWNJ + sfx,
   )
   return out
@@ -104,9 +102,13 @@ export function fixZWNJ(text: string): string {
 export function fixSpacing(text: string): string {
   let out = text
   // No space before Persian sentence punctuation, a single space after.
-  out = out.replace(/ *([،؛؟!])/g, '$1')
+  out = out.replace(/ *([،؛؟!…])/g, '$1')
   out = out.replace(/ *\./g, '.')
-  out = out.replace(/([،؛؟!.])(?=[؀-ۿ])/g, '$1 ')
+  // …but not between a digit and a decimal point (۳.۵ stays ۳.۵).
+  out = out.replace(/([،؛؟!.…])(?=[؀-ۿ])(?![۰-۹٠-٩])/g, '$1 ')
+  // Guillemets hug their text: «کلمه», not « کلمه ».
+  out = out.replace(/« +/g, '«')
+  out = out.replace(/ +»/g, '»')
   // Tidy runs of whitespace and stray half-spaces.
   out = out.replace(/[ \t]{2,}/g, ' ')
   out = out.trim()
@@ -153,6 +155,7 @@ export const COLLOQUIAL_TO_STANDARD: Record<string, string> = {
   'نمیاد': 'نمیآید',
   'اصلا': 'اصلاً',
   'واقعا': 'واقعاً',
+  'حتما': 'حتماً',
   'برم': 'بروم',
   'بری': 'بروی',
   'بره': 'برود',
@@ -205,6 +208,21 @@ export const COLLOQUIAL_TO_STANDARD: Record<string, string> = {
   'میخاستم': 'میخواستم',
   'میخاست': 'میخواست',
   'میخوره': 'میخورد',
+  'بخوام': 'بخواهم',
+  'بخوای': 'بخواهی',
+  'بخواد': 'بخواهد',
+  'بخوایم': 'بخواهیم',
+  'بخواین': 'بخواهید',
+  'بخوان': 'بخواهند',
+  'باشه': 'باشد',
+  'بشه': 'بشود',
+  'بشی': 'بشوی',
+  'بشیم': 'بشویم',
+  'بشن': 'بشوند',
+  'خوبه': 'خوب است',
+  'خونه': 'خانه',
+  'کتابخونه': 'کتابخانه',
+  'چیکار': 'چه کار',
 }
 
 /** Formal registers swap casual forms for literary/standard ones. */
@@ -242,7 +260,6 @@ export const TO_FORMAL: Record<string, string> = {
   'میخوره': 'میخورد',
   'میخواستم': 'میخواستم',
   'هستم': 'هستم',
-  'باز هم': 'بار دیگر',
   'دوباره': 'بار دیگر',
   'دیگه': 'دیگر',
   'اصلا': 'اصلاً',
@@ -381,14 +398,15 @@ export function orderedEntries(dict: Record<string, string>): Array<[string, str
   return Object.entries(dict).sort((a, b) => b[0].length - a[0].length)
 }
 
-/** Replace whole words (Persian letters + ZWNJ form a word) from a dictionary. */
+/** Replace whole words (a letter on either side, or a نیم‌فاصله, blocks a match)
+ *  from a dictionary. Punctuation — ، ؛ ؟ — counts as a boundary. */
 export function replaceWords(text: string, dict: Record<string, string>): { text: string; count: number } {
   let out = text
   let count = 0
   for (const [from, to] of orderedEntries(dict)) {
     const re = new RegExp(
-      `(?<![\\u0600-\\u06FF\\u200c])${escapeRegExp(from)}(?![\\u0600-\\u06FF\\u200c])`,
-      'g',
+      `(?<![\\p{L}\\u200c])${escapeRegExp(from)}(?![\\p{L}\\u200c])`,
+      'gu',
     )
     const replaced = out.replace(re, (m) => {
       count++
