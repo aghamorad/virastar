@@ -11,7 +11,7 @@ echo "== $(date) pipeline start =="
 echo "== waiting for dataset generation =="
 while pgrep -f "tsx scripts/generate_dataset" >/dev/null; do sleep 20; done
 sleep 5
-echo "records: $(wc -l < data/distill/train.jsonl)"
+echo "records: $(wc -l < data/distill/all.jsonl)"
 tail -n 3 /tmp/virastar-model/gen.log || true
 
 echo "== training =="

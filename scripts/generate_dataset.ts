@@ -12,26 +12,55 @@
 //   MODES_SUBSET=rasmi,adabi   only these mode ids
 //   SOURCES_LIMIT=3            only the first N sources
 //   TEMPERATURE=0.4
-//   OUTPUT=data/distill/train.jsonl
+//   OUTPUT=data/distill/all.jsonl
 // The run is resumable: already-generated (mode|source) keys are skipped.
+// all.jsonl is the canonical full dataset; train.sh splits it into train/valid
+// without ever touching the canonical file, so the split is idempotent.
 
-import { appendFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { MODES } from '../domain/modes'
 import { ONLINE_RULES } from '../domain/engines/online'
-import { SOURCES } from './sources'
+import { SOURCES, type SourceText } from './sources'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const OLLAMA = 'http://localhost:11434/v1/chat/completions'
 const TEACHER = 'gemma2:9b'
 const TEMPERATURE = Number(process.env.TEMPERATURE ?? 0.4)
-const OUT = process.env.OUTPUT ?? join(ROOT, 'data', 'distill', 'train.jsonl')
+const OUT = process.env.OUTPUT ?? join(ROOT, 'data', 'distill', 'all.jsonl')
+const SYNTH = join(ROOT, 'data', 'distill', 'synth_sentences.jsonl')
 
 const modeSubset = process.env.MODES_SUBSET?.split(',').filter(Boolean)
 const sourceLimit = process.env.SOURCES_LIMIT ? Number(process.env.SOURCES_LIMIT) : SOURCES.length
 const modes = modeSubset ? MODES.filter((m) => modeSubset.includes(m.id)) : MODES
-const sources = SOURCES.slice(0, sourceLimit)
+// Hand-written seeds first, then every synthesized sentence (from
+// synthesize_sentences.ts), so each one is edited under every mode. Keys are
+// `mode|sNN` and `mode|synthNNN` — distinct, so the resume set stays correct.
+const sources: SourceText[] = [
+  ...SOURCES.slice(0, sourceLimit),
+  ...loadSynth(),
+]
+
+interface SynthRecord {
+  id: string
+  text: string
+}
+
+function loadSynth(): SourceText[] {
+  if (!existsSync(SYNTH)) return []
+  const out: SourceText[] = []
+  for (const line of readFileSync(SYNTH, 'utf8').split('\n')) {
+    if (!line.trim()) continue
+    try {
+      const r = JSON.parse(line) as SynthRecord
+      out.push({ id: r.id, text: r.text })
+    } catch {
+      /* skip malformed line */
+    }
+  }
+  return out
+}
 
 interface Record {
   key: string
