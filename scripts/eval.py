@@ -11,6 +11,7 @@ import sys
 import pathlib
 
 from mlx_lm import load, generate
+from mlx_lm.sample_utils import make_sampler
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 VALID = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "data" / "distill" / "valid.jsonl"
@@ -38,7 +39,7 @@ def main() -> None:
             tokenizer,
             prompt=prompt,
             max_tokens=MAX_TOKENS,
-            temp=TEMP,
+            sampler=make_sampler(temp=TEMP),
         ).strip()
         lines.append("=" * 64)
         lines.append(f"{r['key']}  (mode: {r['mode']})")

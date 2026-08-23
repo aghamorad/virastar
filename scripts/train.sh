@@ -54,17 +54,20 @@ print(f"split: train={nt} valid={nv} test={nte}")
 PY
 
 mkdir -p "$ADAPTERS"
+# Batch 2 + gradient checkpointing to fit 16 GB RAM (batch 4 OOM'd Metal at
+# iter ~200 with peak 12.6 GB). Checkpoints every 200 so a crash can resume.
 "$VENV/bin/mlx_lm.lora" \
   --model "$BASE" \
   --train \
   --fine-tune-type lora \
   --data "$DATA" \
-  --batch-size 4 \
+  --batch-size 2 \
   --iters 800 \
   --learning-rate 1e-4 \
   --steps-per-eval 200 \
-  --val-batches 25 \
-  --save-every 400 \
+  --val-batches 10 \
+  --save-every 200 \
+  --grad-checkpoint \
   --seed 7 \
   --config "$DATA/lora.yaml" \
   --adapter-path "$ADAPTERS" \
