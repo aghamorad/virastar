@@ -11,7 +11,7 @@ import sys
 import pathlib
 
 from mlx_lm import load, generate
-from mlx_lm.sample_utils import make_sampler
+from mlx_lm.sample_utils import make_sampler, make_repetition_penalty
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 VALID = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "data" / "distill" / "valid.jsonl"
@@ -20,6 +20,9 @@ REPORT = pathlib.Path(sys.argv[3]) if len(sys.argv) > 3 else ROOT / "data" / "di
 
 MAX_TOKENS = 300
 TEMP = 0.4
+# Match Ollama's default repeat_penalty=1.1 so the eval reflects production
+# inference (without it the 2B model's repetition loops dominate the report).
+REPETITION_PENALTY = 1.1
 
 
 def fold(system: str, user: str) -> str:
@@ -32,6 +35,7 @@ def main() -> None:
     model, tokenizer = load(str(MERGED))
 
     lines: list[str] = []
+    rep_penalty = make_repetition_penalty(REPETITION_PENALTY)
     for i, r in enumerate(records, 1):
         prompt = fold(r["system"], r["input"])
         out = generate(
@@ -40,6 +44,7 @@ def main() -> None:
             prompt=prompt,
             max_tokens=MAX_TOKENS,
             sampler=make_sampler(temp=TEMP),
+            logits_processors=[rep_penalty],
         ).strip()
         lines.append("=" * 64)
         lines.append(f"{r['key']}  (mode: {r['mode']})")
