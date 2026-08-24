@@ -31,6 +31,16 @@ echo "== exporting GGUF (via llama.cpp; mlx_lm can't convert gemma2) =="
 ROOT="$(pwd)"
 "$VENV/bin/mlx_lm.convert" --model data/distill/merged \
   --mlx-path data/distill/merged-f16 --dtype float16 -d
+# llama.cpp's converter wants the SentencePiece tokenizer.model; the
+# dequantized MLX dir only carries tokenizer.json. Pull it from the base
+# model's HF cache (already downloaded; no network needed).
+TOKENIZER_SRC="$(HF_HUB_OFFLINE=1 "$VENV/bin/python" - "$BASE" <<'PY'
+import sys
+from huggingface_hub import snapshot_download
+print(snapshot_download(sys.argv[1]))
+PY
+)"
+cp "$TOKENIZER_SRC/tokenizer.model" data/distill/merged-f16/tokenizer.model
 (cd /tmp/llama.cpp \
   && "$VENV/bin/python" convert_hf_to_gguf.py "$ROOT/data/distill/merged-f16" \
      --outfile "$ROOT/data/distill/virastar-small-fa-q8.gguf" --outtype q8_0)
