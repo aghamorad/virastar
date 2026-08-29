@@ -1,0 +1,12 @@
+node_modules/
+out/
+ios/App/Pods/
+ios/DerivedData/
+ios/build/
+build/
+vendor/
+dist/
+Virastar.ipa
+*.xcuserstate
+xcuserdata/
+.DS_Store

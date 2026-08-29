@@ -1,0 +1,9 @@
+{
+  "appId": "com.aghamorad.virastar",
+  "appName": "ویراستار",
+  "webDir": "../out",
+  "backgroundColor": "#f6efe1",
+  "ios": {
+    "contentInset": "never"
+  }
+}

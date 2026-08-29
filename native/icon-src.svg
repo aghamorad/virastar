@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="1024" viewBox="0 0 1024 1024">
+  <defs>
+    <radialGradient id="paper" cx="50%" cy="40%" r="80%">
+      <stop offset="0%" stop-color="#fbf5e8"/>
+      <stop offset="55%" stop-color="#f6efe1"/>
+      <stop offset="100%" stop-color="#e4d4b0"/>
+    </radialGradient>
+    <linearGradient id="star" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#d34a3c"/>
+      <stop offset="100%" stop-color="#a82a21"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1024" height="1024" fill="url(#paper)"/>
+
+  <!-- faint watermark ring, echoing the star's geometry -->
+  <g fill="none" stroke="#c7372c" stroke-opacity="0.10" stroke-width="10">
+    <rect x="86" y="86" width="852" height="852"/>
+    <rect x="150" y="150" width="724" height="724" transform="rotate(45 512 512)"/>
+  </g>
+
+  <!-- soft shadow under the star -->
+  <path transform="translate(116 116) scale(8.2)" fill="#7d1812" opacity="0.32"
+    d="M 50 1.5 L 98.5 50 L 50 98.5 L 1.5 50 Z M 16 16 L 84 16 L 84 84 L 16 84 Z"/>
+
+  <!-- the eight-pointed star: two overlapping squares -->
+  <path transform="translate(102 102) scale(8.2)" fill="url(#star)"
+    d="M 50 1.5 L 98.5 50 L 50 98.5 L 1.5 50 Z M 16 16 L 84 16 L 84 84 L 16 84 Z"/>
+
+  <!-- a sliver of warm light on the star's upper-left face -->
+  <path transform="translate(102 102) scale(8.2)" fill="#e86a5b" fill-opacity="0.5"
+    d="M 50 1.5 L 98.5 50 L 84 50 L 50 16 Z"/>
+</svg>

@@ -1,0 +1,16 @@
+{
+  "name": "virastar-native",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "build:web": "cd .. && npm run build",
+    "sync": "cap sync ios",
+    "add:ios": "cap add ios",
+    "open": "cap open ios"
+  },
+  "dependencies": {
+    "@capacitor/cli": "^8.5.0",
+    "@capacitor/core": "^8.5.0",
+    "@capacitor/ios": "^8.5.0"
+  }
+}
