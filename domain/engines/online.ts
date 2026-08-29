@@ -8,6 +8,9 @@
 import type { WritingMode } from '../modes'
 import { HARDENING_RULE, ONLINE_RULES, looksBroken } from './editing'
 
+// Kept for the dataset scripts, which import the shared prompt from here.
+export { ONLINE_RULES } from './editing'
+
 export interface OnlineOptions {
   endpoint: string
   model: string
