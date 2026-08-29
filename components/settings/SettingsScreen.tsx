@@ -1,27 +1,120 @@
 'use client'
 
+import { useEffect } from 'react'
 import { THEMES } from '@/domain/themes'
-import type { EngineSettings } from '@/domain/engine'
-import { useSettings } from '@/hooks/useSettings'
+import { MODEL_SIZE_MB, downloadModel, removeModel, restoreModel } from '@/domain/engines/browser'
+import { useModelStatus } from '@/hooks/useModelStatus'
 import { applyTheme, useActiveTheme } from '@/hooks/useActiveTheme'
 import { Star } from '../Star'
 
+function faNum(n: number): string {
+  return n.toLocaleString('fa-IR')
+}
+
 export function SettingsScreen() {
   const active = useActiveTheme()
-  const [settings, save] = useSettings()
+  const model = useModelStatus()
 
-  function setEngine(patch: Partial<EngineSettings>) {
-    save({ ...settings, ...patch })
-  }
+  useEffect(() => {
+    restoreModel()
+  }, [])
 
   return (
     <div className="space-y-10">
       <header>
         <h1 className="text-3xl font-black">تنظیمات</h1>
         <p className="mt-2 text-sm leading-7 text-ink-soft">
-          پوستهٔ ویراستار و موتوری که ویرایش را انجام می‌دهد.
+          پوستهٔ ویراستار و موتور محلی که ویرایش را روی همین دستگاه انجام می‌دهد.
         </p>
       </header>
+
+      {/* Engine / local model */}
+      <section className="space-y-4">
+        <h2 className="text-xl font-black">موتور ویرایش</h2>
+
+        <div className="v-card shadow-soft p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <p className="font-black">مدل محلی گوگل (Gemma)</p>
+              <p className="mt-1 text-xs leading-5 text-ink-soft">
+                کوچک، خوب در فارسی، کاملاً روی همین دستگاه — بدون سرور، بدون کلید API و بدون
+                ارسال متن به جایی.
+              </p>
+            </div>
+            {model.state === 'ready' && (
+              <button
+                type="button"
+                onClick={() => void removeModel()}
+                className="v-btn-ghost px-4 py-2 text-sm"
+              >
+                حذف مدل
+              </button>
+            )}
+          </div>
+
+          {model.state === 'idle' && (
+            <div className="mt-4">
+              <p className="text-sm leading-7 text-ink-soft">
+                هنوز دانلود نشده. تا زمان دانلود، ویرایش با قواعد سریع انجام می‌شود؛ برای
+                بازنویسی واقعی به سبک هر نوشته، مدل را دانلود کن.
+              </p>
+              <button
+                type="button"
+                onClick={() => void downloadModel()}
+                className="v-btn-primary mt-3 px-6 py-2.5 text-sm"
+              >
+                <Star size={16} />
+                دانلود موتور آفلاین (حدود {faNum(MODEL_SIZE_MB)} مگابایت)
+              </button>
+            </div>
+          )}
+
+          {model.state === 'downloading' && (
+            <div className="mt-4">
+              <div className="flex items-center justify-between text-xs font-bold text-ink-soft">
+                <span>در حال دانلود…</span>
+                <span>{faNum(model.progress)}٪</span>
+              </div>
+              <div
+                role="progressbar"
+                aria-valuenow={model.progress}
+                aria-valuemin={0}
+                aria-valuemax={100}
+                className="mt-2 h-2 overflow-hidden rounded-full bg-paper-deep"
+              >
+                <div
+                  className="h-full rounded-full bg-brand transition-all"
+                  style={{ width: `${model.progress}%` }}
+                />
+              </div>
+              <p className="mt-2 text-xs leading-5 text-ink-soft">
+                فقط یک بار — بعد از آن همهٔ ویرایش‌ها آفلاین انجام می‌شود.
+              </p>
+            </div>
+          )}
+
+          {model.state === 'ready' && (
+            <p className="mt-4 text-sm leading-7 text-ink-soft">
+              مدل آماده است؛ ویرایش کاملاً روی همین دستگاه انجام می‌شود، آفلاین و خصوصی.
+            </p>
+          )}
+
+          {model.state === 'error' && (
+            <div className="mt-4">
+              <p className="text-sm leading-7 text-ink-soft">
+                دانلود ناموفق بود. اتصال اینترنت را بررسی کن و دوباره تلاش کن.
+              </p>
+              <button
+                type="button"
+                onClick={() => void downloadModel()}
+                className="v-btn-ghost mt-3 px-4 py-2 text-sm"
+              >
+                تلاش دوباره
+              </button>
+            </div>
+          )}
+        </div>
+      </section>
 
       {/* Themes */}
       <section>
@@ -47,77 +140,6 @@ export function SettingsScreen() {
               </button>
             )
           })}
-        </div>
-      </section>
-
-      {/* Engine */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-black">موتور ویرایش</h2>
-
-        <div className="v-card shadow-soft p-5">
-          <div className="flex gap-3">
-            <label className="flex cursor-pointer items-center gap-2">
-              <input
-                type="radio"
-                name="engine"
-                checked={settings.engine === 'offline'}
-                onChange={() => setEngine({ engine: 'offline' })}
-                className="h-4 w-4 accent-brand"
-              />
-              <span className="font-extrabold">آفلاین</span>
-            </label>
-            <label className="flex cursor-pointer items-center gap-2">
-              <input
-                type="radio"
-                name="engine"
-                checked={settings.engine === 'online'}
-                onChange={() => setEngine({ engine: 'online' })}
-                className="h-4 w-4 accent-brand"
-              />
-              <span className="font-extrabold">آنلاین</span>
-            </label>
-          </div>
-
-          {settings.engine === 'offline' ? (
-            <p className="mt-3 text-sm leading-7 text-ink-soft">
-              موتور آفلاین روی همین دستگاه کار می‌کند: اصلاح و نیم‌فاصله، و تغییر لحن با واژه‌نامه.
-              بدون اینترنت و با حریم خصوصی کامل. برای بازنویسی واقعی، موتور آنلاین را وصل کن.
-            </p>
-          ) : (
-            <p className="mt-3 text-sm leading-7 text-ink-soft">
-              موتور آنلاین یک مدل زبان واقعی (Qwen یا Gemma) را به کار می‌گیرد و واقعاً بازنویسی
-              می‌کند. پیش‌فرض آن مدل محلی اولاما روی همین دستگاه است — متن هیچ‌وقت از کامپیوترت
-              خارج نمی‌شود. هر سرویس دیگری که با
-              <span dir="ltr" className="mx-1 font-bold">chat/completions</span>
-              سازگار باشد هم کار می‌کند. اگر سرویس در دسترس نباشد، ویراستار خودش به موتور آفلاین
-              برمی‌گردد.
-            </p>
-          )}
-
-          <div className="mt-4 space-y-3">
-            <label className="block">
-              <span className="mb-1 block text-xs font-black text-ink-soft">آدرس سرویس</span>
-              <input
-                type="text"
-                dir="ltr"
-                placeholder="https://…/v1/chat/completions"
-                value={settings.endpoint}
-                onChange={(e) => setEngine({ endpoint: e.target.value })}
-                className="v-field py-2.5 text-left font-mono text-sm"
-              />
-            </label>
-            <label className="block">
-              <span className="mb-1 block text-xs font-black text-ink-soft">نام مدل</span>
-              <input
-                type="text"
-                dir="ltr"
-                placeholder="gemma2:9b"
-                value={settings.model}
-                onChange={(e) => setEngine({ model: e.target.value })}
-                className="v-field py-2.5 text-left font-mono text-sm"
-              />
-            </label>
-          </div>
         </div>
       </section>
     </div>

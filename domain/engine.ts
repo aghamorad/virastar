@@ -1,9 +1,14 @@
-// The editor engine facade. The product treats online and offline editing as
-// the same capability — the difference is quality and speed, never the UI.
+// The editor engine facade. The product's default is the in-browser model:
+// a small Google Gemma that downloads once and then edits fully offline. Until
+// the model is downloaded, editing falls back to the deterministic Persian
+// rules, so the app always works. A custom online endpoint (Ollama or any
+// OpenAI-compatible service) remains available to power users via settings,
+// but nothing in the UI advertises it.
 
 import { getMode } from './modes'
 import { editOffline, type OfflineResult } from './engines/offline'
 import { editOnline } from './engines/online'
+import { editWithModel, isModelReady, wasModelInstalled, MODEL_ID } from './engines/browser'
 
 export type EngineKind = 'offline' | 'online'
 
@@ -13,13 +18,10 @@ export interface EngineSettings {
   model: string
 }
 
-// Default to the on-device model engine (Ollama → Qwen/Gemma). The request
-// goes to localhost, so nothing ever leaves the machine; if no local model is
-// running, runEdit falls back to the offline rules with an honest note.
 export const DEFAULT_SETTINGS: EngineSettings = {
-  engine: 'online',
-  endpoint: 'http://localhost:11434/v1/chat/completions',
-  model: 'gemma2:9b',
+  engine: 'offline',
+  endpoint: '',
+  model: MODEL_ID,
 }
 
 export interface EditResult {
@@ -37,6 +39,7 @@ export async function runEdit(
 ): Promise<EditResult> {
   const mode = getMode(modeId)
 
+  // Power-user path: a configured online endpoint (Ollama / OpenAI-compatible).
   if (settings.engine === 'online' && settings.endpoint) {
     try {
       const output = await editOnline(input, mode, {
@@ -65,8 +68,34 @@ export async function runEdit(
     }
   }
 
+  // Default path: the in-browser model, or the fast rules until it downloads.
+  // A previously-installed model is used even before this page restores its
+  // status — editWithModel loads it from the browser cache on demand.
+  if (isModelReady() || wasModelInstalled()) {
+    try {
+      const output = await editWithModel(input, mode)
+      return {
+        output,
+        changed: countWordDiffs(input, output),
+        engine: 'offline',
+        notes: [
+          `«${mode.label}» با موتور محلی روی همین دستگاه انجام شد.`,
+          'آفلاین و خصوصی — هیچ‌چیز از دستگاه خارج نشد.',
+        ],
+      }
+    } catch {
+      // model hiccuped — fall through to the rules so the user still gets an edit
+    }
+  }
+
   const offline: OfflineResult = editOffline(input, mode)
-  return { ...offline, engine: 'offline' }
+  return {
+    ...offline,
+    engine: 'offline',
+    notes: isModelReady()
+      ? ['مدل محلی به درستی جواب نداد؛ با قواعد سریع ویرایش شد.', ...offline.notes]
+      : ['مدل محلی هنوز دانلود نشده؛ با قواعد سریع ویرایش شد.', ...offline.notes],
+  }
 }
 
 function countWordDiffs(a: string, b: string): number {

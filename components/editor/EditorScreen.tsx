@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { MODES, getMode, type WritingMode } from '@/domain/modes'
 import { runEdit, type EditResult } from '@/domain/engine'
+import { isModelReady, restoreModel } from '@/domain/engines/browser'
 import { useSettings } from '@/hooks/useSettings'
 import { useHistory } from '@/hooks/useHistory'
 import { clearDraft, readDraft } from '@/services/draft'
@@ -39,6 +40,11 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
   useEffect(() => {
     if (initialMode && getMode(initialMode)) setModeId(initialMode)
   }, [initialMode])
+
+  // Reuse a previously-downloaded model from the browser cache.
+  useEffect(() => {
+    restoreModel()
+  }, [])
 
   // Pick up a handed-off text (from history) when the editor opens fresh.
   useEffect(() => {
@@ -145,7 +151,11 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
               )}
             </button>
             <span className="text-xs font-bold text-ink-soft">
-              {settings.engine === 'online' && settings.endpoint ? 'موتور آنلاین' : 'موتور آفلاین'}
+              {settings.engine === 'online' && settings.endpoint
+                ? 'موتور آنلاین'
+                : isModelReady()
+                  ? 'موتور محلی'
+                  : 'قواعد سریع — مدل هنوز دانلود نشده'}
             </span>
           </div>
 

@@ -7,6 +7,10 @@
       "runtimeArgs": ["run", "dev"],
       "port": 3002,
       "url": "http://localhost:3002"
+    },
+    {
+      "name": "virastar-attach",
+      "url": "http://localhost:4173"
     }
   ]
 }

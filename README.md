@@ -38,7 +38,7 @@ npm install
 npm run dev
 ```
 
-Then open `http://localhost:3001`. The site is RTL Persian, set in Vazirmatn.
+Then open `http://localhost:3000`. The site is RTL Persian, set in Vazirmatn.
 
 Production and type checks:
 
