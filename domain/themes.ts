@@ -29,6 +29,21 @@ export const THEMES: AppTheme[] = [
     label: 'جوهر بنفش',
     blurb: 'مرکب و خیال؛ دفتری برای نوشتنِ خلاق.',
   },
+  {
+    id: 'mashin-tahrir',
+    label: 'ماشین‌تحریر',
+    blurb: 'دفتر دههٔ سی؛ کلیدهای فولادی و روبان کهنه، نوشته‌های اداری.',
+  },
+  {
+    id: 'gramophone',
+    label: 'گرامافون',
+    blurb: 'کافهٔ آرت‌دکو؛ گردو و برنج و صفحه‌های وینیل در مه.',
+  },
+  {
+    id: 'ruzname',
+    label: 'روزنامه',
+    blurb: 'صفحهٔ روزنامهٔ قدیم؛ تیتر سرخ، ستون‌ها و جوهر چاپ.',
+  },
 ]
 
 export const THEME_STORAGE_KEY = 'virastar-theme'

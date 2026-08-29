@@ -69,3 +69,14 @@ export function CheckGlyph({ size = 18, className }: P) {
     </svg>
   )
 }
+
+export function MicGlyph({ size = 20, className }: P) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" stroke="currentColor" className={className} aria-hidden>
+      <rect x="36" y="12" width="28" height="44" rx="14" strokeWidth="8" />
+      <path d="M 26 46 a 24 24 0 0 0 48 0" strokeWidth="8" strokeLinecap="round" />
+      <line x1="50" y1="70" x2="50" y2="88" strokeWidth="8" strokeLinecap="round" />
+      <line x1="38" y1="88" x2="62" y2="88" strokeWidth="8" strokeLinecap="round" />
+    </svg>
+  )
+}

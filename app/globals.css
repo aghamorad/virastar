@@ -83,6 +83,64 @@
   --shadow-float: 0 18px 44px rgb(44 36 64 / 0.18);
 }
 
+/* ---- ماشین‌تحریر: the mid-century office. Typewriter keys in ink blue,
+   a faded ribbon red, and ruled typing paper. ---- */
+[data-theme='mashin-tahrir'] {
+  --color-paper: #e8e1d0;
+  --color-paper-deep: #d6ccb4;
+  --color-ink: #26313a;
+  --color-ink-soft: #6f7c86;
+  --color-brand: #a9342b;
+  --color-brand-deep: #8f2a22;
+  --color-accent: #3f5d78;
+  --color-success: #5c7247;
+  --color-surface: #f3ecd9;
+  --color-border: #c9bea6;
+  --color-on-brand: #fbf5e9;
+  --color-star: #a9342b;
+  --shadow-card: 0 10px 26px rgb(38 49 58 / 0.18), 0 2px 6px rgb(38 49 58 / 0.08);
+  --shadow-soft: 0 4px 12px rgb(38 49 58 / 0.09);
+  --shadow-float: 0 16px 40px rgb(38 49 58 / 0.24);
+}
+
+/* ---- گرامافون: an art-deco café. Walnut, brass and teal; vinyl grooves. ---- */
+[data-theme='gramophone'] {
+  --color-paper: #ead6a8;
+  --color-paper-deep: #d7bd84;
+  --color-ink: #2b2116;
+  --color-ink-soft: #7d6a48;
+  --color-brand: #a85d2e;
+  --color-brand-deep: #8c4a20;
+  --color-accent: #2f6f68;
+  --color-success: #5f7d46;
+  --color-surface: #f4e7c6;
+  --color-border: #c9ae76;
+  --color-on-brand: #fdf5e4;
+  --color-star: #c07a35;
+  --shadow-card: 0 10px 26px rgb(43 33 22 / 0.18), 0 2px 6px rgb(43 33 22 / 0.08);
+  --shadow-soft: 0 4px 12px rgb(43 33 22 / 0.09);
+  --shadow-float: 0 16px 40px rgb(43 33 22 / 0.24);
+}
+
+/* ---- روزنامه: a Tehran daily of old. Newsprint, a red masthead, columns. ---- */
+[data-theme='ruzname'] {
+  --color-paper: #ece1c6;
+  --color-paper-deep: #d8c9a4;
+  --color-ink: #201a10;
+  --color-ink-soft: #6d6147;
+  --color-brand: #b23a2a;
+  --color-brand-deep: #942a1d;
+  --color-accent: #41567d;
+  --color-success: #4f6b3f;
+  --color-surface: #f4ead3;
+  --color-border: #c9ba97;
+  --color-on-brand: #fdf6e5;
+  --color-star: #b23a2a;
+  --shadow-card: 0 10px 26px rgb(32 26 16 / 0.2), 0 2px 6px rgb(32 26 16 / 0.08);
+  --shadow-soft: 0 4px 12px rgb(32 26 16 / 0.1);
+  --shadow-float: 0 16px 40px rgb(32 26 16 / 0.26);
+}
+
 @layer base {
   html {
     scroll-behavior: smooth;
@@ -187,6 +245,23 @@
 }
 .v-btn-ghost:active:not(:disabled) {
   transform: translateY(1px);
+}
+
+/* Dictation mic — a live pulse while listening. */
+@keyframes rec-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--color-brand) 40%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 7px transparent;
+  }
+}
+.rec-live {
+  border-color: var(--color-brand);
+  color: var(--color-brand);
+  background-color: color-mix(in srgb, var(--color-brand) 8%, transparent);
+  animation: rec-pulse 1.6s ease-in-out infinite;
 }
 
 .v-field {
@@ -313,6 +388,31 @@
     100% 100%;
 }
 
+[data-theme='mashin-tahrir'] body {
+  background-image:
+    repeating-linear-gradient(0deg, rgb(38 49 58 / 0.05) 0, rgb(38 49 58 / 0.05) 1px, transparent 1px, transparent 38px),
+    radial-gradient(rgb(38 49 58 / 0.04) 1px, transparent 1px);
+  background-size:
+    100% 100%,
+    14px 14px;
+}
+
+[data-theme='gramophone'] body {
+  background-image:
+    repeating-radial-gradient(circle at 84% -12%, transparent 0, transparent 27px, rgb(43 33 22 / 0.05) 28px, transparent 29px),
+    radial-gradient(95% 45% at 50% 0%, rgb(168 93 46 / 0.09), transparent 60%);
+  background-size: 100% 100%;
+}
+
+[data-theme='ruzname'] body {
+  background-image:
+    radial-gradient(rgb(32 26 16 / 0.05) 0.8px, transparent 0.8px),
+    repeating-linear-gradient(90deg, transparent 0, transparent calc(100% - 26px), rgb(178 58 42 / 0.055) calc(100% - 26px), rgb(178 58 42 / 0.055) calc(100% - 25px));
+  background-size:
+    9px 9px,
+    100% 100%;
+}
+
 /* Mood dressing for the primary action. */
 [data-theme='shabnevis'] .v-btn-primary {
   box-shadow: 0 6px 22px rgb(232 184 75 / 0.28);
@@ -342,6 +442,61 @@
   box-shadow: 0 6px 20px rgb(124 77 219 / 0.3);
 }
 
+/* Typewriter — flat keys, squared corners. */
+[data-theme='mashin-tahrir'] .v-btn-primary {
+  border-radius: 8px;
+  border-width: 2px;
+}
+[data-theme='mashin-tahrir'] .v-chip {
+  border-radius: 6px;
+}
+[data-theme='mashin-tahrir'] .v-chip-active {
+  border-radius: 6px;
+}
+[data-theme='mashin-tahrir'] .v-card {
+  border-radius: 10px;
+}
+[data-theme='mashin-tahrir'] .v-field {
+  border-radius: 8px;
+}
+
+/* Gramophone — deco: softer, with a brass glow on the action. */
+[data-theme='gramophone'] .v-btn-primary {
+  border-radius: 10px;
+  border-width: 2px;
+  box-shadow: 0 6px 22px rgb(168 93 46 / 0.3);
+}
+[data-theme='gramophone'] .v-chip {
+  border-radius: 10px;
+}
+[data-theme='gramophone'] .v-chip-active {
+  border-radius: 10px;
+}
+[data-theme='gramophone'] .v-card {
+  border-radius: 14px;
+}
+[data-theme='gramophone'] .v-field {
+  border-radius: 10px;
+}
+
+/* Newspaper — sharp rules and columns. */
+[data-theme='ruzname'] .v-btn-primary {
+  border-radius: 8px;
+  border-width: 2px;
+}
+[data-theme='ruzname'] .v-chip {
+  border-radius: 6px;
+}
+[data-theme='ruzname'] .v-chip-active {
+  border-radius: 6px;
+}
+[data-theme='ruzname'] .v-card {
+  border-radius: 6px;
+}
+[data-theme='ruzname'] .v-field {
+  border-radius: 8px;
+}
+
 /* Selection + focus accents per mood. */
 [data-theme='shabnevis'] ::selection {
   background-color: var(--color-brand);
@@ -352,6 +507,18 @@
   color: var(--color-on-brand);
 }
 [data-theme='johar-benafsh'] ::selection {
+  background-color: var(--color-brand);
+  color: var(--color-on-brand);
+}
+[data-theme='mashin-tahrir'] ::selection {
+  background-color: var(--color-brand);
+  color: var(--color-on-brand);
+}
+[data-theme='gramophone'] ::selection {
+  background-color: var(--color-brand);
+  color: var(--color-on-brand);
+}
+[data-theme='ruzname'] ::selection {
   background-color: var(--color-brand);
   color: var(--color-on-brand);
 }

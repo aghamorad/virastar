@@ -7,10 +7,11 @@ import { MODEL_SIZE_MB, downloadModel, isModelReady, restoreModel } from '@/doma
 import { useModelStatus } from '@/hooks/useModelStatus'
 import { useSettings } from '@/hooks/useSettings'
 import { useHistory } from '@/hooks/useHistory'
+import { useDictation } from '@/hooks/useDictation'
 import { clearDraft, readDraft } from '@/services/draft'
 import { Star } from '../Star'
 import { ModeGlyph } from './ModeGlyph'
-import { CheckGlyph, CopyGlyph, SaveGlyph } from '../Glyphs'
+import { CheckGlyph, CopyGlyph, MicGlyph, SaveGlyph } from '../Glyphs'
 
 const SAMPLE =
   'امروز میخوام این نامه رو برای استادم بفرستم ولی خیلی خشک شده و من اصلا نمیدونم چطور بنویسمش. لطفا یه کاریش کنین که رسمی تر بشه. ممنون'
@@ -35,6 +36,9 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
   const model = useModelStatus()
   const { add } = useHistory()
   const resultRef = useRef<HTMLDivElement>(null)
+  const inputRef = useRef<HTMLTextAreaElement>(null)
+  const dictation = useDictation('fa-IR')
+  const anchorRef = useRef<{ before: string; after: string } | null>(null)
 
   const mode = getMode(modeId)
   const words = countWords(input)
@@ -87,6 +91,30 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
     setTimeout(() => setSaved(false), 1800)
   }
 
+  // Dictation replaces the current selection (or appends at the end) with what
+  // is heard, so the anchor is fixed when the mic opens and stays stable while
+  // interim results stream in.
+  function toggleDictation() {
+    if (dictation.listening) {
+      dictation.stop()
+      return
+    }
+    const ta = inputRef.current
+    const start = ta ? ta.selectionStart : input.length
+    const end = ta ? ta.selectionEnd : input.length
+    anchorRef.current = { before: input.slice(0, start), after: input.slice(end) }
+    dictation.start(
+      (text) => {
+        const anchor = anchorRef.current
+        if (!anchor) return
+        setInput(anchor.before + text + anchor.after)
+      },
+      () => {
+        anchorRef.current = null
+      },
+    )
+  }
+
   return (
     <div className="space-y-6">
       {/* سبک selection */}
@@ -115,20 +143,41 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
       <div className="grid gap-5 md:grid-cols-2">
         {/* Original */}
         <section className="md:order-1">
-          <label htmlFor="virastar-input" className="mb-2 block text-sm font-black text-ink-soft">
-            متن تو
-          </label>
+          <div className="mb-2 flex items-center justify-between gap-2">
+            <label htmlFor="virastar-input" className="block text-sm font-black text-ink-soft">
+              متن تو
+            </label>
+            {dictation.supported && (
+              <button
+                type="button"
+                onClick={toggleDictation}
+                aria-pressed={dictation.listening}
+                aria-label={dictation.listening ? 'توقف گفتار' : 'گفتار به متن'}
+                className={`v-btn-ghost px-3 py-1 text-xs ${dictation.listening ? 'rec-live' : ''}`}
+              >
+                <MicGlyph size={16} />
+                {dictation.listening ? 'گوش میکنم…' : 'گفتار'}
+              </button>
+            )}
+          </div>
           <textarea
             id="virastar-input"
+            ref={inputRef}
             dir="rtl"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="بنویس… هر نوشته‌ای، از پیام تا نامه"
             className="v-field min-h-64 resize-y text-lg leading-8 md:min-h-80"
           />
-          <p className="mt-2 text-xs text-ink-soft">
-            {faNum(words)} کلمه · {faNum(input.length)} کاراکتر
-          </p>
+          {dictation.listening ? (
+            <p className="mt-2 text-xs font-bold text-brand">
+              در حال گوش دادن… برای تمام کردن دوباره روی «گفتار» بزن.
+            </p>
+          ) : (
+            <p className="mt-2 text-xs text-ink-soft">
+              {faNum(words)} کلمه · {faNum(input.length)} کاراکتر
+            </p>
+          )}
         </section>
 
         {/* Action + result */}
