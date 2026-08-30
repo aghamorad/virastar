@@ -324,6 +324,9 @@
 }
 
 .v-header {
+  /* On a notch iPhone the status bar overlaps the sticky header unless the
+     viewport-fit:cover inset is honored here. */
+  padding-top: env(safe-area-inset-top);
   border-bottom: 1px solid var(--color-border);
   background-color: color-mix(in srgb, var(--color-paper) 82%, transparent);
   -webkit-backdrop-filter: blur(10px);
@@ -331,10 +334,39 @@
 }
 
 .v-bottomnav {
+  /* Keep the tab bar above the home indicator on iOS. */
+  padding-bottom: env(safe-area-inset-bottom);
   border-top: 1px solid var(--color-border);
   background-color: color-mix(in srgb, var(--color-surface) 88%, transparent);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
+}
+
+/* Content must clear the fixed bottom bar plus the home indicator. */
+.v-main {
+  padding-bottom: calc(7rem + env(safe-area-inset-bottom));
+}
+@media (min-width: 768px) {
+  .v-main {
+    padding-bottom: 4rem;
+  }
+}
+
+/* Native-feel touches: no tap highlight, no double-tap zoom on controls, no
+   iOS font-size reflow, and no rubber-band on the page background. */
+* {
+  -webkit-tap-highlight-color: transparent;
+}
+button,
+a,
+select {
+  touch-action: manipulation;
+}
+html {
+  -webkit-text-size-adjust: 100%;
+}
+body {
+  overscroll-behavior-y: none;
 }
 .v-bottomnav a {
   display: flex;

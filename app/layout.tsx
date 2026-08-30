@@ -39,6 +39,9 @@ export const viewport: Viewport = {
   themeColor: '#f6efe1',
   width: 'device-width',
   initialScale: 1,
+  // Let the app paint under the notch/home indicator so the CSS safe-area
+  // insets can keep the header and bottom bar clear of the hardware chrome.
+  viewportFit: 'cover',
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {

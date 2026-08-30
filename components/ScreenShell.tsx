@@ -52,7 +52,7 @@ export function ScreenShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 pb-28 pt-6 md:pb-16">{children}</main>
+      <main className="v-main mx-auto w-full max-w-5xl flex-1 px-4 pt-6">{children}</main>
 
       <nav className="v-bottomnav fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 md:hidden" aria-label="اصلی">
         {NAV.map((item) => {
