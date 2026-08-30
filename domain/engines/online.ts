@@ -184,13 +184,22 @@ export async function editOnline(
   return unwrapGuillemets(retry)
 }
 
-// The retry frames the input as «...», and Qwen sometimes echoes the quotes
-// around its whole reply. Strip a wrapping pair; keep any «» used mid-text.
+// The retry frames the input as «...», and models sometimes echo a wrapping
+// quote pair around their whole reply (Persian «» or plain ""). Strip a single
+// wrapping pair; keep any quotes used mid-text.
 function unwrapGuillemets(text: string): string {
   const t = text.trim()
-  if (t.length > 2 && t.startsWith('«') && t.endsWith('»')) {
-    const inner = t.slice(1, -1).trim()
-    if (inner) return inner
+  if (t.length > 2) {
+    const open = t[0]
+    const close = t[t.length - 1]
+    const pair =
+      (open === '«' && close === '»') ||
+      (open === '"' && close === '"') ||
+      (open === "'" && close === "'")
+    if (pair) {
+      const inner = t.slice(1, -1).trim()
+      if (inner) return inner
+    }
   }
   return t
 }
