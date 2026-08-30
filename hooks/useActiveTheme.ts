@@ -27,5 +27,10 @@ export function applyTheme(id: string) {
   } catch {
     /* storage unavailable — theme still applies for this session */
   }
-  document.documentElement.setAttribute('data-theme', id)
+  const root = document.documentElement
+  root.setAttribute('data-theme', id)
+  // Re-trigger the settle animation so a switch feels like the paper re-sets.
+  root.classList.remove('theme-settle')
+  void root.offsetWidth
+  root.classList.add('theme-settle')
 }

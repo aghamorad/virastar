@@ -568,3 +568,372 @@
 .animate-star-busy {
   animation: star-turn 0.9s linear infinite;
 }
+
+/* ---- Interactive dressing — controls read as physical objects in each
+   mood: keys that strike, fields that read as paper, title bars that
+   change identity, and a sky that breathes. ---- */
+
+/* The whole instrument "re-sets" when the mood changes. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes theme-settle {
+    0% {
+      opacity: 0.35;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+  html.theme-settle {
+    animation: theme-settle 0.45s ease both;
+  }
+}
+
+/* Ambient layer above the paper, below content, for animated textures. */
+body {
+  isolation: isolate;
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes twinkle {
+    0%,
+    100% {
+      opacity: 0.4;
+    }
+    50% {
+      opacity: 0.95;
+    }
+  }
+  @keyframes lamp-breath {
+    0%,
+    100% {
+      opacity: 0.45;
+    }
+    50% {
+      opacity: 0.95;
+    }
+  }
+  @keyframes ribbon-shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+  @keyframes press-sheen {
+    0% {
+      background-position: 130% 0;
+    }
+    100% {
+      background-position: -130% 0;
+    }
+  }
+  @keyframes ink-sheen {
+    0% {
+      background-position: 0 0;
+    }
+    100% {
+      background-position: 42px 0;
+    }
+  }
+}
+
+/* ---- ویراستار (default): clean paper, a soft sunken field. ---- */
+[data-theme='virastar'] .v-field {
+  box-shadow: inset 0 2px 5px rgb(38 33 26 / 0.06), 0 1px 0 rgb(255 255 255 / 0.5);
+}
+[data-theme='virastar'] .v-field:focus {
+  box-shadow: inset 0 2px 5px rgb(38 33 26 / 0.05), 0 0 0 4px color-mix(in srgb, var(--color-brand) 14%, transparent);
+}
+
+/* ---- شب‌نویس: a night sky that twinkles, a star-flare press. ---- */
+@media (prefers-reduced-motion: no-preference) {
+  [data-theme='shabnevis'] body::after {
+    background-image:
+      radial-gradient(1.2px 1.2px at 12% 22%, rgb(255 255 255 / 0.5), transparent 100%),
+      radial-gradient(1px 1px at 36% 12%, rgb(255 255 255 / 0.42), transparent 100%),
+      radial-gradient(1.4px 1.4px at 60% 28%, rgb(255 255 255 / 0.38), transparent 100%),
+      radial-gradient(1px 1px at 82% 18%, rgb(255 255 255 / 0.45), transparent 100%),
+      radial-gradient(1.1px 1.1px at 28% 48%, rgb(255 255 255 / 0.36), transparent 100%),
+      radial-gradient(1px 1px at 72% 60%, rgb(255 255 255 / 0.32), transparent 100%),
+      radial-gradient(1.3px 1.3px at 90% 48%, rgb(255 255 255 / 0.4), transparent 100%),
+      radial-gradient(1px 1px at 46% 74%, rgb(255 255 255 / 0.34), transparent 100%);
+    animation: twinkle 5.5s ease-in-out infinite;
+  }
+}
+[data-theme='shabnevis'] .v-btn-primary:active:not(:disabled) {
+  transform: translateY(1px) scale(0.99);
+  box-shadow:
+    0 0 0 6px color-mix(in srgb, var(--color-brand) 22%, transparent),
+    0 4px 16px rgb(232 184 75 / 0.35);
+}
+[data-theme='shabnevis'] .v-chip:active {
+  transform: translateY(1px);
+}
+[data-theme='shabnevis'] .v-field {
+  box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.5), 0 1px 0 rgb(255 255 255 / 0.05);
+}
+[data-theme='shabnevis'] .v-field:focus {
+  box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.45), 0 0 0 3px color-mix(in srgb, var(--color-brand) 22%, transparent);
+}
+[data-theme='shabnevis'] .v-header {
+  background-image:
+    radial-gradient(1px 1px at 15% 50%, rgb(255 255 255 / 0.25), transparent 100%),
+    radial-gradient(1px 1px at 60% 35%, rgb(255 255 255 / 0.18), transparent 100%),
+    radial-gradient(1.2px 1.2px at 85% 60%, rgb(255 255 255 / 0.2), transparent 100%);
+}
+
+/* ---- کافه تهران: warm, coffee-ring focus and a slow lamp breath. ---- */
+@media (prefers-reduced-motion: no-preference) {
+  [data-theme='cafe-tehran'] body::after {
+    background-image: radial-gradient(70% 45% at 50% 0%, rgb(180 90 42 / 0.07), transparent 65%);
+    animation: lamp-breath 8s ease-in-out infinite;
+  }
+}
+[data-theme='cafe-tehran'] .v-btn-primary:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.25), 0 0 0 4px rgb(180 90 42 / 0.12);
+}
+[data-theme='cafe-tehran'] .v-chip:active {
+  transform: translateY(1px);
+}
+[data-theme='cafe-tehran'] .v-field {
+  box-shadow: inset 0 2px 5px rgb(58 44 28 / 0.12), 0 1px 0 rgb(255 255 255 / 0.5);
+}
+[data-theme='cafe-tehran'] .v-field:focus {
+  border-color: var(--color-brand);
+  box-shadow: inset 0 2px 5px rgb(58 44 28 / 0.1), 0 0 0 4px color-mix(in srgb, var(--color-brand) 14%, transparent);
+}
+
+/* ---- جوهر بنفش: ink that slowly moves, a soft ink-swell press. ---- */
+@media (prefers-reduced-motion: no-preference) {
+  [data-theme='johar-benafsh'] body::after {
+    background-image: repeating-linear-gradient(115deg, rgb(124 77 219 / 0.05) 0 2px, transparent 2px 14px);
+    background-size: 42px 100%;
+    animation: ink-sheen 22s linear infinite;
+  }
+}
+[data-theme='johar-benafsh'] .v-btn-primary:active:not(:disabled) {
+  transform: translateY(2px) scale(0.99);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.25), 0 6px 16px rgb(124 77 219 / 0.35);
+}
+[data-theme='johar-benafsh'] .v-chip:active {
+  transform: translateY(1px);
+}
+[data-theme='johar-benafsh'] .v-field {
+  box-shadow: inset 0 2px 6px rgb(44 36 64 / 0.12), 0 1px 0 rgb(255 255 255 / 0.5);
+}
+[data-theme='johar-benafsh'] .v-field:focus {
+  box-shadow: inset 0 2px 6px rgb(44 36 64 / 0.1), 0 0 0 3px color-mix(in srgb, var(--color-brand) 18%, transparent);
+}
+
+/* ---- ماشین‌تحریر: typewriter keys that strike, ruled paper, a carbon
+   ribbon shimmering across the dark top rail. ---- */
+[data-theme='mashin-tahrir'] .v-btn-primary {
+  background-image: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--color-brand) 82%, #fff) 0%,
+    var(--color-brand) 52%,
+    var(--color-brand-deep) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.3),
+    inset 0 -2px 0 rgb(0 0 0 / 0.18),
+    0 2px 0 color-mix(in srgb, var(--color-brand-deep) 80%, #000),
+    0 5px 10px rgb(38 49 58 / 0.18);
+}
+[data-theme='mashin-tahrir'] .v-btn-primary:hover:not(:disabled) {
+  filter: brightness(1.06);
+}
+[data-theme='mashin-tahrir'] .v-btn-primary:active:not(:disabled) {
+  transform: translateY(2px);
+  filter: brightness(0.98);
+  box-shadow:
+    inset 0 2px 3px rgb(0 0 0 / 0.25),
+    0 1px 0 rgb(0 0 0 / 0.25);
+}
+[data-theme='mashin-tahrir'] .v-btn-ghost:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: inset 0 1px 2px rgb(38 49 58 / 0.18);
+  background-color: color-mix(in srgb, var(--color-brand) 6%, transparent);
+}
+[data-theme='mashin-tahrir'] .v-chip {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.35),
+    inset 0 -1px 0 rgb(38 49 58 / 0.1),
+    0 1px 0 rgb(38 49 58 / 0.08);
+}
+[data-theme='mashin-tahrir'] .v-chip:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 1px 2px rgb(38 49 58 / 0.16);
+}
+[data-theme='mashin-tahrir'] .v-field {
+  border-color: #b9ab8c;
+  background-color: #fbf7ea;
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgb(38 49 58 / 0.05) 0,
+    rgb(38 49 58 / 0.05) 1px,
+    transparent 1px,
+    transparent 32px
+  );
+  box-shadow: inset 0 2px 6px rgb(38 49 58 / 0.12), 0 1px 0 rgb(255 255 255 / 0.55);
+}
+[data-theme='mashin-tahrir'] .v-field:focus {
+  border-color: var(--color-brand);
+  box-shadow:
+    inset 0 2px 6px rgb(38 49 58 / 0.1),
+    0 0 0 3px color-mix(in srgb, var(--color-brand) 18%, transparent);
+}
+[data-theme='mashin-tahrir'] .v-header {
+  background-color: rgb(38 49 58 / 0.94);
+  border-bottom: 2px solid var(--color-brand-deep);
+  color: #f1ead6;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+[data-theme='mashin-tahrir'] .v-header .v-link {
+  color: #aeb8c1;
+}
+[data-theme='mashin-tahrir'] .v-header .v-link:hover {
+  color: #f1ead6;
+}
+[data-theme='mashin-tahrir'] .v-header .v-btn-ghost {
+  color: #f1ead6;
+  border-color: rgb(241 234 214 / 0.35);
+}
+[data-theme='mashin-tahrir'] .v-header .v-btn-ghost:hover:not(:disabled) {
+  border-color: var(--color-brand);
+  color: #f1ead6;
+  background-color: rgb(169 52 43 / 0.18);
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-theme='mashin-tahrir'] .v-header::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: linear-gradient(
+      105deg,
+      transparent 40%,
+      rgb(255 255 255 / 0.06) 50%,
+      transparent 60%
+    );
+    background-size: 200% 100%;
+    animation: ribbon-shimmer 9s linear infinite;
+  }
+}
+
+/* ---- گرامافون: brass plates that press in, recessed walnut fields, a
+   warm lamp breathing in the corner. ---- */
+[data-theme='gramophone'] .v-btn-primary {
+  background-image: linear-gradient(
+    180deg,
+    #d89a4e 0%,
+    var(--color-brand) 50%,
+    var(--color-brand-deep) 100%
+  );
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.4),
+    inset 0 -2px 0 rgb(0 0 0 / 0.2),
+    0 2px 0 color-mix(in srgb, var(--color-brand-deep) 82%, #000),
+    0 6px 14px rgb(168 93 46 / 0.28);
+}
+[data-theme='gramophone'] .v-btn-primary:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: inset 0 2px 3px rgb(0 0 0 / 0.28), 0 1px 0 rgb(0 0 0 / 0.22);
+}
+[data-theme='gramophone'] .v-chip {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.4),
+    inset 0 -1px 0 rgb(0 0 0 / 0.12),
+    0 1px 0 rgb(43 33 22 / 0.1);
+}
+[data-theme='gramophone'] .v-chip:active {
+  transform: translateY(2px);
+  box-shadow: inset 0 1px 2px rgb(43 33 22 / 0.18);
+}
+[data-theme='gramophone'] .v-field {
+  border-color: #b99a5e;
+  background-color: #f7ecd0;
+  box-shadow: inset 0 2px 6px rgb(43 33 22 / 0.14), 0 1px 0 rgb(255 255 255 / 0.5);
+}
+[data-theme='gramophone'] .v-field:focus {
+  border-color: var(--color-brand);
+  box-shadow: inset 0 2px 6px rgb(43 33 22 / 0.12), 0 0 0 3px color-mix(in srgb, var(--color-brand) 18%, transparent);
+}
+[data-theme='gramophone'] .v-header {
+  background-color: rgb(59 40 22 / 0.92);
+  border-bottom: 2px solid #c98a3f;
+  color: #f4e8cf;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+[data-theme='gramophone'] .v-header .v-link {
+  color: #c9b893;
+}
+[data-theme='gramophone'] .v-header .v-link:hover {
+  color: #f4e8cf;
+}
+[data-theme='gramophone'] .v-header .v-btn-ghost {
+  color: #f4e8cf;
+  border-color: rgb(244 232 207 / 0.35);
+}
+[data-theme='gramophone'] .v-header .v-btn-ghost:hover:not(:disabled) {
+  border-color: #c98a3f;
+  color: #f4e8cf;
+  background-color: rgb(168 93 46 / 0.2);
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-theme='gramophone'] body::after {
+    background-image: radial-gradient(55% 40% at 78% 0%, rgb(192 122 53 / 0.14), transparent 70%);
+    animation: lamp-breath 7s ease-in-out infinite;
+  }
+}
+
+/* ---- روزنامه: the press stamps the ink — hard-edged keys, newsprint
+   paper, a double-rule masthead, a slow press sheen. ---- */
+[data-theme='ruzname'] .v-btn-primary {
+  border-radius: 4px;
+  border-width: 2px;
+  box-shadow: 0 2px 0 rgb(0 0 0 / 0.45), 0 5px 12px rgb(32 26 16 / 0.2);
+}
+[data-theme='ruzname'] .v-btn-primary:active:not(:disabled) {
+  transform: translate(1px, 2px);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.4);
+}
+[data-theme='ruzname'] .v-chip {
+  border-radius: 4px;
+}
+[data-theme='ruzname'] .v-chip:active {
+  transform: translate(1px, 2px);
+}
+[data-theme='ruzname'] .v-field {
+  border-radius: 3px;
+  border-color: #b9a77e;
+  background-color: #faf3e1;
+  box-shadow: inset 0 2px 5px rgb(32 26 16 / 0.12), 0 1px 0 rgb(255 255 255 / 0.6);
+}
+[data-theme='ruzname'] .v-field:focus {
+  border-color: var(--color-brand);
+  box-shadow: inset 0 2px 5px rgb(32 26 16 / 0.1), 0 0 0 3px color-mix(in srgb, var(--color-brand) 16%, transparent);
+}
+[data-theme='ruzname'] .v-header {
+  background-color: rgb(244 234 211 / 0.94);
+  border-bottom: 3px double var(--color-ink);
+  color: var(--color-ink);
+}
+@media (prefers-reduced-motion: no-preference) {
+  [data-theme='ruzname'] body::after {
+    background-image: linear-gradient(110deg, transparent 42%, rgb(178 58 42 / 0.05) 50%, transparent 58%);
+    background-size: 220% 100%;
+    animation: press-sheen 14s linear infinite;
+  }
+}
