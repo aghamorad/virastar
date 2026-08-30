@@ -36,12 +36,19 @@ function createRecognition(): SpeechRecognitionLike | null {
 }
 
 export function useDictation(lang = 'fa-IR') {
-  const [supported] = useState(() => createRecognition() !== null)
+  // Detect the recognizer after mount: the server doesn't have one, so checking
+  // during the first render would make server HTML and client HTML disagree and
+  // fail hydration (which also kills the editor's event handlers).
+  const [supported, setSupported] = useState(false)
   const [listening, setListening] = useState(false)
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null)
   const sessionRef = useRef(0)
   const onTranscriptRef = useRef<(text: string) => void>(() => {})
   const onEndRef = useRef<() => void>(() => {})
+
+  useEffect(() => {
+    setSupported(createRecognition() !== null)
+  }, [])
 
   // Tear down any running recognition when the screen unmounts.
   useEffect(() => {

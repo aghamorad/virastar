@@ -47,8 +47,9 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
 
   // Reuse a previously-downloaded model from the browser cache.
   useEffect(() => {
-    restoreModel()
-  }, [])
+    if (settings.localModel) restoreModel(settings.localModel)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [settings.localModel])
 
   // Pick up a handed-off text (from history) when the editor opens fresh.
   useEffect(() => {

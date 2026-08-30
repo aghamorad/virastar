@@ -1,7 +1,8 @@
-// The in-browser editing engine — a small Google Gemma model (Gemma 3 1B,
-// 4-bit) that runs entirely on the user's device via transformers.js + ONNX
-// runtime. Downloaded once from Hugging Face (~764 MB, cached in the browser),
-// then edits work with no server, no API key, and no data leaving the machine.
+// The in-browser editing engine — a small Qwen model (Qwen2.5, 4-bit) that runs
+// entirely on the user's device via transformers.js + ONNX runtime. Downloaded
+// once from Hugging Face (~1–2 GB, cached in the browser), then edits work with
+// no server, no API key, and no data leaving the machine. Two sizes are offered
+// (light / stronger); the model picker in settings chooses which.
 //
 // The engine loads lazily so the app stays light until the model is used or
 // downloaded. The "installed" flag survives reloads, so a cached model is
@@ -12,9 +13,17 @@
 import type { WritingMode } from '../modes'
 import { HARDENING_RULE, ONLINE_RULES, brokenReasons, hasMarkdown } from './editing'
 
-export const MODEL_ID = 'onnx-community/gemma-3-1b-it-ONNX'
+// Qwen2.5 writes far better Persian than the old Gemma 1B pick. q4f16 lands at
+// roughly 0.5 bytes/param, so 1.5B ≈ 1 GB and 3B ≈ 1.8 GB — small enough for
+// the "don't fill up the phone" ask.
+export const LOCAL_MODELS = {
+  'qwen-1.5b': { id: 'onnx-community/Qwen2.5-1.5B-Instruct-ONNX', sizeMB: 1024 },
+  'qwen-3b': { id: 'onnx-community/Qwen2.5-3B-Instruct-ONNX', sizeMB: 1840 },
+} as const
+
+export type LocalModelId = keyof typeof LOCAL_MODELS
+
 export const MODEL_DTYPE = 'q4f16'
-export const MODEL_SIZE_MB = 764
 
 const INSTALLED_KEY = 'virastar-model-installed'
 
@@ -25,6 +34,8 @@ export interface ModelStatus {
   /** 0..100 while downloading, otherwise 0 or 100. */
   progress: number
   error?: string
+  /** The local model this status belongs to, once loading/downloading. */
+  modelId?: LocalModelId
 }
 
 let status: ModelStatus = { state: 'idle', progress: 0 }
@@ -53,6 +64,7 @@ type TextGenerator = (
 ) => Promise<GenerationResult | GenerationResult[]>
 
 let pipelinePromise: Promise<TextGenerator> | null = null
+let pipelineModelId: LocalModelId | null = null
 
 // Per-file bytes as transformers.js streams each file, so the progress bar
 // reflects the whole download instead of resetting on every file.
@@ -69,17 +81,20 @@ function overallProgress(): number {
   return total === 0 ? 0 : Math.min(99, Math.round((loaded / total) * 100))
 }
 
-async function ensureLoaded(): Promise<TextGenerator> {
-  if (pipelinePromise) return pipelinePromise
-  pipelinePromise = loadModel().catch((error) => {
+async function ensureLoaded(modelId: LocalModelId): Promise<TextGenerator> {
+  if (pipelinePromise && pipelineModelId === modelId) return pipelinePromise
+  pipelineModelId = modelId
+  pipelinePromise = loadModel(modelId).catch((error) => {
     // Let a failed load be retried instead of caching the rejection forever.
     pipelinePromise = null
+    pipelineModelId = null
     throw error
   })
   return pipelinePromise
 }
 
-async function loadModel(): Promise<TextGenerator> {
+async function loadModel(modelId: LocalModelId): Promise<TextGenerator> {
+  const model = LOCAL_MODELS[modelId].id
   const transformers = await import('@huggingface/transformers')
     transformers.env.allowLocalModels = false
     transformers.env.useBrowserCache = true
@@ -90,11 +105,11 @@ async function loadModel(): Promise<TextGenerator> {
         fileProgress.set(info.file, { loaded: 0, total: 0 })
       } else if (info.status === 'progress' && typeof info.loaded === 'number') {
         fileProgress.set(info.file, { loaded: info.loaded, total: info.total ?? info.loaded })
-        setStatus({ state: 'downloading', progress: overallProgress() })
+        setStatus({ state: 'downloading', progress: overallProgress(), modelId })
       } else if (info.status === 'done' || info.status === 'ready') {
         const entry = fileProgress.get(info.file)
         if (entry) entry.loaded = entry.total
-        setStatus({ state: 'downloading', progress: overallProgress() })
+        setStatus({ state: 'downloading', progress: overallProgress(), modelId })
       }
     }
 
@@ -102,57 +117,60 @@ async function loadModel(): Promise<TextGenerator> {
     // fallback (slower, but runs everywhere).
     for (const device of ['webgpu', 'wasm'] as const) {
       try {
-        const generator = (await transformers.pipeline('text-generation', MODEL_ID, {
+        const generator = (await transformers.pipeline('text-generation', model, {
           dtype: MODEL_DTYPE,
           device,
           progress_callback: progressCallback,
         })) as unknown as TextGenerator
-        setStatus({ state: 'ready', progress: 100 })
+        setStatus({ state: 'ready', progress: 100, modelId })
         try {
-          localStorage.setItem(INSTALLED_KEY, '1')
+          localStorage.setItem(INSTALLED_KEY, modelId)
         } catch {
           /* storage unavailable */
         }
         return generator
       } catch (error) {
-        setStatus({ state: 'error', progress: 0, error: String(error) })
+        setStatus({ state: 'error', progress: 0, error: String(error), modelId })
       }
     }
     throw new Error('model could not be loaded')
 }
 
-export function isModelReady(): boolean {
-  return status.state === 'ready'
+/** Ready specifically for `modelId` (a different model may be loaded). */
+export function isModelReady(modelId?: LocalModelId): boolean {
+  if (!modelId) return status.state === 'ready'
+  return status.state === 'ready' && status.modelId === modelId
 }
 
-/** True when the user has installed the model before, even if not loaded yet. */
-export function wasModelInstalled(): boolean {
+/** True when `modelId` was installed before, even if not loaded yet. */
+export function wasModelInstalled(modelId: LocalModelId): boolean {
   if (typeof localStorage === 'undefined') return false
   try {
-    return localStorage.getItem(INSTALLED_KEY) === '1'
+    return localStorage.getItem(INSTALLED_KEY) === modelId
   } catch {
     return false
   }
 }
 
 /** Reuse a previously-installed model from the browser cache on page load. */
-export function restoreModel(): void {
-  if (status.state !== 'idle' || !wasModelInstalled()) return
-  void ensureLoaded()
+export function restoreModel(modelId: LocalModelId): void {
+  if (status.state !== 'idle' || !wasModelInstalled(modelId)) return
+  void ensureLoaded(modelId)
 }
 
-export async function downloadModel(): Promise<void> {
+export async function downloadModel(modelId: LocalModelId): Promise<void> {
   if (status.state === 'downloading') return
-  setStatus({ state: 'downloading', progress: 0 })
+  setStatus({ state: 'downloading', progress: 0, modelId })
   try {
-    await ensureLoaded()
+    await ensureLoaded(modelId)
   } catch {
     // status already carries the error
   }
 }
 
-export async function removeModel(): Promise<void> {
+export async function removeModel(modelId: LocalModelId): Promise<void> {
   pipelinePromise = null
+  pipelineModelId = null
   setStatus({ state: 'idle', progress: 0 })
   fileProgress.clear()
   try {
@@ -160,6 +178,7 @@ export async function removeModel(): Promise<void> {
   } catch {
     /* storage unavailable */
   }
+  const model = LOCAL_MODELS[modelId].id
   if (typeof caches === 'undefined') return
   try {
     const keys = await caches.keys()
@@ -167,7 +186,7 @@ export async function removeModel(): Promise<void> {
       keys.map(async (key) => {
         const cache = await caches.open(key)
         const requests = await cache.keys()
-        const doomed = requests.filter((request) => request.url.includes(MODEL_ID))
+        const doomed = requests.filter((request) => request.url.includes(model))
         await Promise.all(doomed.map((request) => cache.delete(request)))
       }),
     )
@@ -176,15 +195,15 @@ export async function removeModel(): Promise<void> {
   }
 }
 
-export async function editWithModel(input: string, mode: WritingMode): Promise<string> {
-  const generator = await ensureLoaded()
+export async function editWithModel(input: string, mode: WritingMode, modelId: LocalModelId): Promise<string> {
+  const generator = await ensureLoaded(modelId)
   const system = [
     mode.instruction,
     ONLINE_RULES,
     'متن را عیناً بازنویسی کن، نه درباره‌اش؛ چیزی به آن اضافه نکن و حذفش نکن. عنوان، ستاره، گلوله و هر علامت Markdown ننویس؛ «هدف ما»، «هدف از این»، «در ادامه»، «پیشنهاد می‌شود» و جمله‌های سخنرانی‌گونه ننویس.',
   ].join('\n\n')
-  // A short letter needs only ~150 tokens; capping by input length stops the
-  // 1B model padding a rewrite out into an essay.
+  // A short letter needs only ~150 tokens; capping by input length stops a
+  // small model padding a rewrite out into an essay.
   const max_new_tokens = Math.min(420, Math.max(240, Math.round(input.split(/\s+/).length * 3) + 60))
   const sampling = {
     max_new_tokens,

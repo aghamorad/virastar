@@ -14,6 +14,8 @@ export { ONLINE_RULES } from './editing'
 export interface OnlineOptions {
   endpoint: string
   model: string
+  /** Which worker backend to route to ('gemini' | 'workersai' | 'hf'). */
+  backend?: string
 }
 
 async function request(endpoint: string, body: unknown): Promise<string> {
@@ -49,6 +51,7 @@ export async function editOnline(
   const system = `${mode.instruction}\n\n${ONLINE_RULES}`
   const body = {
     model: opts.model || 'gemma2:9b',
+    backend: opts.backend,
     messages: [
       { role: 'system', content: system },
       { role: 'user', content: input },
@@ -72,5 +75,16 @@ export async function editOnline(
   if (looksBroken(retry, input, mode)) {
     throw new Error('online engine returned an unedited response')
   }
-  return retry
+  return unwrapGuillemets(retry)
+}
+
+// The retry frames the input as «...», and Qwen sometimes echoes the quotes
+// around its whole reply. Strip a wrapping pair; keep any «» used mid-text.
+function unwrapGuillemets(text: string): string {
+  const t = text.trim()
+  if (t.length > 2 && t.startsWith('«') && t.endsWith('»')) {
+    const inner = t.slice(1, -1).trim()
+    if (inner) return inner
+  }
+  return t
 }

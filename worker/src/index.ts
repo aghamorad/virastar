@@ -106,7 +106,7 @@ export default {
       .map((s) => s.trim())
     if (origin && !originAllowed(origin, allowed)) return json(403, { error: 'origin not allowed' })
 
-    let body: { model?: string; messages?: ChatMessage[]; temperature?: number }
+    let body: { backend?: string; model?: string; messages?: ChatMessage[]; temperature?: number }
     try {
       body = await request.json()
     } catch {
@@ -122,8 +122,13 @@ export default {
     if (user.length > 20_000) return json(413, { error: 'text too long' })
     const temperature = typeof body.temperature === 'number' ? body.temperature : 0.3
 
-    // Google Gemini is the best-quality backend, so it wins whenever the key is
-    // set; Cloudflare Workers AI is the no-key fallback, then HuggingFace.
+    // An explicit `backend` lets the app's model picker choose per request.
+    // Default: Google Gemini wins whenever the key is set, then Cloudflare
+    // Workers AI (no-key), then HuggingFace.
+    const backend = typeof body.backend === 'string' ? body.backend.trim() : ''
+    if (backend === 'gemini') return proxyGemini(user, messages, temperature, env)
+    if (backend === 'workersai' || backend === 'cloudflare') return proxyWorkersAI(user, messages, temperature, env, body.model)
+    if (backend === 'hf' || backend === 'huggingface') return proxyHuggingFace(user, messages, temperature, env)
     if (env.GEMINI_API_KEY) return proxyGemini(user, messages, temperature, env)
     if (env.AI) return proxyWorkersAI(user, messages, temperature, env, body.model)
     if (env.HF_TOKEN) return proxyHuggingFace(user, messages, temperature, env)
@@ -170,7 +175,9 @@ async function proxyWorkersAI(
 ): Promise<Response> {
   const words = user.trim().split(/\s+/).length
   const model = resolveWorkersAiModel(requestedModel)
-  const maxTokens = Math.min(4096, Math.max(256, words * 4 + 120))
+  // Generous cap — reasoning models (e.g. Qwen3) burn tokens on thinking and a
+  // low cap truncates the actual rewrite.
+  const maxTokens = Math.min(8192, Math.max(2048, words * 8 + 512))
 
   let content = await workersAiChat(env, model, messages, maxTokens, temperature)
   if (!content) return json(502, { error: 'workers ai returned no text' })
