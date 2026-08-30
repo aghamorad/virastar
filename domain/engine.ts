@@ -1,14 +1,15 @@
-// The editor engine facade. The product's default is the in-browser model:
-// a small Google Gemma that downloads once and then edits fully offline. Until
-// the model is downloaded, editing falls back to the deterministic Persian
-// rules, so the app always works. A custom online endpoint (Ollama or any
-// OpenAI-compatible service) remains available to power users via settings,
-// but nothing in the UI advertises it.
+// The editor engine facade. The default is a hosted online engine: a free
+// Cloudflare Worker (`worker/`) fronts Google Gemini, so editing works with
+// zero setup and no API key anywhere near the user. Installing the optional
+// in-browser Gemma model (settings → model) upgrades the app to fully offline,
+// private editing — once installed, the local model takes over automatically.
+// If the online engine fails or isn't configured, editing falls back to the
+// deterministic Persian rules, so the app never stops working.
 
 import { getMode } from './modes'
 import { editOffline, type OfflineResult } from './engines/offline'
 import { editOnline } from './engines/online'
-import { editWithModel, isModelReady, wasModelInstalled, MODEL_ID } from './engines/browser'
+import { editWithModel, isModelReady, wasModelInstalled } from './engines/browser'
 
 export type EngineKind = 'offline' | 'online'
 
@@ -18,10 +19,15 @@ export interface EngineSettings {
   model: string
 }
 
+// The hosted edit server. Replace with the real Workers URL once deployed
+// (see worker/README.md). A temporary override can be set per-browser with
+// localStorage.setItem('virastar-server', 'https://<your>.workers.dev').
+export const HOSTED_ENDPOINT = 'https://virastar-edit.your-subdomain.workers.dev'
+
 export const DEFAULT_SETTINGS: EngineSettings = {
-  engine: 'offline',
-  endpoint: '',
-  model: MODEL_ID,
+  engine: 'online',
+  endpoint: HOSTED_ENDPOINT,
+  model: 'gemini-2.0-flash',
 }
 
 export interface EditResult {
@@ -32,6 +38,17 @@ export interface EditResult {
   notes: string[]
 }
 
+/** A per-browser endpoint override, so the server URL can change without a rebuild. */
+function readServerOverride(): string | null {
+  if (typeof localStorage === 'undefined') return null
+  try {
+    const value = localStorage.getItem('virastar-server')
+    return value && value.trim() ? value.trim() : null
+  } catch {
+    return null
+  }
+}
+
 export async function runEdit(
   input: string,
   modeId: string,
@@ -39,38 +56,8 @@ export async function runEdit(
 ): Promise<EditResult> {
   const mode = getMode(modeId)
 
-  // Power-user path: a configured online endpoint (Ollama / OpenAI-compatible).
-  if (settings.engine === 'online' && settings.endpoint) {
-    try {
-      const output = await editOnline(input, mode, {
-        endpoint: settings.endpoint,
-        model: settings.model,
-      })
-      return {
-        output,
-        changed: countWordDiffs(input, output),
-        engine: 'online',
-        notes: [
-          `«${mode.label}» با موتور آنلاین انجام شد.`,
-          'ویرایش واقعی هوش مصنوعی — نتیجه را خودت قضاوت کن.',
-        ],
-      }
-    } catch {
-      const offline = editOffline(input, mode)
-      return {
-        ...offline,
-        engine: 'offline',
-        notes: [
-          'موتور آنلاین پاسخ درست نداد؛ با موتور آفلاین ویرایش شد.',
-          ...offline.notes,
-        ],
-      }
-    }
-  }
-
-  // Default path: the in-browser model, or the fast rules until it downloads.
-  // A previously-installed model is used even before this page restores its
-  // status — editWithModel loads it from the browser cache on demand.
+  // A locally-installed model edits privately on the device — the product's
+  // offline upgrade. Used automatically so installing it is the only step.
   if (isModelReady() || wasModelInstalled()) {
     try {
       const output = await editWithModel(input, mode)
@@ -84,7 +71,31 @@ export async function runEdit(
         ],
       }
     } catch {
-      // model hiccuped — fall through to the rules so the user still gets an edit
+      // model hiccuped — fall through to the online engine, then the rules
+    }
+  }
+
+  // Default path: the hosted (or custom) online engine. Power users can point
+  // `settings.endpoint` at any OpenAI-compatible service (Ollama, etc.).
+  const endpoint = readServerOverride() ?? settings.endpoint
+  if (settings.engine === 'online' && endpoint) {
+    try {
+      const output = await editOnline(input, mode, {
+        endpoint,
+        model: settings.model,
+      })
+      return {
+        output,
+        changed: countWordDiffs(input, output),
+        engine: 'online',
+        notes: [
+          `«${mode.label}» با هوش مصنوعی آنلاین انجام شد.`,
+          'ویرایش واقعی هوش مصنوعی — نتیجه را خودت قضاوت کن.',
+        ],
+      }
+    } catch {
+      // online engine failed or isn't live yet — fall through to the rules so
+      // the user still gets an edit
     }
   }
 
@@ -92,9 +103,10 @@ export async function runEdit(
   return {
     ...offline,
     engine: 'offline',
-    notes: isModelReady()
-      ? ['مدل محلی به درستی جواب نداد؛ با قواعد سریع ویرایش شد.', ...offline.notes]
-      : ['مدل محلی هنوز دانلود نشده؛ با قواعد سریع ویرایش شد.', ...offline.notes],
+    notes: [
+      'موتور آنلاین در دسترس نبود؛ با قواعد سریع ویرایش شد.',
+      ...offline.notes,
+    ],
   }
 }
 

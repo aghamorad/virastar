@@ -1,0 +1,3 @@
+name = "virastar-edit"
+main = "src/index.ts"
+compatibility_date = "2025-06-01"

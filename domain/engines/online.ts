@@ -1,9 +1,9 @@
 // The online editing engine — a thin, OpenAI-compatible chat-completions
-// client for power users (Ollama, or any OpenAI-compatible service). The
-// mode's `instruction` is the system prompt; the user text is the message.
-// Kept out of the product UI — the default experience is the in-browser model.
-// If it fails, the caller falls back to the offline rules, so the app never
-// breaks.
+// client. By default it talks to the hosted Virastar proxy (`worker/`, which
+// fronts Google Gemini); power users can point it at any OpenAI-compatible
+// service (Ollama, etc.). The mode's `instruction` is the system prompt; the
+// user text is the message. If it fails, the caller falls back to the offline
+// rules, so the app never breaks.
 
 import type { WritingMode } from '../modes'
 import { HARDENING_RULE, ONLINE_RULES, looksBroken } from './editing'

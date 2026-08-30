@@ -3,8 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { MODES, getMode, type WritingMode } from '@/domain/modes'
 import { runEdit, type EditResult } from '@/domain/engine'
-import { MODEL_SIZE_MB, downloadModel, isModelReady, restoreModel } from '@/domain/engines/browser'
-import { useModelStatus } from '@/hooks/useModelStatus'
+import { restoreModel } from '@/domain/engines/browser'
 import { useSettings } from '@/hooks/useSettings'
 import { useHistory } from '@/hooks/useHistory'
 import { useDictation } from '@/hooks/useDictation'
@@ -33,7 +32,6 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
   const [copied, setCopied] = useState(false)
   const [saved, setSaved] = useState(false)
   const [settings] = useSettings()
-  const model = useModelStatus()
   const { add } = useHistory()
   const resultRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
@@ -202,65 +200,9 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
               )}
             </button>
             <span className="text-xs font-bold text-ink-soft">
-              {settings.engine === 'online' && settings.endpoint
-                ? 'موتور آنلاین'
-                : isModelReady()
-                  ? 'موتور محلی'
-                  : 'قواعد سریع — مدل هنوز دانلود نشده'}
+              {settings.engine === 'online' && settings.endpoint ? 'ویرایش آنلاین' : 'ویرایش آفلاین'}
             </span>
           </div>
-
-          {settings.engine !== 'online' && model.state === 'idle' && (
-            <div className="v-card mt-3 flex items-center justify-between gap-3 border-dashed px-4 py-3">
-              <p className="text-xs leading-5 text-ink-soft">
-                برای ویرایش واقعی با هر سبک، موتور آفلاین را یک بار نصب کن؛ بعد از آن همهٔ ویرایش‌ها
-                روی همین دستگاه انجام می‌شود.
-              </p>
-              <button
-                type="button"
-                onClick={() => void downloadModel()}
-                className="v-btn-primary shrink-0 px-4 py-2 text-xs"
-              >
-                نصب موتور آفلاین ({faNum(MODEL_SIZE_MB)} مگابایت)
-              </button>
-            </div>
-          )}
-
-          {settings.engine !== 'online' && model.state === 'downloading' && (
-            <div className="v-card mt-3 border-dashed px-4 py-3">
-              <div className="flex items-center justify-between text-xs font-bold text-ink-soft">
-                <span>در حال نصب موتور آفلاین…</span>
-                <span>{faNum(model.progress)}٪</span>
-              </div>
-              <div
-                role="progressbar"
-                aria-valuenow={model.progress}
-                aria-valuemin={0}
-                aria-valuemax={100}
-                className="mt-2 h-2 overflow-hidden rounded-full bg-paper-deep"
-              >
-                <div
-                  className="h-full rounded-full bg-brand transition-all"
-                  style={{ width: `${model.progress}%` }}
-                />
-              </div>
-            </div>
-          )}
-
-          {settings.engine !== 'online' && model.state === 'error' && (
-            <div className="v-card mt-3 flex items-center justify-between gap-3 border-dashed px-4 py-3">
-              <p className="text-xs leading-5 text-ink-soft">
-                دانلود ناموفق بود. اتصال اینترنت را بررسی کن و دوباره تلاش کن.
-              </p>
-              <button
-                type="button"
-                onClick={() => void downloadModel()}
-                className="v-btn-ghost shrink-0 px-4 py-2 text-xs"
-              >
-                تلاش دوباره
-              </button>
-            </div>
-          )}
 
           <div ref={resultRef} className="mt-4">
             {result ? (
