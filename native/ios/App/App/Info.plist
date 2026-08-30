@@ -26,6 +26,8 @@
 	<true/>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>برای دیکتهٔ گفتار به متن از میکروفون استفاده میکند؛ همهچیز روی همین دستگاه میماند.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>برای تبدیل گفتار به متن، گفتار شما روی سرورهای اپل پردازش میشود؛ خودتان میدانید که کدام متن دیکته میشود.</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
