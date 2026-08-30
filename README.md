@@ -2,9 +2,9 @@
 
 > بهتر بنویس، بهتر بگو.
 
-Virastar is a beautiful Persian writing instrument — not a chatbot. You write in Persian, choose how you want the text to sound, and an editor improves it. You review, copy, save, and keep writing.
+Virastar is a Persian writing instrument — not a chatbot. You write in Persian, pick how you want the text to sound, and it helps you say it better. Everything it does, you review: you keep what you like, copy it, save it, and go on writing.
 
-The first screen is a calm place to start: a star, the wordmark, the promise, and a big «متن جدید» button. The editor is the whole point: your words on the left, a style, and one decisive «ویرایش کن».
+It's free, it needs no account, and it runs on the web, on iPhone, and on Android. The phone apps are in the repo's Releases.
 
 ## The eleven modes
 
@@ -31,6 +31,15 @@ Two groups, eleven ways to speak.
 | نسل زد | today's internet Persian, irony and fresh idioms |
 | شاعرانه | rhythmic prose with imagery, echoing Ferdowsi, Sa'di, Hafez |
 
+## How the editor works
+
+The engine has two halves, and you pick which you want in **تنظیمات**:
+
+- **Online (the default).** A real language model rewrites your text. The default is Google Gemini, served through a small Cloudflare Worker; there's also a free Qwen model that needs no key. If you prefer, you can point the engine at any OpenAI-compatible service instead.
+- **Offline.** Download a small Qwen model and everything runs on your own device, with no network at all — or pick the rules-only mode, which uses deterministic Persian rules (character normalization, نیمفاصله repair, punctuation spacing, register lexicons) and needs no model whatsoever.
+
+You can also dictate instead of typing. Dictation is built in — native on iPhone and Android, and via the browser elsewhere.
+
 ## Run it locally
 
 ```bash
@@ -47,23 +56,17 @@ npm run build
 npm run typecheck
 ```
 
-## How the editor works
-
-The editing engine has two halves:
-
-- **Online (default):** a real language model rewrites the text. The default is a Gemma model served by local Ollama — the request goes to `localhost`, so the text never leaves your computer, and the same eleven modes get genuine rewriting. The settings screen can point the engine at any OpenAI-compatible `chat/completions` service instead.
-- **Offline (fallback):** deterministic Persian rules that run anywhere with no network — character normalization, نیمفاصله repair, punctuation spacing, register lexicons, and openers/closers for the polite modes. If the model service is unreachable, the app falls back to it and says so.
-
-To use the default local engine, install [Ollama](https://ollama.com) and pull a model: `ollama pull gemma2:9b`. Everything else is configured in **تنظیمات**. Same eleven modes either way.
-
 ## Themes
 
 The palette is defined as role tokens, so the whole UI restyles in one switch, remembered across visits:
 
-- **ویراستار** — cream paper, carmine star, friendly accent
+- **ویراستار** — cream paper, carmine star; the default
 - **شبنویس** — night writing: deep indigo and gold
 - **کافه تهران** — 1960s/70s Tehran: sepia, burnt orange, olive
 - **جوهر بنفش** — purple ink on lavender
+- **ماشینتحریر** — the 1950s office: steel keys, worn ribbon
+- **گرامافون** — an art-deco café: walnut, brass, vinyl in the haze
+- **روزنامه** — the old newspaper page: red headlines, print ink
 
 ## Deploying
 
@@ -97,4 +100,4 @@ The visual identity is built from the graphic tradition of Ikko Tanaka, Paul Ran
 
 ## Privacy
 
-The engine is on-device by default: the model runs locally (Ollama) and the offline rules run in the browser — nothing leaves your computer unless you point the online engine at a remote service in settings.
+The online model runs through a Cloudflare Worker in front of Google Gemini, so the text you're editing travels there to be edited — no account, nothing to configure. If you want nothing to leave your device, choose a local model or the rules-only mode in تنظیمات; then the editing happens entirely on your own machine.
