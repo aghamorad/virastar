@@ -2,22 +2,29 @@
 // static Virastar site. The site sends OpenAI-style chat-completions bodies.
 //
 // Backends (first configured one wins):
-//   1. HF_TOKEN      → HuggingFace serverless inference (Qwen2.5-72B by
-//                      default — excellent at Persian, free tier). Uses a key
-//                      that needs no Google sign-up.
-//   2. GEMINI_API_KEY → Google Gemini (best quality; enable once a key exists).
+//   1. AI binding   → Cloudflare Workers AI (the reliable default; Llama 3.3
+//                     70B for Persian formal rewrites).
+//   2. HF_TOKEN      → HuggingFace serverless inference (Qwen2.5-14B).
+//   3. GEMINI_API_KEY → Google Gemini (best quality; enable once a key exists).
 //
-// Both translate to/from the OpenAI body shape the app already speaks, so
-// `domain/engines/online.ts` needs no changes and users never see a key.
+// Workers AI chat models occasionally leak a stray Chinese character into
+// otherwise Persian prose, so the worker re-checks its own output for
+// non-Persian script, retries once with a corrective instruction, and strips
+// any leftover foreign characters as a last resort. The app's own guard
+// (`domain/engines/editing.ts`) stays as a second backstop.
 //
-// Deploy (see worker/README.md for the Persian walkthrough):
+// Deploy:
 //   npx wrangler login
-//   npx wrangler secret put HF_TOKEN        # value from ~/.cache/huggingface/token
 //   npx wrangler deploy
+//   npx wrangler secret put WORKERS_AI_MODEL   # optional model override
 
 export interface Env {
+  /** Cloudflare Workers AI binding (the reliable default backend). */
+  AI?: { run: (model: string, options: Record<string, unknown>) => Promise<unknown> }
+  /** Workers AI model id, default @cf/qwen/qwen3-30b-a3b-fp8 (strong Persian). */
+  WORKERS_AI_MODEL?: string
   HF_TOKEN?: string
-  /** HuggingFace model id, default Qwen/Qwen2.5-72B-Instruct. */
+  /** HuggingFace model id, default Qwen/Qwen2.5-14B-Instruct (free tier). */
   HF_MODEL?: string
   GEMINI_API_KEY?: string
   /** Comma-separated list of origins allowed to call this worker. */
@@ -30,9 +37,6 @@ export interface Env {
 const DEFAULT_ALLOWED_ORIGINS = [
   'https://aghamorad.github.io',
   'https://virastar.ir',
-  'capacitor://localhost',
-  'http://localhost:3000',
-  'http://localhost:4173',
 ]
 
 const JSON_HEADERS = { 'Content-Type': 'application/json' }
@@ -44,11 +48,29 @@ const CORS_HEADERS = {
 
 const GEMINI_BASE = 'https://generativelanguage.googleapis.com/v1beta'
 const HF_CHAT_URL = 'https://api-inference.huggingface.co/v1/chat/completions'
-const DEFAULT_HF_MODEL = 'Qwen/Qwen2.5-72B-Instruct'
+// Llama 3.3 70B (not the Qwen3 reasoning model — that burns the token budget
+// on thinking and emits no rewrite).
+const DEFAULT_WORKERS_AI_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast'
+const DEFAULT_HF_MODEL = 'Qwen/Qwen2.5-14B-Instruct'
 const DEFAULT_GEMINI_MODEL = 'gemini-2.0-flash'
 
 function json(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), { status, headers: { ...CORS_HEADERS, ...JSON_HEADERS } })
+}
+
+// Local development runs on arbitrary localhost ports and the iOS app is a
+// Capacitor WKWebView, so those origins always pass. Otherwise require an
+// explicit entry in the allowlist.
+function originAllowed(origin: string, allowed: string[]): boolean {
+  if (allowed.includes(origin)) return true
+  try {
+    const url = new URL(origin)
+    if (url.protocol === 'capacitor:') return true
+    if (url.hostname === 'localhost' || url.hostname === '127.0.0.1') return true
+  } catch {
+    /* not a URL — treat as disallowed */
+  }
+  return false
 }
 
 interface ChatMessage {
@@ -56,17 +78,31 @@ interface ChatMessage {
   content?: unknown
 }
 
+// Persian (and other Arabic-script) prose should never contain a letter from a
+// foreign script. Workers AI chat models occasionally slip in a Chinese or
+// Latin character, so this drives the worker's own retry + strip pass.
+const FOREIGN_LETTER = /\p{Letter}/u
+const ARABIC_SCRIPT = /\p{Script_Extensions=Arabic}/u
+function hasForeignLetter(value: string): boolean {
+  return [...value].some((c) => FOREIGN_LETTER.test(c) && !ARABIC_SCRIPT.test(c))
+}
+// Keep only Arabic-script letters, numbers, punctuation, symbols, spaces and
+// join controls (ZWNJ) — everything else (Latin/CJK/Cyrillic letters) is dropped.
+const FOREIGN_STRIP = /[^\p{Script_Extensions=Arabic}\p{N}\p{P}\p{S}\p{Z}\p{Cf}]/gu
+
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
     if (request.method === 'OPTIONS') return new Response(null, { status: 204, headers: CORS_HEADERS })
     if (request.method !== 'POST') return json(405, { error: 'method not allowed' })
 
     // Reject requests from unapproved sites so strangers can't burn the quota.
+    // Localhost and the Capacitor wrapper are always fine; everything else must
+    // be an explicit production origin.
     const origin = request.headers.get('Origin')
     const allowed = (env.ALLOWED_ORIGINS ?? DEFAULT_ALLOWED_ORIGINS.join(','))
       .split(',')
       .map((s) => s.trim())
-    if (origin && !allowed.includes(origin)) return json(403, { error: 'origin not allowed' })
+    if (origin && !originAllowed(origin, allowed)) return json(403, { error: 'origin not allowed' })
 
     let body: { model?: string; messages?: ChatMessage[]; temperature?: number }
     try {
@@ -84,11 +120,75 @@ export default {
     if (user.length > 20_000) return json(413, { error: 'text too long' })
     const temperature = typeof body.temperature === 'number' ? body.temperature : 0.3
 
+    // Cloudflare's own AI is the most reliable (no external dependency, no
+    // third-party key), so it wins when the binding exists.
+    if (env.AI) return proxyWorkersAI(user, messages, temperature, env, body.model)
     if (env.HF_TOKEN) return proxyHuggingFace(user, messages, temperature, env)
     if (env.GEMINI_API_KEY) return proxyGemini(user, messages, temperature, env)
 
-    return json(500, { error: 'no model backend configured (set HF_TOKEN or GEMINI_API_KEY)' })
+    return json(500, { error: 'no model backend configured (AI binding, HF_TOKEN, or GEMINI_API_KEY)' })
   },
+}
+
+// Cloudflare Workers AI takes OpenAI-style messages directly and returns
+// { response: string } for chat models. The model id resolves from the
+// WORKERS_AI_MODEL secret, else the request's own `model` when it names a
+// Workers AI model (@cf/...), else the default.
+function resolveWorkersAiModel(requestedModel: unknown): string {
+  if (typeof requestedModel === 'string' && requestedModel.startsWith('@cf/')) return requestedModel
+  return DEFAULT_WORKERS_AI_MODEL
+}
+
+// A single Workers AI chat call, returning the assistant text or null.
+async function workersAiChat(
+  env: Env,
+  model: string,
+  messages: ChatMessage[],
+  maxTokens: number,
+  temperature: number,
+): Promise<string | null> {
+  const out = await env.AI!.run(model, {
+    messages,
+    max_tokens: maxTokens,
+    temperature,
+  })
+  const object = out as { response?: unknown; choices?: Array<{ message?: { content?: unknown } }> } | null
+  const direct = typeof object?.response === 'string' ? object.response : undefined
+  const choice = typeof object?.choices?.[0]?.message?.content === 'string' ? object.choices[0].message.content : undefined
+  const content = (direct ?? choice ?? '').trim()
+  return content || null
+}
+
+async function proxyWorkersAI(
+  user: string,
+  messages: ChatMessage[],
+  temperature: number,
+  env: Env,
+  requestedModel?: unknown,
+): Promise<Response> {
+  const words = user.trim().split(/\s+/).length
+  const model = resolveWorkersAiModel(requestedModel)
+  const maxTokens = Math.min(4096, Math.max(256, words * 4 + 120))
+
+  let content = await workersAiChat(env, model, messages, maxTokens, temperature)
+  if (!content) return json(502, { error: 'workers ai returned no text' })
+
+  if (hasForeignLetter(content)) {
+    // Leaked a Chinese/Latin letter — re-issue the request with a warning. Do
+    // NOT echo the leaked draft into context, or the model "corrects" it by
+    // repeating it and the reply comes back duplicated.
+    const corrective = [...messages, {
+      role: 'user',
+      content: 'خروجیِ قبلی تو حرفِ چینی/لاتین (غیرفارسی) داشت و ممنوع است. فقط با خط فارسی دوباره بنویس؛ حتی یک حرف غیرفارسی هم جایز نیست.',
+    }]
+    const retry = await workersAiChat(env, model, corrective, maxTokens, 0.1)
+    if (retry && !hasForeignLetter(retry)) content = retry
+    else if (retry) content = retry.replace(FOREIGN_STRIP, '').trim()
+    else content = content.replace(FOREIGN_STRIP, '').trim()
+  }
+
+  if (!content) return json(502, { error: 'workers ai returned no text' })
+  return json(200, { choices: [{ message: { role: 'assistant', content } }] })
 }
 
 // HuggingFace serverless inference exposes an OpenAI-compatible chat endpoint,

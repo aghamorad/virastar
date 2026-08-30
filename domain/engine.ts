@@ -19,10 +19,10 @@ export interface EngineSettings {
   model: string
 }
 
-// The hosted edit server. Replace with the real Workers URL once deployed
-// (see worker/README.md). A temporary override can be set per-browser with
+// The hosted edit server (Cloudflare Worker fronting Workers AI — Llama 3.3
+// 70B; see worker/README.md). A per-browser override can be set with
 // localStorage.setItem('virastar-server', 'https://<your>.workers.dev').
-export const HOSTED_ENDPOINT = 'https://virastar-edit.your-subdomain.workers.dev'
+export const HOSTED_ENDPOINT = 'https://virastar-edit.kharkhan.workers.dev'
 
 export const DEFAULT_SETTINGS: EngineSettings = {
   engine: 'online',
