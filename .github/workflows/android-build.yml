@@ -1,0 +1,65 @@
+name: Build Android APK
+
+# Builds the Capacitor Android app in the cloud (free GitHub Actions runner —
+# nothing needs to be installed on a local machine) and attaches the APK to a
+# GitHub Release when one is published, so it can be downloaded freely.
+# The web export is built WITHOUT BASE_PATH: the app loads from the WebView's
+# localhost origin, not from GitHub Pages.
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: Install web dependencies
+        run: npm ci
+
+      - name: Build the web export
+        run: npm run build
+
+      - name: Install native dependencies
+        working-directory: native
+        run: npm ci
+
+      - name: Sync web assets into the Android project
+        working-directory: native
+        run: npx cap sync android
+
+      - name: Build the debug APK
+        working-directory: native/android
+        run: ./gradlew assembleDebug
+
+      - name: Upload APK as workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: virastar-apk
+          path: native/android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Attach APK to the release
+        if: github.event_name == 'release'
+        run: |
+          cp native/android/app/build/outputs/apk/debug/app-debug.apk /tmp/virastar.apk
+          gh release upload "${{ github.event.release.tag_name }}" /tmp/virastar.apk --clobber
+        env:
+          GH_TOKEN: ${{ github.token }}

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ویراستار</string>
+    <string name="title_activity_main">ویراستار</string>
+    <string name="package_name">com.aghamorad.virastar</string>
+    <string name="custom_url_scheme">com.aghamorad.virastar</string>
+</resources>
