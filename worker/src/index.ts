@@ -2,10 +2,10 @@
 // static Virastar site. The site sends OpenAI-style chat-completions bodies.
 //
 // Backends (first configured one wins):
-//   1. AI binding   → Cloudflare Workers AI (the reliable default; Llama 3.3
-//                     70B for Persian formal rewrites).
-//   2. HF_TOKEN      → HuggingFace serverless inference (Qwen2.5-14B).
-//   3. GEMINI_API_KEY → Google Gemini (best quality; enable once a key exists).
+//   1. GEMINI_API_KEY → Google Gemini (best quality for Persian formal prose;
+//                       model `gemini-3.6-flash`, override with GEMINI_MODEL).
+//   2. AI binding   → Cloudflare Workers AI (no-key fallback; Llama 3.3 70B).
+//   3. HF_TOKEN      → HuggingFace serverless inference (Qwen2.5-14B).
 //
 // Workers AI chat models occasionally leak a stray Chinese character into
 // otherwise Persian prose, so the worker re-checks its own output for
@@ -19,14 +19,16 @@
 //   npx wrangler secret put WORKERS_AI_MODEL   # optional model override
 
 export interface Env {
-  /** Cloudflare Workers AI binding (the reliable default backend). */
+  GEMINI_API_KEY?: string
+  /** Gemini model id, default gemini-3.6-flash. */
+  GEMINI_MODEL?: string
+  /** Cloudflare Workers AI binding (no-key fallback backend). */
   AI?: { run: (model: string, options: Record<string, unknown>) => Promise<unknown> }
-  /** Workers AI model id, default @cf/qwen/qwen3-30b-a3b-fp8 (strong Persian). */
+  /** Workers AI model id, default @cf/meta/llama-3.3-70b-instruct-fp8-fast. */
   WORKERS_AI_MODEL?: string
   HF_TOKEN?: string
   /** HuggingFace model id, default Qwen/Qwen2.5-14B-Instruct (free tier). */
   HF_MODEL?: string
-  GEMINI_API_KEY?: string
   /** Comma-separated list of origins allowed to call this worker. */
   ALLOWED_ORIGINS?: string
 }
@@ -52,7 +54,7 @@ const HF_CHAT_URL = 'https://api-inference.huggingface.co/v1/chat/completions'
 // on thinking and emits no rewrite).
 const DEFAULT_WORKERS_AI_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast'
 const DEFAULT_HF_MODEL = 'Qwen/Qwen2.5-14B-Instruct'
-const DEFAULT_GEMINI_MODEL = 'gemini-2.0-flash'
+const DEFAULT_GEMINI_MODEL = 'gemini-3.6-flash'
 
 function json(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), { status, headers: { ...CORS_HEADERS, ...JSON_HEADERS } })
@@ -120,11 +122,11 @@ export default {
     if (user.length > 20_000) return json(413, { error: 'text too long' })
     const temperature = typeof body.temperature === 'number' ? body.temperature : 0.3
 
-    // Cloudflare's own AI is the most reliable (no external dependency, no
-    // third-party key), so it wins when the binding exists.
+    // Google Gemini is the best-quality backend, so it wins whenever the key is
+    // set; Cloudflare Workers AI is the no-key fallback, then HuggingFace.
+    if (env.GEMINI_API_KEY) return proxyGemini(user, messages, temperature, env)
     if (env.AI) return proxyWorkersAI(user, messages, temperature, env, body.model)
     if (env.HF_TOKEN) return proxyHuggingFace(user, messages, temperature, env)
-    if (env.GEMINI_API_KEY) return proxyGemini(user, messages, temperature, env)
 
     return json(500, { error: 'no model backend configured (AI binding, HF_TOKEN, or GEMINI_API_KEY)' })
   },
@@ -231,36 +233,46 @@ async function proxyGemini(
     .filter((m) => m.role === 'system')
     .map((m) => String(m.content ?? ''))
     .join('\n')
-  const model = 'gemini-2.0-flash'
+  const model = env.GEMINI_MODEL || DEFAULT_GEMINI_MODEL
   const words = user.trim().split(/\s+/).length
-  const payload: Record<string, unknown> = {
-    contents: [{ role: 'user', parts: [{ text: user }] }],
-    generationConfig: {
-      temperature,
-      maxOutputTokens: Math.min(4096, Math.max(256, words * 4 + 120)),
-    },
-  }
-  if (system.trim()) payload.systemInstruction = { parts: [{ text: system }] }
-
+  // Gemini 3.x flash is a reasoning model: it spends a large chunk of its token
+  // budget on internal thinking, so give it a generous cap or the actual
+  // rewrite gets cut off at MAX_TOKENS with a truncated fragment.
+  const maxOutputTokens = Math.min(8192, Math.max(2048, words * 8 + 512))
   const params = new URLSearchParams({ key: env.GEMINI_API_KEY ?? '' })
-  const res = await fetch(`${GEMINI_BASE}/models/${model}:generateContent?${params}`, {
-    method: 'POST',
-    headers: JSON_HEADERS,
-    body: JSON.stringify(payload),
-  })
-  if (!res.ok) {
-    const detail = await res.text().catch(() => '')
-    return json(502, { error: `gemini ${res.status}`, detail: detail.slice(0, 400) })
-  }
 
-  const data = (await res.json()) as {
-    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>
-    promptFeedback?: { blockReason?: string }
+  let lastDetail = 'gemini unavailable'
+  for (let attempt = 0; attempt < 3; attempt++) {
+    if (attempt > 0) await new Promise((resolve) => setTimeout(resolve, 400 * attempt))
+    const payload: Record<string, unknown> = {
+      contents: [{ role: 'user', parts: [{ text: user }] }],
+      generationConfig: { temperature, maxOutputTokens },
+    }
+    if (system.trim()) payload.systemInstruction = { parts: [{ text: system }] }
+
+    const res = await fetch(`${GEMINI_BASE}/models/${model}:generateContent?${params}`, {
+      method: 'POST',
+      headers: JSON_HEADERS,
+      body: JSON.stringify(payload),
+    })
+    if (!res.ok) {
+      const detail = await res.text().catch(() => '')
+      lastDetail = `gemini ${res.status} ${detail.slice(0, 200)}`
+      if (res.status === 429 || res.status === 500 || res.status === 503) continue // transient — retry
+      return json(502, { error: lastDetail })
+    }
+
+    const data = (await res.json()) as {
+      candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>
+      promptFeedback?: { blockReason?: string }
+    }
+    const content = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('').trim()
+    if (!content) {
+      const block = data.promptFeedback?.blockReason
+      lastDetail = block ? `gemini blocked: ${block}` : 'gemini returned no content'
+      continue
+    }
+    return json(200, { choices: [{ message: { role: 'assistant', content } }] })
   }
-  const content = data.candidates?.[0]?.content?.parts?.map((p) => p.text ?? '').join('').trim()
-  if (!content) {
-    const block = data.promptFeedback?.blockReason
-    return json(502, { error: block ? `gemini blocked: ${block}` : 'gemini returned no content' })
-  }
-  return json(200, { choices: [{ message: { role: 'assistant', content } }] })
+  return json(502, { error: lastDetail })
 }

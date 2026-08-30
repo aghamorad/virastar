@@ -27,7 +27,7 @@ export const HOSTED_ENDPOINT = 'https://virastar-edit.kharkhan.workers.dev'
 export const DEFAULT_SETTINGS: EngineSettings = {
   engine: 'online',
   endpoint: HOSTED_ENDPOINT,
-  model: 'gemini-2.0-flash',
+  model: 'gemini-3.6-flash',
 }
 
 export interface EditResult {
