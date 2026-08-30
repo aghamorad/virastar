@@ -29,8 +29,9 @@ jobs:
       - name: Set up Java
         uses: actions/setup-java@v4
         with:
+          # Capacitor 8 / AGP compile with sourceCompatibility 21.
           distribution: temurin
-          java-version: '17'
+          java-version: '21'
 
       - name: Install web dependencies
         run: npm ci
