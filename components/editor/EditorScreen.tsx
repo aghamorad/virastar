@@ -29,6 +29,7 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState<EditResult | null>(null)
+  const [liveOutput, setLiveOutput] = useState('')
   const [copied, setCopied] = useState(false)
   const [saved, setSaved] = useState(false)
   const [settings] = useSettings()
@@ -68,9 +69,11 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
     setBusy(true)
     setCopied(false)
     setSaved(false)
-    const res = await runEdit(text, modeId, settings)
+    setLiveOutput('')
+    const res = await runEdit(text, modeId, settings, (partial) => setLiveOutput(partial))
     setResult(res)
     setBusy(false)
+    setLiveOutput('')
     requestAnimationFrame(() => resultRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' }))
   }
 
@@ -250,6 +253,22 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                     {saved ? <CheckGlyph size={17} className="text-success" /> : <SaveGlyph size={17} />}
                     {saved ? 'ذخیره شد' : 'ذخیره در نوشته‌ها'}
                   </button>
+                </div>
+              </div>
+            ) : busy && liveOutput ? (
+              <div className="v-card shadow-card animate-fade-up overflow-hidden">
+                <div className="flex items-center gap-2 border-b border-border px-4 py-3">
+                  <Star size={15} className="animate-star-busy text-brand" />
+                  <span className="font-black">نتیجه</span>
+                  <span className="rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-bold text-brand">
+                    {mode.label}
+                  </span>
+                </div>
+                <div className="px-4 py-4">
+                  <p dir="rtl" className="whitespace-pre-wrap text-lg leading-8">
+                    {liveOutput}
+                  </p>
+                  <p className="mt-3 text-xs font-bold text-ink-soft">در حال ویرایش…</p>
                 </div>
               </div>
             ) : (

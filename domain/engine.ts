@@ -138,6 +138,7 @@ export async function runEdit(
   input: string,
   modeId: string,
   settings: EngineSettings,
+  onPartial?: (text: string) => void,
 ): Promise<EditResult> {
   const mode = getMode(modeId)
   const localId = settings.localModel && LOCAL_MODELS[settings.localModel] ? settings.localModel : undefined
@@ -170,6 +171,7 @@ export async function runEdit(
         endpoint,
         model: settings.model,
         backend: settings.backend,
+        onPartial,
       })
       return {
         output,
