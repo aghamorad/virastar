@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Star } from './Star'
 import { ThemeSwitcher } from './ThemeSwitcher'
+import { UpdateNotice } from './UpdateNotice'
 import { EditGlyph, HistoryGlyph, SettingsGlyph, StylesGlyph } from './Glyphs'
 
 const NAV = [
@@ -51,6 +52,8 @@ export function ScreenShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </header>
+
+      <UpdateNotice />
 
       <main className="v-main mx-auto w-full max-w-5xl flex-1 px-4 pt-6">{children}</main>
 

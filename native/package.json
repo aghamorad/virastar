@@ -1,7 +1,7 @@
 {
   "name": "virastar-native",
   "private": true,
-  "version": "0.1.0",
+  "version": "1.0.0",
   "scripts": {
     "build:web": "cd .. && npm run build",
     "sync": "cap sync ios",

@@ -18,6 +18,8 @@ import {
 import { useModelStatus } from '@/hooks/useModelStatus'
 import { useSettings } from '@/hooks/useSettings'
 import { applyTheme, useActiveTheme } from '@/hooks/useActiveTheme'
+import { useUpdate } from '@/hooks/useUpdate'
+import { APP_VERSION, DOWNLOAD, faVersion } from '@/domain/updates'
 import { Star } from '../Star'
 
 function faNum(n: number): string {
@@ -27,6 +29,7 @@ function faNum(n: number): string {
 export function SettingsScreen() {
   const active = useActiveTheme()
   const model = useModelStatus()
+  const { newer, checked } = useUpdate()
   const [settings, saveSettings] = useSettings()
   const option = MODEL_OPTIONS.find((o) => o.id === modelChoiceFromSettings(settings)) ?? MODEL_OPTIONS[0]
   const localId = option.localModel
@@ -128,6 +131,34 @@ export function SettingsScreen() {
               </button>
             )
           })}
+        </div>
+      </section>
+
+      {/* About — the only place this copy says how old it is. */}
+      <section>
+        <h2 className="mb-3 text-xl font-black">درباره</h2>
+        <div className="v-card shadow-soft p-5">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <p className="font-black">ویراستار</p>
+              <p className="mt-1 text-xs leading-5 text-ink-soft">
+                نسخهٔ {faVersion(APP_VERSION)}
+                {newer && <> — نسخهٔ {faVersion(newer)} منتشر شده است.</>}
+                {!newer && checked && <> — همین تازه‌ترین نسخه است.</>}
+              </p>
+            </div>
+            {newer && (
+              <a
+                href={DOWNLOAD}
+                target="_blank"
+                rel="noreferrer"
+                className="v-btn-primary px-6 py-2.5 text-sm"
+              >
+                <Star size={16} />
+                دریافت نسخهٔ {faVersion(newer)}
+              </a>
+            )}
+          </div>
         </div>
       </section>
     </div>
