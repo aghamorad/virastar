@@ -21,7 +21,7 @@ import { appendFileSync, existsSync, mkdirSync, readFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { MODES } from '../domain/modes'
-import { ONLINE_RULES } from '../domain/engines/online'
+import { ONLINE_RULES } from '../domain/engines/editing'
 import { SOURCES, type SourceText } from './sources'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')

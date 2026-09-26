@@ -15,7 +15,7 @@ import { fileURLToPath } from 'node:url'
 import { readFileSync } from 'node:fs'
 import { dirname } from 'node:path'
 import { getMode } from '../domain/modes'
-import { ONLINE_RULES } from '../domain/engines/online'
+import { ONLINE_RULES } from '../domain/engines/editing'
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..')
 const CORPUS = process.env.CORPUS ?? '/tmp/virastar-model/persian-corpus'
