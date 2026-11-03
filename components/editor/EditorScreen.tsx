@@ -11,6 +11,7 @@ import { clearDraft, readDraft } from '@/services/draft'
 import { Star } from '../Star'
 import { ModeGlyph } from './ModeGlyph'
 import { CheckGlyph, CopyGlyph, MicGlyph, SaveGlyph, ShareGlyph } from '../Glyphs'
+import { PersianKeyboard } from './PersianKeyboard'
 
 const SAMPLE =
   'امروز میخوام این نامه رو برای استادم بفرستم ولی خیلی خشک شده و من اصلا نمیدونم چطور بنویسمش. لطفا یه کاریش کنین که رسمی تر بشه. ممنون'
@@ -34,12 +35,59 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
   const [copied, setCopied] = useState(false)
   const [saved, setSaved] = useState(false)
   const [showDiff, setShowDiff] = useState(false)
+  const [showKeyboard, setShowKeyboard] = useState(false)
   const [settings] = useSettings()
   const { add } = useHistory()
   const resultRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLTextAreaElement>(null)
   const dictation = useDictation('fa-IR')
   const anchorRef = useRef<{ before: string; after: string } | null>(null)
+
+  function insertAtCursor(text: string) {
+    const el = inputRef.current
+    if (!el) {
+      setInput((prev) => prev + text)
+      return
+    }
+    const start = el.selectionStart
+    const end = el.selectionEnd
+    const val = el.value
+    const next = val.substring(0, start) + text + val.substring(end)
+    setInput(next)
+    requestAnimationFrame(() => {
+      el.focus()
+      const newPos = start + text.length
+      el.setSelectionRange(newPos, newPos)
+    })
+  }
+
+  function backspaceAtCursor() {
+    const el = inputRef.current
+    if (!el) {
+      setInput((prev) => prev.slice(0, -1))
+      return
+    }
+    const start = el.selectionStart
+    const end = el.selectionEnd
+    const val = el.value
+    if (start === end) {
+      if (start > 0) {
+        const next = val.substring(0, start - 1) + val.substring(end)
+        setInput(next)
+        requestAnimationFrame(() => {
+          el.focus()
+          el.setSelectionRange(start - 1, start - 1)
+        })
+      }
+    } else {
+      const next = val.substring(0, start) + val.substring(end)
+      setInput(next)
+      requestAnimationFrame(() => {
+        el.focus()
+        el.setSelectionRange(start, start)
+      })
+    }
+  }
 
   const mode = getMode(modeId)
   const words = countWords(input)
@@ -287,6 +335,83 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
             placeholder="بنویس… هر نوشته‌ای، از پیام تا نامه"
             className="v-field min-h-64 resize-y text-lg leading-8 md:min-h-80"
           />
+
+          {/* Persian Smart Quick Bar (Toolbar) */}
+          <div className="mt-2 flex flex-wrap items-center justify-between gap-1.5 rounded-xl bg-paper-deep p-2 border border-border">
+            <div className="flex flex-wrap items-center gap-1">
+              <button
+                type="button"
+                onClick={() => insertAtCursor('\u200c')}
+                className="rounded-lg bg-paper px-2.5 py-1 text-xs font-black text-brand border border-border hover:bg-brand/10 transition-colors shadow-xs"
+                title="نیم‌فاصله استاندارد فارسی"
+              >
+                نیم‌فاصله
+              </button>
+              <button
+                type="button"
+                onClick={() => insertAtCursor('«»')}
+                className="rounded-lg bg-paper px-2 py-1 text-xs font-black text-ink border border-border hover:border-brand"
+                title="گیومه فارسی"
+              >
+                « »
+              </button>
+              <button
+                type="button"
+                onClick={() => insertAtCursor('،')}
+                className="rounded-lg bg-paper px-2 py-1 text-xs font-black text-ink border border-border hover:border-brand"
+                title="ویرگول فارسی"
+              >
+                ،
+              </button>
+              <button
+                type="button"
+                onClick={() => insertAtCursor('؛')}
+                className="rounded-lg bg-paper px-2 py-1 text-xs font-black text-ink border border-border hover:border-brand"
+                title="نقطه‌ویرگول فارسی"
+              >
+                ؛
+              </button>
+              <button
+                type="button"
+                onClick={() => insertAtCursor('؟')}
+                className="rounded-lg bg-paper px-2 py-1 text-xs font-black text-ink border border-border hover:border-brand"
+                title="علامت سوال فارسی"
+              >
+                ؟
+              </button>
+              <button
+                type="button"
+                onClick={() => insertAtCursor('.')}
+                className="rounded-lg bg-paper px-2 py-1 text-xs font-black text-ink border border-border hover:border-brand"
+                title="نقطه پایان جمله"
+              >
+                .
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setShowKeyboard(!showKeyboard)}
+              className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-bold transition-all border ${
+                showKeyboard
+                  ? 'bg-brand text-on-brand border-brand shadow-xs'
+                  : 'bg-paper text-ink border-border hover:border-brand shadow-xs'
+              }`}
+            >
+              <span>⌨️</span>
+              <span>{showKeyboard ? 'بستن کیبورد' : 'صفحه‌کلید فارسی'}</span>
+            </button>
+          </div>
+
+          {showKeyboard && (
+            <PersianKeyboard
+              onInsert={insertAtCursor}
+              onBackspace={backspaceAtCursor}
+              onHalfSpace={() => insertAtCursor('\u200c')}
+              onNewLine={() => insertAtCursor('\n')}
+              onClose={() => setShowKeyboard(false)}
+            />
+          )}
           {dictation.listening ? (
             <p className="mt-2 text-xs font-bold text-brand">
               در حال گوش دادن… برای تمام کردن دوباره روی «گفتار» بزن.

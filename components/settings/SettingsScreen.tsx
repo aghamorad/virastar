@@ -557,6 +557,40 @@ export function SettingsScreen() {
         modelStatus={model}
       />
 
+      {/* Smart Keyboard Integration Guide */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-2">
+          <span className="text-xl">⌨️</span>
+          <h2 className="text-xl font-black">کیبورد هوشمند ویراستار (ویژه موبایل و پیام‌رسان‌ها)</h2>
+        </div>
+
+        <div className="v-card shadow-soft space-y-4 p-5">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <span className="font-black text-ink text-base">استفاده مستقیم داخل واتس‌اپ، تلگرام، اینستاگرام و یادداشت‌ها</span>
+            <span className="rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-bold text-brand">
+              iOS Keyboard Extension
+            </span>
+          </div>
+
+          <p className="text-xs leading-6 text-ink-soft">
+            با کیبورد ویراستار، نیازی به کپی و جابه‌جایی متن نیست! در هر برنامه‌ای که تایپ می‌کنید، کیبورد ویراستار متن را مستقیماً ویرایش کرده، نیم‌فاصله‌ها و نشانه‌گذاری را درست می‌کند و لحن دلخواه شما (رسمی، اداری، حقوقی، لاتی و غیره) را اعمال می‌کند.
+          </p>
+
+          <div className="rounded-xl bg-paper-deep p-4 text-xs leading-6 text-ink-soft space-y-2 border border-border">
+            <p className="font-bold text-ink">نحوه فعال‌سازی در آیفون و آیپد (فقط یک‌بار):</p>
+            <p>۱. وارد تنظیمات اصلی آیفون (<strong>Settings</strong>) شوید.</p>
+            <p>۲. به مسیر <strong>General &gt; Keyboard &gt; Keyboards</strong> بروید.</p>
+            <p>۳. گزینه <strong>«Add New Keyboard...»</strong> را بزنید و <strong>«ویراستار (Virastar)»</strong> را انتخاب کنید.</p>
+            <p>۴. روی ویراستار کلیک کرده و گزینه <strong>«Allow Full Access»</strong> را روشن کنید (برای فعال شدن هوش مصنوعی و گفتار به متن).</p>
+          </div>
+
+          <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-ink-soft border-t border-border pt-3">
+            <span className="text-brand">💡 روش استفاده:</span>
+            <span>در هر برنامه روی آیکون کُره زمین (🌐) پایین کیبورد بزنید تا ویراستار بالا بیاید، بنویسید و دکمهٔ «✨ ویرایش با ویراستار» را لمس کنید!</span>
+          </div>
+        </div>
+      </section>
+
       {/* Themes */}
       <section>
         <h2 className="mb-3 text-xl font-black">پوسته</h2>
