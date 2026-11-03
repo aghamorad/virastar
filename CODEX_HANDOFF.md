@@ -1,6 +1,6 @@
 # Codex handoff — finish Virastar's distilled Persian editor model (v4cur6 era)
 
-You are taking over the active model-improvement job on this Mac (`/Users/Morad/Claude/Virastar`). Goal: get the small distilled Persian editor model to pass the acceptance gates at **100%** — zero hard issues on both full audit sets, and all six register tones at or above 75% marker coverage. If it cannot pass, you deliver the honest not-ready verdict in plain language. The user (Morad) is non-technical; report in lay terms.
+You are taking over the active model-improvement job on this Mac (`/Users/Morad/C3PO/Virastar`). Goal: get the small distilled Persian editor model to pass the acceptance gates at **100%** — zero hard issues on both full audit sets, and all six register tones at or above 75% marker coverage. If it cannot pass, you deliver the honest not-ready verdict in plain language. The user (Morad) is non-technical; report in lay terms.
 
 ## The bar — 100%, non-negotiable
 The gate (`scripts/check_eval_report.mjs`) is the source of truth. A candidate is READY only when `status: "PASS"` on **BOTH**:
@@ -72,7 +72,7 @@ Probe whether a different base eliminates foreign-letter leaks:
 Re-fuse and re-audit any candidate that looks better than step-100. Commands:
 
 ```bash
-cd /Users/Morad/Claude/Virastar
+cd /Users/Morad/C3PO/Virastar
 VALID=data/distill/v4cur/valid.jsonl      # full valid, 331 rows
 HARD=data/distill/hard_test.jsonl         # full hard, 110 rows
 

@@ -7,7 +7,7 @@ The executor must follow the commands below exactly. Do not edit prompts, thresh
 **Running-job barrier:** sections 1 through 6 document the current v2 run. Do not execute any command in the future-v3 sections 7 through 11 until the user confirms that v2 has finished and these commands all succeed:
 
 ```bash
-cd /Users/Morad/Claude/Virastar
+cd /Users/Morad/C3PO/Virastar
 test -s data/distill/v2/pipeline.log
 grep -F '== V2 COMPLETE ==' data/distill/v2/pipeline.log
 test -s data/distill/v2/eval_audit.json
@@ -23,7 +23,7 @@ Important: this repository's `.gitignore` excludes the entire `data/distill` dir
 Run from the repository root:
 
 ```bash
-cd /Users/Morad/Claude/Virastar
+cd /Users/Morad/C3PO/Virastar
 ```
 
 Inputs that must remain unchanged during the run:
@@ -55,7 +55,7 @@ node --check scripts/check_eval_report.mjs
 /Users/Morad/.virastar-venv/bin/python -c 'import ast, pathlib; ast.parse(pathlib.Path("scripts/eval.py").read_text())'
 bash -n scripts/train_v2.sh
 node scripts/audit_codex.mjs \
-  --repo /Users/Morad/Claude/Virastar \
+  --repo /Users/Morad/C3PO/Virastar \
   --input data/distill/codex.jsonl \
   --review-ledger data/distill/codex_review_ledger.json \
   --report data/distill/codex_audit_report.json
@@ -201,7 +201,7 @@ The internal mode identifier remains `pachelhkhor`; its correct Persian name is 
 After section 7's barrier passes, run exactly:
 
 ```bash
-cd /Users/Morad/Claude/Virastar
+cd /Users/Morad/C3PO/Virastar
 test ! -e data/distill/v3
 test -s data/distill/codex_v3.jsonl
 test -s data/distill/hard_test.jsonl
@@ -210,13 +210,13 @@ node --check scripts/prepare_v3_data.mjs
 node --check scripts/check_semantics.mjs
 /Users/Morad/.virastar-venv/bin/python -c 'import ast, pathlib; ast.parse(pathlib.Path("scripts/eval_v3.py").read_text())'
 node scripts/audit_codex_v3.mjs \
-  --repo /Users/Morad/Claude/Virastar \
+  --repo /Users/Morad/C3PO/Virastar \
   --input data/distill/codex_v3.jsonl \
   --report data/distill/codex_v3_audit.json
 jq -e '.status == "PASS" and .records == 1320 and .foreignScriptFlags == 0 and .unresolvedFlagsTotal == 0 and .uniqueKeys == 1320 and .uniqueInputs == 1320 and .uniqueOutputs == 1320 and .sentenceDiversity.maxInputSentenceRepeat <= 5 and .sentenceDiversity.maxOutputSentenceRepeat <= 3' \
   data/distill/codex_v3_audit.json
 node scripts/prepare_v3_data.mjs \
-  --repo /Users/Morad/Claude/Virastar \
+  --repo /Users/Morad/C3PO/Virastar \
   --output data/distill/v3
 jq -e '.final.trainRows == 12100 and .final.validRows == 335 and .codex.hardTest.included == 0 and .filteredCount == 333 and .duplicateCount == 2' \
   data/distill/v3/preparation_manifest.json
@@ -255,7 +255,7 @@ The six difficult modes—`rasmi`, `daneshgahi`, `edari`, `adabi`, `pachelhkhor`
 Do not run this section during v2. After section 8 succeeds, run the following commands in one shell, in order. A failure stops the sequence because `set -euo pipefail` is enabled.
 
 ```bash
-cd /Users/Morad/Claude/Virastar
+cd /Users/Morad/C3PO/Virastar
 set -euo pipefail
 V3_ROOT="$(pwd)"
 V3_ENV=/Users/Morad/.virastar-venv
@@ -312,7 +312,7 @@ This is one complete pass because 6,050 batches at batch size 2 consume all 12,1
 Run both evaluations before creating any Ollama tag:
 
 ```bash
-cd /Users/Morad/Claude/Virastar
+cd /Users/Morad/C3PO/Virastar
 /Users/Morad/.virastar-venv/bin/python scripts/eval_v3.py \
   data/distill/v3/valid.jsonl \
   data/distill/v3/merged \
@@ -340,7 +340,7 @@ Then start the local teacher, run the semantic gate twice, and require complete,
 Leave that foreground command running and use a second terminal:
 
 ```bash
-cd /Users/Morad/Claude/Virastar
+cd /Users/Morad/C3PO/Virastar
 node scripts/check_semantics.mjs \
   --eval-report data/distill/v3/eval_report.txt \
   --output data/distill/v3/semantic_eval.json
@@ -358,7 +358,7 @@ If Ollama is busy or unavailable, the checker retries and records `SKIP` instead
 Only after every gate above succeeds, create a separate non-production tag:
 
 ```bash
-cd /Users/Morad/Claude/Virastar
+cd /Users/Morad/C3PO/Virastar
 /opt/homebrew/bin/ollama create virastar-small-v3 -f data/distill/v3/Modelfile
 /opt/homebrew/bin/ollama show virastar-small-v3 >/dev/null
 shasum -a 256 \
@@ -374,7 +374,7 @@ Do not replace `data/distill/virastar-small-fa.gguf`, `virastar-small`, or `vira
 To judge an evaluation report containing `INPUT`, `TEACHER (9B)`, and `SMALL (2B)` columns:
 
 ```bash
-cd /Users/Morad/Claude/Virastar
+cd /Users/Morad/C3PO/Virastar
 node scripts/check_semantics.mjs \
   --eval-report data/distill/eval_report.txt \
   --output data/distill/semantic_eval_old.json
