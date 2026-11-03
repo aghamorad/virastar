@@ -381,6 +381,158 @@
   transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
+/* =========================================================================
+   ARTISANAL BOOKCRAFT & MANUSCRIPT DESK SYSTEM (میز کار هنرورزانه ویراستار)
+   ========================================================================= */
+
+/* The Master Writing Folio — physical manuscript sheet with depth & deckled margin */
+.v-folio {
+  position: relative;
+  border-radius: 1.5rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow:
+    0 1px 3px rgb(0 0 0 / 0.05),
+    0 10px 30px rgb(0 0 0 / 0.06),
+    0 25px 60px rgb(0 0 0 / 0.05),
+    inset 0 0 0 1px rgb(255 255 255 / 0.6);
+  transition: box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+[data-theme='shabnevis'] .v-folio,
+[data-theme='cyber-tehran'] .v-folio {
+  box-shadow:
+    0 1px 3px rgb(0 0 0 / 0.4),
+    0 14px 40px rgb(0 0 0 / 0.5),
+    0 30px 70px rgb(0 0 0 / 0.6),
+    inset 0 1px 0 rgb(255 255 255 / 0.08);
+}
+
+/* Calligraphic corner brackets (گوشه‌بندی تذهیب) */
+.v-folio::before,
+.v-folio::after {
+  content: '';
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  pointer-events: none;
+  opacity: 0.35;
+  transition: opacity 0.2s ease;
+}
+.v-folio::before {
+  top: 12px;
+  right: 12px;
+  border-top: 2px solid var(--color-brand);
+  border-right: 2px solid var(--color-brand);
+  border-top-right-radius: 4px;
+}
+.v-folio::after {
+  bottom: 12px;
+  left: 12px;
+  border-bottom: 2px solid var(--color-brand);
+  border-left: 2px solid var(--color-brand);
+  border-bottom-left-radius: 4px;
+}
+.v-folio:hover::before,
+.v-folio:hover::after {
+  opacity: 0.75;
+}
+
+/* The Master Lacquer Seal Button (مهر لاکی ویراستار) */
+.v-seal-master {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+  padding: 0.9rem 2.25rem;
+  border-radius: 9999px;
+  font-weight: 900;
+  font-size: 1.05rem;
+  color: var(--color-on-brand);
+  background-image: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--color-brand) 70%, #fff) 0%, var(--color-brand) 55%, var(--color-brand-deep) 100%);
+  border: 2px solid color-mix(in srgb, var(--color-brand) 80%, #fff);
+  box-shadow:
+    0 8px 24px color-mix(in srgb, var(--color-brand) 40%, transparent),
+    inset 0 2px 2px rgb(255 255 255 / 0.5),
+    inset 0 -3px 4px rgb(0 0 0 / 0.3),
+    0 0 0 4px color-mix(in srgb, var(--color-brand) 18%, transparent);
+  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+  user-select: none;
+}
+.v-seal-master:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow:
+    0 12px 32px color-mix(in srgb, var(--color-brand) 50%, transparent),
+    inset 0 2px 3px rgb(255 255 255 / 0.6),
+    inset 0 -3px 4px rgb(0 0 0 / 0.25),
+    0 0 0 6px color-mix(in srgb, var(--color-brand) 25%, transparent);
+}
+.v-seal-master:active:not(:disabled) {
+  transform: translateY(2px) scale(0.97);
+  box-shadow:
+    0 3px 10px color-mix(in srgb, var(--color-brand) 45%, transparent),
+    inset 0 3px 6px rgb(0 0 0 / 0.4),
+    0 0 0 3px color-mix(in srgb, var(--color-brand) 15%, transparent);
+}
+.v-seal-master:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Drafting Ruler Toolbar (خط‌کش و نوار قلم) */
+.v-ruler-toolbar {
+  background-color: color-mix(in srgb, var(--color-paper-deep) 75%, transparent);
+  border-top: 1px solid var(--color-border);
+  border-bottom-left-radius: 1.5rem;
+  border-bottom-right-radius: 1.5rem;
+  backdrop-filter: blur(8px);
+}
+
+/* Calligrapher's Stylus Tray (قلم‌دان سبک‌ها) */
+.v-qalamdan {
+  background-color: color-mix(in srgb, var(--color-surface) 60%, var(--color-paper-deep));
+  border: 1px solid var(--color-border);
+  border-radius: 1.25rem;
+  box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.04);
+}
+
+/* Master editorial marginalia highlight */
+.v-marginalia-diff-del {
+  background-color: color-mix(in srgb, #ef4444 14%, transparent);
+  color: #dc2626;
+  text-decoration: line-through;
+  text-decoration-color: #ef4444;
+  padding: 0 4px;
+  border-radius: 4px;
+  margin: 0 1px;
+}
+.v-marginalia-diff-add {
+  background-color: color-mix(in srgb, #10b981 18%, transparent);
+  color: #047857;
+  font-weight: 800;
+  padding: 0 4px;
+  border-radius: 4px;
+  margin: 0 1px;
+  box-shadow: 0 0 0 1px color-mix(in srgb, #10b981 30%, transparent);
+}
+
+/* Luxury gemstone status indicator */
+.v-gem-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 800;
+  border: 1px solid var(--color-border);
+  background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.5), 0 2px 6px rgb(0 0 0 / 0.04);
+}
+
 .v-link {
   color: var(--color-ink-soft);
   font-weight: 600;
