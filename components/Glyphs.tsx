@@ -80,3 +80,15 @@ export function MicGlyph({ size = 20, className }: P) {
     </svg>
   )
 }
+
+export function ShareGlyph({ size = 18, className }: P) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none" stroke="currentColor" className={className} aria-hidden>
+      <circle cx="70" cy="24" r="12" strokeWidth="8" />
+      <circle cx="28" cy="50" r="12" strokeWidth="8" />
+      <circle cx="70" cy="76" r="12" strokeWidth="8" />
+      <line x1="39" y1="44" x2="59" y2="30" strokeWidth="8" strokeLinecap="round" />
+      <line x1="39" y1="56" x2="59" y2="70" strokeWidth="8" strokeLinecap="round" />
+    </svg>
+  )
+}

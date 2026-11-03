@@ -10,7 +10,7 @@ import { useDictation } from '@/hooks/useDictation'
 import { clearDraft, readDraft } from '@/services/draft'
 import { Star } from '../Star'
 import { ModeGlyph } from './ModeGlyph'
-import { CheckGlyph, CopyGlyph, MicGlyph, SaveGlyph } from '../Glyphs'
+import { CheckGlyph, CopyGlyph, MicGlyph, SaveGlyph, ShareGlyph } from '../Glyphs'
 
 const SAMPLE =
   'امروز میخوام این نامه رو برای استادم بفرستم ولی خیلی خشک شده و من اصلا نمیدونم چطور بنویسمش. لطفا یه کاریش کنین که رسمی تر بشه. ممنون'
@@ -113,6 +113,22 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
     setTimeout(() => setSaved(false), 1800)
   }
 
+  async function handleShare() {
+    if (!result) return
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share({
+          title: `ویراستار — متن به سبک ${mode.label}`,
+          text: result.output,
+        })
+        return
+      } catch {
+        /* user dismissed share dialog or not permitted */
+      }
+    }
+    await handleCopy()
+  }
+
   function handleClear() {
     setInput('')
     setResult(null)
@@ -183,7 +199,17 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
             <label htmlFor="virastar-input" className="block text-sm font-black text-ink-soft">
               متن تو
             </label>
-            <div className="flex items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-1.5">
+              {input.trim() && (
+                <button
+                  type="button"
+                  onClick={handleEdit}
+                  disabled={busy}
+                  className="v-btn-primary px-3 py-1 text-xs md:hidden"
+                >
+                  {busy ? 'در حال ویرایش…' : 'ویرایش کن'}
+                </button>
+              )}
               {input && (
                 <button
                   type="button"
@@ -316,11 +342,15 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                   )}
                 </div>
 
-                <div className="flex gap-2 border-t border-border px-4 py-3">
+                <div className="flex flex-wrap gap-2 border-t border-border px-4 py-3">
                   <button type="button" onClick={handleCopy} className="v-btn-ghost flex-1">
                     {copied ? <CheckGlyph size={17} className="text-success" /> : <CopyGlyph size={17} />}
                     {copied ? 'کپی شد' : 'کپی'}
                     <span className="hidden md:inline-block mr-1 text-xs opacity-50 font-mono">⌘⇧C</span>
+                  </button>
+                  <button type="button" onClick={handleShare} className="v-btn-ghost flex-1" title="اشتراک‌گذاری در پیام‌رسان‌ها">
+                    <ShareGlyph size={17} />
+                    ارسال
                   </button>
                   <button type="button" onClick={handleSave} className="v-btn-ghost flex-1">
                     {saved ? <CheckGlyph size={17} className="text-success" /> : <SaveGlyph size={17} />}
