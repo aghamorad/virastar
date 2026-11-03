@@ -17,8 +17,9 @@ import { HARDENING_RULE, ONLINE_RULES, brokenReasons, hasMarkdown } from './edit
 // roughly 0.5 bytes/param, so 1.5B ≈ 1 GB and 3B ≈ 1.8 GB — small enough for
 // the "don't fill up the phone" ask.
 export const LOCAL_MODELS = {
-  'qwen-1.5b': { id: 'onnx-community/Qwen2.5-1.5B-Instruct-ONNX', sizeMB: 1024 },
-  'qwen-3b': { id: 'onnx-community/Qwen2.5-3B-Instruct-ONNX', sizeMB: 1840 },
+  'qwen-0.5b': { id: 'onnx-community/Qwen2.5-0.5B-Instruct-ONNX', sizeMB: 380, label: 'قوِن فوق‌سبک (۰.۵B)' },
+  'qwen-1.5b': { id: 'onnx-community/Qwen2.5-1.5B-Instruct-ONNX', sizeMB: 1024, label: 'قوِن استاندارد (۱.۵B)' },
+  'qwen-3b': { id: 'onnx-community/Qwen2.5-3B-Instruct-ONNX', sizeMB: 1840, label: 'قوِن پیشرفته (۳B)' },
 } as const
 
 export type LocalModelId = keyof typeof LOCAL_MODELS
@@ -212,6 +213,8 @@ export async function editWithModel(input: string, mode: WritingMode, modelId: L
     repetition_penalty: 1.1,
   }
 
+  const userContent = `متن جهت بازنویسی و ویرایش به سبک «${mode.label}»:\n«««\n${input}\n»»»\n\nفقط متن ویرایش‌شده را بنویس.`
+
   // Log which guard rejected each attempt so a dodge is diagnosable from the
   // console instead of a black box; the cleaned text keeps the trail readable.
   const produce = async (label: string, sys: string, usr: string, opts: Record<string, unknown>) => {
@@ -222,20 +225,16 @@ export async function editWithModel(input: string, mode: WritingMode, modelId: L
   }
 
   try {
-    const first = await produce('first', system, input, sampling)
+    const first = await produce('first', system, userContent, sampling)
     const firstProblems = brokenReasons(first, input, mode)
-    const firstMarkdown = hasMarkdown(first)
-    if (firstProblems.length === 0 && !firstMarkdown) return first
+    if (firstProblems.length === 0) return first
 
-    // The model dodged the task (wrote about the text, added markdown, echoed
-    // instructions). Retry once, more deterministically, framing the input as
-    // data to edit rather than a request.
-    const retry = await produce('retry', `${system}\n\n${HARDENING_RULE}`, `متن:\n«${input}»`, { ...sampling, temperature: 0.2 })
+    // Retry once with hardening instruction
+    const retry = await produce('retry', `${system}\n\n${HARDENING_RULE}`, `متن بازنویسی شود:\n«««\n${input}\n»»»\n\nفقط متن نهایی را بدون هیچ توضیح یا سلامی بنویس.`, { ...sampling, temperature: 0.2 })
     const retryProblems = brokenReasons(retry, input, mode)
-    const retryMarkdown = hasMarkdown(retry)
-    if (retryProblems.length > 0 || retryMarkdown) {
-      console.warn('[browser-model] rejected:', JSON.stringify({ problems: retryProblems, markdown: retryMarkdown }))
-      throw new Error('model returned an unedited response')
+    if (retryProblems.length > 0) {
+      console.warn('[browser-model] rejected:', JSON.stringify({ problems: retryProblems }))
+      throw new Error('مدل محلی پاسخ معتبری تولید نکرد.')
     }
     return retry
   } catch (error) {
@@ -244,14 +243,29 @@ export async function editWithModel(input: string, mode: WritingMode, modelId: L
   }
 }
 
-// Strip the markdown scaffolding the model sometimes wraps a rewrite in.
+// Strip the markdown scaffolding and framing quotes the model sometimes wraps a rewrite in.
 function cleanOutput(text: string): string {
-  return text
-    .replace(/\*\*/g, '')
+  let t = text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
     .replace(/^#{1,6}\s*/gm, '')
     .replace(/^\s*[-*]\s+/gm, '')
     .replace(/^\s*>\s?/gm, '')
     .trim()
+
+  if (t.length > 2) {
+    const open = t[0]
+    const close = t[t.length - 1]
+    const pair =
+      (open === '«' && close === '»') ||
+      (open === '"' && close === '"') ||
+      (open === "'" && close === "'")
+    if (pair) {
+      const inner = t.slice(1, -1).trim()
+      if (inner) t = inner
+    }
+  }
+  return t
 }
 
 async function generateText(

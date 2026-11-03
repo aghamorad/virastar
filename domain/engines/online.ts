@@ -17,6 +17,13 @@ export interface OnlineOptions {
   model: string
   /** Which worker backend to route to ('gemini' | 'workersai' | 'hf'). */
   backend?: string
+  /** User-provided Google Gemini API key (free tier) */
+  geminiApiKey?: string
+  /** User-provided Groq API key (free tier) */
+  groqApiKey?: string
+  /** Custom endpoint (e.g. http://localhost:11434/v1 for Ollama) */
+  customEndpoint?: string
+  customModel?: string
   /** Called as streamed text arrives, so the UI can show the edit forming. */
   onPartial?: (text: string) => void
 }
@@ -143,26 +150,174 @@ async function request(
   return out
 }
 
+async function callGeminiDirect(
+  input: string,
+  mode: WritingMode,
+  apiKey: string,
+  modelName = 'gemini-2.5-flash',
+  onPartial?: (text: string) => void,
+): Promise<string> {
+  const model = modelName.includes('gemini') ? modelName : 'gemini-2.5-flash'
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`
+  const systemPrompt = `${mode.instruction}\n\n${ONLINE_RULES}`
+  const userContent = `متن جهت بازنویسی و ویرایش به سبک «${mode.label}»:\n«««\n${input}\n»»»\n\nفقط متن ویرایش‌شده را بدون هیچ توضیح اضافی برگردان.`
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      systemInstruction: {
+        parts: [{ text: systemPrompt }],
+      },
+      contents: [
+        {
+          role: 'user',
+          parts: [{ text: userContent }],
+        },
+      ],
+      generationConfig: {
+        temperature: 0.3,
+        maxOutputTokens: 2048,
+      },
+    }),
+  })
+
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '')
+    throw new Error(`خطای گوگل جمینی (${res.status}): ${detail.slice(0, 160)}`)
+  }
+
+  const data = (await res.json()) as {
+    candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>
+  }
+  const text = data.candidates?.[0]?.content?.parts?.[0]?.text
+  if (!text || !text.trim()) throw new Error('گوگل جمینی متنی برنگرداند')
+  const cleaned = cleanOutput(text)
+  onPartial?.(cleaned)
+  return cleaned
+}
+
+async function callGroqDirect(
+  input: string,
+  mode: WritingMode,
+  apiKey: string,
+  modelName = 'qwen-2.5-32b',
+  onPartial?: (text: string) => void,
+): Promise<string> {
+  const url = 'https://api.groq.com/openai/v1/chat/completions'
+  const systemPrompt = `${mode.instruction}\n\n${ONLINE_RULES}`
+  const userContent = `متن جهت بازنویسی و ویرایش به سبک «${mode.label}»:\n«««\n${input}\n»»»\n\nفقط متن ویرایش‌شده را بدون هیچ توضیح اضافی بنویس.`
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: modelName || 'qwen-2.5-32b',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userContent },
+      ],
+      temperature: 0.3,
+      max_tokens: 2048,
+    }),
+  })
+
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '')
+    throw new Error(`خطای Groq (${res.status}): ${detail.slice(0, 160)}`)
+  }
+
+  const data = (await res.json()) as {
+    choices?: Array<{ message?: { content?: string } }>
+  }
+  const text = data.choices?.[0]?.message?.content
+  if (!text || !text.trim()) throw new Error('Groq متنی برنگرداند')
+  const cleaned = cleanOutput(text)
+  onPartial?.(cleaned)
+  return cleaned
+}
+
+async function callCustomEndpoint(
+  input: string,
+  mode: WritingMode,
+  endpoint: string,
+  modelName = 'qwen2.5:1.5b',
+  onPartial?: (text: string) => void,
+): Promise<string> {
+  const ep = endpoint.replace(/\/+$/, '')
+  const url = ep.endsWith('/chat/completions') ? ep : `${ep}/chat/completions`
+  const systemPrompt = `${mode.instruction}\n\n${ONLINE_RULES}`
+  const userContent = `متن جهت بازنویسی و ویرایش به سبک «${mode.label}»:\n«««\n${input}\n»»»\n\nفقط متن ویرایش‌شده را بدون هیچ توضیح اضافی بنویس.`
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: modelName || 'qwen2.5:1.5b',
+      messages: [
+        { role: 'system', content: systemPrompt },
+        { role: 'user', content: userContent },
+      ],
+      temperature: 0.3,
+    }),
+  })
+
+  if (!res.ok) {
+    const detail = await res.text().catch(() => '')
+    throw new Error(`خطای سرور محلی (${res.status}): ${detail.slice(0, 160)}`)
+  }
+
+  const data = (await res.json()) as {
+    choices?: Array<{ message?: { content?: string } }>
+  }
+  const text = data.choices?.[0]?.message?.content
+  if (!text || !text.trim()) throw new Error('سرور محلی پاسخی نداد')
+  const cleaned = cleanOutput(text)
+  onPartial?.(cleaned)
+  return cleaned
+}
+
 export async function editOnline(
   input: string,
   mode: WritingMode,
   opts: OnlineOptions,
 ): Promise<string> {
+  // 1. If user provided a direct Gemini API key, use direct Google Gemini call
+  if (opts.geminiApiKey && opts.geminiApiKey.trim()) {
+    return callGeminiDirect(input, mode, opts.geminiApiKey.trim(), opts.model, opts.onPartial)
+  }
+
+  // 2. If user provided a direct Groq API key, use Groq
+  if (opts.groqApiKey && opts.groqApiKey.trim()) {
+    return callGroqDirect(input, mode, opts.groqApiKey.trim(), opts.model, opts.onPartial)
+  }
+
+  // 3. If user provided a custom local endpoint (e.g. Ollama http://localhost:11434/v1)
+  if (opts.customEndpoint && opts.customEndpoint.trim()) {
+    return callCustomEndpoint(input, mode, opts.customEndpoint.trim(), opts.customModel, opts.onPartial)
+  }
+
+  // 4. Default: Hosted Cloudflare Worker proxy
   const endpoint = opts.endpoint.replace(/\/+$/, '')
   const system = `${mode.instruction}\n\n${ONLINE_RULES}`
+  const userContent = `متن جهت بازنویسی و ویرایش به سبک «${mode.label}»:\n«««\n${input}\n»»»\n\nفقط متن ویرایش‌شده را بنویس.`
   const body = {
-    model: opts.model || 'gemma2:9b',
+    model: opts.model || 'gemini-2.5-flash',
     backend: opts.backend,
     messages: [
       { role: 'system', content: system },
-      { role: 'user', content: input },
+      { role: 'user', content: userContent },
     ],
     temperature: 0.3,
     stream: true,
   }
 
   let out = await request(endpoint, body, opts.onPartial)
-  if (!looksBroken(out, input, mode)) return unwrapGuillemets(out)
+  out = cleanOutput(out)
+  if (!looksBroken(out, input, mode)) return out
 
   // The model dodged the task (echoed instructions / changed language). Retry
   // once, more deterministically, framing the input as data to edit.
@@ -173,22 +328,27 @@ export async function editOnline(
       temperature: 0.1,
       messages: [
         { role: 'system', content: `${system}\n\n${HARDENING_RULE}` },
-        { role: 'user', content: `متن:\n«${input}»` },
+        { role: 'user', content: `متن بازنویسی شود:\n«««\n${input}\n»»»\n\nفقط متن نهایی را بدون هیچ کلمه اضافه‌ای بنویس.` },
       ],
     },
     opts.onPartial,
   )
-  if (looksBroken(retry, input, mode)) {
-    throw new Error('online engine returned an unedited response')
+  const cleanedRetry = cleanOutput(retry)
+  if (looksBroken(cleanedRetry, input, mode)) {
+    throw new Error('مدل آنلاین پاسخ معتبری بازنگرداند.')
   }
-  return unwrapGuillemets(retry)
+  return cleanedRetry
 }
 
-// The retry frames the input as «...», and models sometimes echo a wrapping
-// quote pair around their whole reply (Persian «» or plain ""). Strip a single
-// wrapping pair; keep any quotes used mid-text.
-function unwrapGuillemets(text: string): string {
-  const t = text.trim()
+export function cleanOutput(text: string): string {
+  let t = text
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/^#{1,6}\s*/gm, '')
+    .replace(/^\s*[-*]\s+/gm, '')
+    .replace(/^\s*>\s?/gm, '')
+    .trim()
+
   if (t.length > 2) {
     const open = t[0]
     const close = t[t.length - 1]
@@ -198,7 +358,7 @@ function unwrapGuillemets(text: string): string {
       (open === "'" && close === "'")
     if (pair) {
       const inner = t.slice(1, -1).trim()
-      if (inner) return inner
+      if (inner) t = inner
     }
   }
   return t

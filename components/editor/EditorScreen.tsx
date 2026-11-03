@@ -32,6 +32,7 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
   const [liveOutput, setLiveOutput] = useState('')
   const [copied, setCopied] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [showDiff, setShowDiff] = useState(false)
   const [settings] = useSettings()
   const { add } = useHistory()
   const resultRef = useRef<HTMLDivElement>(null)
@@ -45,6 +46,25 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
   useEffect(() => {
     if (initialMode && getMode(initialMode)) setModeId(initialMode)
   }, [initialMode])
+
+  // Global keyboard shortcuts (⌘+Enter for edit, ⌘+⇧+C for copy)
+  useEffect(() => {
+    function handleKeyDown(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+        e.preventDefault()
+        const text = input.trim()
+        if (text && !busy) void handleEdit()
+      }
+      if ((e.metaKey || e.ctrlKey) && e.shiftKey && (e.key === 'c' || e.key === 'C')) {
+        if (result?.output) {
+          e.preventDefault()
+          void handleCopy()
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [input, busy, result, modeId, settings])
 
   // Reuse a previously-downloaded model from the browser cache.
   useEffect(() => {
@@ -91,6 +111,20 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
     add({ input: input.trim(), output: result.output, modeId, engine: result.engine })
     setSaved(true)
     setTimeout(() => setSaved(false), 1800)
+  }
+
+  function handleClear() {
+    setInput('')
+    setResult(null)
+  }
+
+  async function handlePaste() {
+    try {
+      const text = await navigator.clipboard.readText()
+      if (text) setInput((prev) => (prev ? `${prev}\n${text}` : text))
+    } catch {
+      /* clipboard read not permitted */
+    }
   }
 
   // Dictation replaces the current selection (or appends at the end) with what
@@ -145,22 +179,42 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
       <div className="grid gap-5 md:grid-cols-2">
         {/* Original */}
         <section className="md:order-1">
-          <div className="mb-2 flex items-center justify-between gap-2">
+          <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
             <label htmlFor="virastar-input" className="block text-sm font-black text-ink-soft">
               متن تو
             </label>
-            {dictation.supported && (
+            <div className="flex items-center gap-1.5">
+              {input && (
+                <button
+                  type="button"
+                  onClick={handleClear}
+                  className="v-btn-ghost px-2.5 py-1 text-xs text-ink-soft hover:text-ink"
+                  title="پاک کردن متن"
+                >
+                  پاک کردن
+                </button>
+              )}
               <button
                 type="button"
-                onClick={toggleDictation}
-                aria-pressed={dictation.listening}
-                aria-label={dictation.listening ? 'توقف گفتار' : 'گفتار به متن'}
-                className={`v-btn-ghost px-3 py-1 text-xs ${dictation.listening ? 'rec-live' : ''}`}
+                onClick={handlePaste}
+                className="v-btn-ghost px-2.5 py-1 text-xs text-ink-soft hover:text-ink"
+                title="جای‌گذاری از کلیپ‌بورد"
               >
-                <MicGlyph size={16} />
-                {dictation.listening ? 'گوش میکنم…' : 'گفتار'}
+                جای‌گذاری
               </button>
-            )}
+              {dictation.supported && (
+                <button
+                  type="button"
+                  onClick={toggleDictation}
+                  aria-pressed={dictation.listening}
+                  aria-label={dictation.listening ? 'توقف گفتار' : 'گفتار به متن'}
+                  className={`v-btn-ghost px-3 py-1 text-xs ${dictation.listening ? 'rec-live' : ''}`}
+                >
+                  <MicGlyph size={16} />
+                  {dictation.listening ? 'گوش میکنم…' : 'گفتار'}
+                </button>
+              )}
+            </div>
           </div>
           <textarea
             id="virastar-input"
@@ -200,18 +254,19 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                 <>
                   <Star size={18} />
                   ویرایش کن
+                  <span className="hidden md:inline-block mr-2 text-xs opacity-60 font-mono">⌘↵</span>
                 </>
               )}
             </button>
             <span className="text-xs font-bold text-ink-soft">
-              {settings.engine === 'online' && settings.endpoint ? 'ویرایش آنلاین' : 'ویرایش آفلاین'}
+              {settings.engine === 'online' ? 'ویرایش هوشمند' : 'ویرایش آفلاین'}
             </span>
           </div>
 
           <div ref={resultRef} className="mt-4">
             {result ? (
               <div className="v-card shadow-card animate-fade-up overflow-hidden">
-                <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-3">
+                <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border px-4 py-3">
                   <div className="flex items-center gap-2">
                     <Star size={15} className="text-brand" />
                     <span className="font-black">نتیجه</span>
@@ -222,15 +277,32 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                       {result.engine === 'online' ? 'آنلاین' : 'آفلاین'}
                     </span>
                   </div>
-                  <span className="text-xs font-bold text-ink-soft">
-                    {faNum(result.changed)} تغییر
-                  </span>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowDiff((v) => !v)}
+                      className={`px-2.5 py-1 text-xs font-bold rounded-lg border transition-colors ${
+                        showDiff
+                          ? 'bg-brand/15 border-brand text-brand'
+                          : 'bg-paper-deep border-border text-ink-soft hover:text-ink'
+                      }`}
+                    >
+                      {showDiff ? 'متن یکدست' : 'نمایش تفاوت‌ها'}
+                    </button>
+                    <span className="text-xs font-bold text-ink-soft">
+                      {faNum(result.changed)} تغییر
+                    </span>
+                  </div>
                 </div>
 
                 <div className="px-4 py-4">
-                  <p dir="rtl" className="whitespace-pre-wrap text-lg leading-8">
-                    {result.output}
-                  </p>
+                  {showDiff ? (
+                    <DiffText original={input} modified={result.output} />
+                  ) : (
+                    <p dir="rtl" className="whitespace-pre-wrap text-lg leading-8">
+                      {result.output}
+                    </p>
+                  )}
 
                   {result.notes.length > 0 && (
                     <ul className="mt-4 space-y-1 border-t border-border pt-3">
@@ -248,6 +320,7 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                   <button type="button" onClick={handleCopy} className="v-btn-ghost flex-1">
                     {copied ? <CheckGlyph size={17} className="text-success" /> : <CopyGlyph size={17} />}
                     {copied ? 'کپی شد' : 'کپی'}
+                    <span className="hidden md:inline-block mr-1 text-xs opacity-50 font-mono">⌘⇧C</span>
                   </button>
                   <button type="button" onClick={handleSave} className="v-btn-ghost flex-1">
                     {saved ? <CheckGlyph size={17} className="text-success" /> : <SaveGlyph size={17} />}
@@ -325,4 +398,30 @@ async function copyText(t: string): Promise<boolean> {
     ta.remove()
     return ok
   }
+}
+
+function DiffText({ original, modified }: { original: string; modified: string }) {
+  const origTokens = new Set(
+    original
+      .split(/\s+/)
+      .map((s) => s.trim().replace(/[.,!؟،؛]/g, ''))
+      .filter(Boolean),
+  )
+  const tokens = modified.split(/(\s+)/)
+  return (
+    <p dir="rtl" className="whitespace-pre-wrap text-lg leading-8">
+      {tokens.map((token, idx) => {
+        if (!token.trim()) return <span key={idx}>{token}</span>
+        const cleanToken = token.trim().replace(/[.,!؟،؛]/g, '')
+        const isChanged = !origTokens.has(cleanToken)
+        return isChanged ? (
+          <mark key={idx} className="rounded bg-brand/15 px-1 font-bold text-brand not-italic">
+            {token}
+          </mark>
+        ) : (
+          <span key={idx}>{token}</span>
+        )
+      })}
+    </p>
+  )
 }

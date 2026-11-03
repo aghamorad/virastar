@@ -39,7 +39,7 @@ export function SettingsScreen() {
   }, [localId])
 
   function handleChoiceChange(value: string) {
-    saveSettings(settingsForModelChoice(value, settings.endpoint))
+    saveSettings(settingsForModelChoice(value, settings))
   }
 
   return (
@@ -47,7 +47,7 @@ export function SettingsScreen() {
       <header>
         <h1 className="text-3xl font-black">تنظیمات</h1>
         <p className="mt-2 text-sm leading-7 text-ink-soft">
-          پوستهٔ ویراستار و اینکه ویرایش با کدام مدل هوش مصنوعی انجام شود.
+          پوستهٔ ویراستار و اینکه ویرایش با کدام مدل هوش مصنوعی یا به صورت آفلاین انجام شود.
         </p>
       </header>
 
@@ -57,7 +57,7 @@ export function SettingsScreen() {
 
         <div className="v-card shadow-soft p-5">
           <label htmlFor="model-choice" className="block font-black">
-            مدل ویرایش
+            مدل و نحوهٔ ویرایش
           </label>
           <select
             id="model-choice"
@@ -74,14 +74,131 @@ export function SettingsScreen() {
           <p className="mt-3 text-sm leading-7 text-ink-soft">{option.description}</p>
         </div>
 
-        {option.kind === 'online' && (
+        {option.id === 'online-gemini' && (
           <div className="v-card shadow-soft p-5">
-            <p className="font-black">بدون نصب</p>
+            <p className="font-black text-brand">سرور ابری ویراستار (پیش‌فرض)</p>
             <p className="mt-1 text-xs leading-5 text-ink-soft">
-              همین الان آماده است. متن برای ویرایش به سرور ویراستار فرستاده می‌شود و با
-              {option.id === 'online-qwen' ? ' قوِن ' : ' گوگل‌جمینی '}
-              ویرایش برمی‌گردد — بدون نصب، بدون کلید و بدون هیچ تنظیمی.
+              متن به صورت خودکار از طریق سرور اختصاصی ویراستار با مدل Google Gemini پردازش می‌شود؛ بدون نیاز به هیچ کلید یا تنظیمی.
             </p>
+          </div>
+        )}
+
+        {option.id === 'online-qwen' && (
+          <div className="v-card shadow-soft p-5">
+            <p className="font-black text-brand">قوِن آنلاین (Cloudflare Workers AI)</p>
+            <p className="mt-1 text-xs leading-5 text-ink-soft">
+              متن از طریق سرور رایگان Cloudflare و مدل Qwen 2.5 7B ویرایش می‌شود؛ نیازی به نصب یا کلید ندارد.
+            </p>
+          </div>
+        )}
+
+        {/* Direct Gemini API Key Guide & Input */}
+        {(option.id === 'direct-gemini' || settings.geminiApiKey) && (
+          <div className="v-card shadow-soft space-y-4 p-5">
+            <div className="flex items-center justify-between">
+              <span className="font-black text-ink">کلید رایگان Google Gemini API</span>
+              <span className="rounded-full bg-brand/10 px-2 py-0.5 text-xs font-bold text-brand">۱۵۰۰ درخواست رایگان در روز</span>
+            </div>
+            
+            <div className="rounded-xl bg-paper-deep p-4 text-xs leading-6 text-ink-soft space-y-1.5 border border-border">
+              <p className="font-bold text-ink">نحوه دریافت کلید رایگان (۱ دقیقه زمان می‌برد):</p>
+              <p>۱. وارد سایت رسمی <a href="https://aistudio.google.com" target="_blank" rel="noreferrer" className="text-brand underline font-bold">Google AI Studio</a> شوید و با اکانت گوگل خود ورود کنید.</p>
+              <p>۲. روی دکمه آبی‌رنگ <strong>«Get API key»</strong> در گوشه بالا کلیک کنید.</p>
+              <p>۳. گزینه <strong>«Create API key»</strong> را بزنید و کد نمایش‌داده‌شده را کپی کنید.</p>
+              <p>۴. کلید را در کادر زیر وارد کنید. (کاملاً رایگان، بدون نیاز به کارت اعتباری).</p>
+            </div>
+
+            <div>
+              <label htmlFor="gemini-key" className="block text-xs font-bold text-ink-soft">
+                کد کلید API گوگل (Gemini API Key)
+              </label>
+              <input
+                id="gemini-key"
+                type="password"
+                placeholder="AIzaSy..."
+                value={settings.geminiApiKey ?? ''}
+                onChange={(e) => saveSettings({ ...settings, geminiApiKey: e.target.value.trim() })}
+                className="mt-2 w-full rounded-xl border border-border bg-paper-deep px-4 py-2.5 font-mono text-sm text-ink outline-none focus:ring-2 focus:ring-brand"
+              />
+              {settings.geminiApiKey && (
+                <p className="mt-1.5 text-xs text-success font-bold">✓ کلید ذخیره شد و در ویرایش‌ها مستقیماً استفاده می‌شود.</p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Direct Groq API Key Guide & Input */}
+        {(option.id === 'direct-groq' || settings.groqApiKey) && (
+          <div className="v-card shadow-soft space-y-4 p-5">
+            <div className="flex items-center justify-between">
+              <span className="font-black text-ink">کلید رایگان Groq (فوق سریع)</span>
+              <span className="rounded-full bg-brand/10 px-2 py-0.5 text-xs font-bold text-brand">مدل Qwen 2.5 32B</span>
+            </div>
+            
+            <div className="rounded-xl bg-paper-deep p-4 text-xs leading-6 text-ink-soft space-y-1.5 border border-border">
+              <p className="font-bold text-ink">نحوه دریافت کلید رایگان Groq:</p>
+              <p>۱. وارد سایت <a href="https://console.groq.com" target="_blank" rel="noreferrer" className="text-brand underline font-bold">Groq Console</a> شوید.</p>
+              <p>۲. در منوی سمت چپ به بخش <strong>«API Keys»</strong> رفته و کلید بسازید.</p>
+              <p>۳. کلید را در کادر زیر قرار دهید. (سرعت بیش از ۳۰۰ کلمه بر ثانیه با کیفیت عالی فارسی).</p>
+            </div>
+
+            <div>
+              <label htmlFor="groq-key" className="block text-xs font-bold text-ink-soft">
+                کد کلید API گروک (Groq API Key)
+              </label>
+              <input
+                id="groq-key"
+                type="password"
+                placeholder="gsk_..."
+                value={settings.groqApiKey ?? ''}
+                onChange={(e) => saveSettings({ ...settings, groqApiKey: e.target.value.trim() })}
+                className="mt-2 w-full rounded-xl border border-border bg-paper-deep px-4 py-2.5 font-mono text-sm text-ink outline-none focus:ring-2 focus:ring-brand"
+              />
+              {settings.groqApiKey && (
+                <p className="mt-1.5 text-xs text-success font-bold">✓ کلید ذخیره شد و ویرایش‌ها با سرعت فوق‌العاده انجام می‌شود.</p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Local Ollama / Mac Guide & Input */}
+        {option.id === 'local-ollama' && (
+          <div className="v-card shadow-soft space-y-4 p-5">
+            <p className="font-black text-ink">اتصال به مدل آفلاین روی مک (Ollama / LM Studio)</p>
+            <div className="rounded-xl bg-paper-deep p-4 text-xs leading-6 text-ink-soft space-y-1.5 border border-border">
+              <p className="font-bold text-ink">اجرای ساده در ترمینال مک:</p>
+              <code className="block bg-paper px-3 py-2 rounded-lg text-brand font-mono text-xs select-all">
+                ollama run qwen2.5:1.5b
+              </code>
+              <p>به محض اجرای دستور فوق، ویراستار به صورت کاملاً آفلاین و با بیشترین سرعت به مدل متصل خواهد شد.</p>
+            </div>
+
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div>
+                <label htmlFor="ollama-endpoint" className="block text-xs font-bold text-ink-soft">
+                  آدرس سرور محلی
+                </label>
+                <input
+                  id="ollama-endpoint"
+                  type="text"
+                  value={settings.customEndpoint ?? 'http://localhost:11434/v1'}
+                  onChange={(e) => saveSettings({ ...settings, customEndpoint: e.target.value.trim() })}
+                  className="mt-2 w-full rounded-xl border border-border bg-paper-deep px-4 py-2 font-mono text-xs text-ink outline-none focus:ring-2 focus:ring-brand"
+                />
+              </div>
+              <div>
+                <label htmlFor="ollama-model" className="block text-xs font-bold text-ink-soft">
+                  نام مدل (Ollama Model Name)
+                </label>
+                <input
+                  id="ollama-model"
+                  type="text"
+                  value={settings.customModel ?? 'qwen2.5:1.5b'}
+                  onChange={(e) => saveSettings({ ...settings, customModel: e.target.value.trim() })}
+                  className="mt-2 w-full rounded-xl border border-border bg-paper-deep px-4 py-2 font-mono text-xs text-ink outline-none focus:ring-2 focus:ring-brand"
+                />
+              </div>
+            </div>
           </div>
         )}
 
@@ -89,8 +206,7 @@ export function SettingsScreen() {
           <div className="v-card shadow-soft p-5">
             <p className="font-black">بدون هوش مصنوعی</p>
             <p className="mt-1 text-xs leading-5 text-ink-soft">
-              ویرایش فقط با قواعد نوشتاری فارسی انجام می‌شود؛ هیچ درخواستی به سرور نمی‌رود
-              و هیچ داده‌ای از دستگاه خارج نمی‌شود.
+              ویرایش فقط با قواعد دستوری، اصلاح نیم‌فاصله‌ها و غلط‌های املایی فارسی انجام می‌شود؛ هیچ داده‌ای از دستگاه خارج نمی‌شود.
             </p>
           </div>
         )}
@@ -158,6 +274,13 @@ export function SettingsScreen() {
                 دریافت نسخهٔ {faVersion(newer)}
               </a>
             )}
+          </div>
+          <div className="mt-4 pt-4 border-t border-border flex flex-wrap items-center justify-between gap-2 text-xs font-bold text-ink-soft">
+            <span className="flex items-center gap-1.5">
+              <Star size={12} className="text-brand" />
+              ساخته‌شده با ❤️ توسط مراد (Made by Morad)
+            </span>
+            <span>ابزار نگارش، بازنویسی و ویرایش زبان فارسی</span>
           </div>
         </div>
       </section>

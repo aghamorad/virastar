@@ -63,7 +63,7 @@ const HF_CHAT_URL = 'https://api-inference.huggingface.co/v1/chat/completions'
 // on thinking and emits no rewrite).
 const DEFAULT_WORKERS_AI_MODEL = '@cf/meta/llama-3.3-70b-instruct-fp8-fast'
 const DEFAULT_HF_MODEL = 'Qwen/Qwen2.5-14B-Instruct'
-const DEFAULT_GEMINI_MODEL = 'gemini-3.6-flash'
+const DEFAULT_GEMINI_MODEL = 'gemini-2.5-flash'
 
 function json(status: number, body: unknown): Response {
   return new Response(JSON.stringify(body), { status, headers: { ...CORS_HEADERS, ...JSON_HEADERS } })
