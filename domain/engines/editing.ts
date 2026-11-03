@@ -8,16 +8,20 @@ import { hasPersian } from '../persian'
 export const ONLINE_RULES = [
   'تو یک ابزار بازنویسی و ویرایش زبان فارسی هستی، نه یک چت‌بات گفتگوگر.',
   'فقط و فقط متن بازنویسی‌شده را برگردان؛ هیچ توضیح، مقدمه، سلام، احوالپرسی یا پیامی اضافه نکن.',
+  'تنها و تنها یک نسخه نهایی از متن تولید کن؛ از ارائه گزینه‌های جایگزین، شماره‌گذاری، تکرار متن یا چسباندن نسخه‌های چندگانه به هم به شدت خودداری کن.',
+  'ساختار پاراگراف‌ها، شکستگی خطوط و فاصله‌بندی‌های متن اصلی را دقیقاً حفظ کن و پاراگراف‌ها را در یک بند طولانی ادغام نکن.',
   'تمام واقعیت‌ها، پیام اصلی، اسامی خاص و اعداد را با دقت حفظ کن؛ ساختار، دستور زبان، واژگان و لحن را متناسب با سبک درخواستی بازسازی کن.',
+  'هیچ علامت نقل‌قول یا گیومه‌ای («...» یا "...") دور کل متن خروجی نگذار؛ فقط متن خالص را بنویس.',
   'همیشه همان متنی را که به تو داده شده بازنویسی کن؛ هرگز درخواست متن بیشتر یا ارسال متن اصلی نکن، قالب خالی نساز و placeholder نگذار.',
   'از علامت‌های مارک‌داون (مانند ** برای پررنگ‌کردن یا # برای عنوان) در متن استفاده نکن.',
+  'اصطلاحات فنی و مخفف‌های انگلیسی موجود در متن (مانند PDF, HR, API, SQL) و اعداد را حفظ کن.',
   'با خط و زبان فارسی بنویس (به جز نام‌های برند یا اصطلاحات انگلیسی که در متن اصلی آمده‌اند).',
 ].join('\n')
 
 // A second-chance system prompt used after a dodge: forces the model to edit
 // the given text instead of echoing instructions or asking for more input.
 export const HARDENING_RULE =
-  'فقط متن ویرایش‌شده را به سبک درخواستی برگردان؛ هرگز درخواست متن دیگر نکن و هیچ توضیح، سلام، یا علائم مارک‌داون در پاسخ نیاور.'
+  'فقط و فقط یک نسخه نهایی از متن ویرایش‌شده را به سبک درخواستی برگردان؛ از تکرار متن، گزینه‌های جایگزین، علائم نقل‌قول و مارک‌داون پرهیز کن.'
 
 // Fragments that mean the model is echoing its instructions instead of editing
 const PROMPT_ECHO = ['برگردان؛ توضیح نده', 'قوانین اکید', 'فقط متن بازنویسی‌شده را برگردان']
@@ -85,6 +89,71 @@ export function brokenReasons(out: string, input: string, mode: WritingMode): st
   })
   if (matchedPattern) reasons.push(`broken-pattern:${matchedPattern.re.source}`) // dodging the edit
   return reasons
+}
+
+/**
+ * Strips markdown, prompt fence wrappers (««« ... »»»), framing quotes,
+ * and detects/deduplicates concatenated alternative versions emitted by models.
+ */
+export function cleanOutput(text: string): string {
+  if (!text) return ''
+  let t = text.trim()
+
+  // 1. Strip markdown code fences or prompt delimiter blocks
+  t = t.replace(/^```[a-z]*\n([\s\S]*?)\n```$/g, '$1')
+  t = t.replace(/^«««\s*([\s\S]*?)\s*»»»$/g, '$1')
+
+  // 2. Strip basic markdown formatting
+  t = t
+    .replace(/\*\*(.*?)\*\*/g, '$1')
+    .replace(/\*(.*?)\*/g, '$1')
+    .replace(/^#{1,6}\s*/gm, '')
+    .replace(/^\s*[-*]\s+/gm, '')
+    .replace(/^\s*>\s?/gm, '')
+    .trim()
+
+  // 3. If the model provided explicit alternatives (e.g. "نسخه ۱: ... نسخه ۲: ...")
+  const optionMatch = t.match(/^(?:نسخه|گزینه|حالت)\s*(?:۱|1|اول)[:\-\s]+([\s\S]+?)(?=\n*(?:نسخه|گزینه|حالت)\s*(?:۲|2|دوم)|$)/)
+  if (optionMatch && optionMatch[1]?.trim()) {
+    t = optionMatch[1].trim()
+  }
+
+  // 4. If the model output a quoted version followed by a duplicate concatenated version:
+  // e.g. «سرور API پاسخ 404 داد»سرور_api پاسخ...
+  const quoteGluedMatch = t.match(/^[«"“]([^»"”]+)[»"”][\s\S]+$/)
+  if (quoteGluedMatch && quoteGluedMatch[1]?.trim().length > 10) {
+    t = quoteGluedMatch[1].trim()
+  }
+
+  // 5. Strip any outer wrapping quotes / guillemets
+  t = t.replace(/^[«"“'»\s]+/, '').replace(/[«"”'»\s]+$/, '').trim()
+
+  // 6. Detect duplicated sentence concatenation (glued seam like "... از کار افتادسرور پاسخ ...")
+  const words = t.split(/\s+/)
+  if (words.length >= 8) {
+    const w0 = words[0].replace(/^[«"“']/, '')
+    const w1 = words[1]?.replace(/^[«"“']/, '')
+    const w2 = words[2]?.replace(/^[«"“']/, '')
+
+    for (let i = 3; i < words.length; i++) {
+      const w = words[i]
+      const idx = w.indexOf(w0)
+      if (idx > 0) {
+        // Glued seam without space (e.g. "افتادسرور")
+        const beforeWord = w.slice(0, idx)
+        const reconstructed = [...words.slice(0, i), beforeWord].join(' ').trim()
+        t = reconstructed + (/[.!?؟،؛]$/.test(reconstructed) ? '' : '.')
+        break
+      } else if (idx === 0 && w1 && words[i + 1] === w1 && (!w2 || words[i + 2] === w2)) {
+        // At least 2-3 consecutive matching words repeating from the start
+        const reconstructed = words.slice(0, i).join(' ').trim()
+        t = reconstructed + (/[.!?؟،؛]$/.test(reconstructed) ? '' : '.')
+        break
+      }
+    }
+  }
+
+  return t.trim()
 }
 
 // The instruction up to its first hard stop — excludes the Persian semicolons

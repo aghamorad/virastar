@@ -38,6 +38,7 @@ export function ScreenShell({ children }: { children: ReactNode }) {
                   <Link
                     key={item.href}
                     href={item.href}
+                    prefetch={false}
                     aria-current={active ? 'page' : undefined}
                     className={`rounded-full px-4 py-1.5 text-sm font-bold transition-colors ${
                       active ? 'bg-brand text-on-brand' : 'v-link'
@@ -64,6 +65,7 @@ export function ScreenShell({ children }: { children: ReactNode }) {
             <Link
               key={item.href}
               href={item.href}
+              prefetch={false}
               aria-current={active ? 'page' : undefined}
               className={active ? 'text-brand' : ''}
             >

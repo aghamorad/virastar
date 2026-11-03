@@ -255,6 +255,18 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
             <p className="mt-2 text-xs font-bold text-brand">
               در حال گوش دادن… برای تمام کردن دوباره روی «گفتار» بزن.
             </p>
+          ) : dictation.error ? (
+            <div className="mt-2 flex items-center justify-between rounded-lg bg-brand/10 px-3 py-2 text-xs font-bold text-brand">
+              <span>{dictation.error}</span>
+              <button
+                type="button"
+                onClick={dictation.clearError}
+                className="mr-2 text-sm text-ink-soft hover:text-ink"
+                title="بستن پیام"
+              >
+                ✕
+              </button>
+            </div>
           ) : (
             <p className="mt-2 text-xs text-ink-soft">
               {faNum(words)} کلمه · {faNum(input.length)} کاراکتر
@@ -325,7 +337,7 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                   {showDiff ? (
                     <DiffText original={input} modified={result.output} />
                   ) : (
-                    <p dir="rtl" className="whitespace-pre-wrap text-lg leading-8">
+                    <p dir="rtl" className="whitespace-pre-wrap font-serif text-lg leading-8">
                       {result.output}
                     </p>
                   )}
@@ -368,7 +380,7 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                   </span>
                 </div>
                 <div className="px-4 py-4">
-                  <p dir="rtl" className="whitespace-pre-wrap text-lg leading-8">
+                  <p dir="rtl" className="whitespace-pre-wrap font-serif text-lg leading-8">
                     {liveOutput}
                   </p>
                   <p className="mt-3 text-xs font-bold text-ink-soft">در حال ویرایش…</p>
@@ -439,7 +451,7 @@ function DiffText({ original, modified }: { original: string; modified: string }
   )
   const tokens = modified.split(/(\s+)/)
   return (
-    <p dir="rtl" className="whitespace-pre-wrap text-lg leading-8">
+    <p dir="rtl" className="whitespace-pre-wrap font-serif text-lg leading-8">
       {tokens.map((token, idx) => {
         if (!token.trim()) return <span key={idx}>{token}</span>
         const cleanToken = token.trim().replace(/[.,!؟،؛]/g, '')

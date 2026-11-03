@@ -59,6 +59,7 @@ export function useDictation(lang = 'fa-IR') {
   // fail hydration (which also kills the editor's event handlers).
   const [supported, setSupported] = useState(false)
   const [listening, setListening] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const recognitionRef = useRef<SpeechRecognitionLike | null>(null)
   const nativeRef = useRef<NativeSpeechPlugin | null>(null)
   const listenerHandlesRef = useRef<Array<{ remove: () => void }>>([])
@@ -155,8 +156,15 @@ export function useDictation(lang = 'fa-IR') {
       }
       onTranscriptRef.current(finalText + (interim ? ' ' + interim : ''))
     }
-    recognition.onerror = () => {
-      // A failed or denied mic ends the session — onend does the cleanup.
+    recognition.onerror = (event: { error?: string }) => {
+      const err = event.error || ''
+      if (err === 'not-allowed') {
+        setError('دسترسی به میکروفون داده نشد. لطفاً در تنظیمات مرورگر اجازه دهید.')
+      } else if (err === 'language-not-supported' || err === 'service-not-allowed') {
+        setError('تشخیص گفتار فارسی در این مرورگر پشتیبانی نمی‌شود (پیشنهاد: کروم روی اندروید یا مک).')
+      } else if (err && err !== 'no-speech' && err !== 'aborted') {
+        setError(`خطای ورودی صوتی: ${err}`)
+      }
     }
     recognition.onend = () => {
       setListening(false)
@@ -166,6 +174,7 @@ export function useDictation(lang = 'fa-IR') {
 
     recognitionRef.current = recognition
     try {
+      setError(null)
       recognition.start()
       setListening(true)
     } catch {
@@ -200,5 +209,5 @@ export function useDictation(lang = 'fa-IR') {
     }, 800)
   }
 
-  return { supported, listening, start, stop }
+  return { supported, listening, error, clearError: () => setError(null), start, stop }
 }

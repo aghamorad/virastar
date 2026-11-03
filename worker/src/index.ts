@@ -97,17 +97,14 @@ interface ChatMessage {
   content?: unknown
 }
 
-// Persian (and other Arabic-script) prose should never contain a letter from a
-// foreign script. Workers AI chat models occasionally slip in a Chinese or
-// Latin character, so this drives the worker's own retry + strip pass.
-const FOREIGN_LETTER = /\p{Letter}/u
-const ARABIC_SCRIPT = /\p{Script_Extensions=Arabic}/u
-function hasForeignLetter(value: string): boolean {
-  return [...value].some((c) => FOREIGN_LETTER.test(c) && !ARABIC_SCRIPT.test(c))
+// Persian (and other Arabic-script) prose should never contain characters from
+// corrupted script leaks (Cyrillic, Han/Chinese, Japanese, etc.). Latin acronyms
+// (e.g. PDF, API, SQL) present in user input are preserved.
+const CORRUPT_SCRIPT = /[\p{Script=Cyrillic}\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Devanagari}]/u
+function hasCorruptScript(value: string): boolean {
+  return CORRUPT_SCRIPT.test(value)
 }
-// Keep only Arabic-script letters, numbers, punctuation, symbols, spaces and
-// join controls (ZWNJ) — everything else (Latin/CJK/Cyrillic letters) is dropped.
-const FOREIGN_STRIP = /[^\p{Script_Extensions=Arabic}\p{N}\p{P}\p{S}\p{Z}\p{Cf}]/gu
+const CORRUPT_STRIP = /[\p{Script=Cyrillic}\p{Script=Han}\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Devanagari}]/gu
 
 // Every backend is an async generator that yields text deltas as they are
 // produced and throws on failure. The failover loop commits to the first
@@ -236,34 +233,35 @@ async function* workersAiStream(
 ): AsyncGenerator<string> {
   if (!env.AI) throw new Error('workers ai not configured')
   const words = user.trim().split(/\s+/).length
-  // Generous cap — reasoning models (e.g. Qwen3) burn tokens on thinking and a
-  // low cap truncates the actual rewrite.
+  // Generous cap — reasoning models burn tokens on thinking and a low cap truncates the actual rewrite.
   const maxTokens = Math.min(8192, Math.max(2048, words * 8 + 512))
 
-  const first = streamWorkersAi(env, model, messages, maxTokens, temperature)
-  let saw = false
+  // Buffer the first attempt to verify script integrity before yielding,
+  // preventing double-streaming or concatenated retries.
   let firstText = ''
-  for await (const chunk of first) {
-    saw = true
+  for await (const chunk of streamWorkersAi(env, model, messages, maxTokens, temperature)) {
     firstText += chunk
-    yield chunk
   }
-  if (!saw) throw new Error('workers ai returned no text')
-  if (!hasForeignLetter(firstText)) return
+  if (!firstText.trim()) throw new Error('workers ai returned no text')
+  if (!hasCorruptScript(firstText)) {
+    yield firstText
+    return
+  }
 
-  // Leaked a Chinese/Latin letter — re-issue the request with a warning. Do
-  // NOT echo the leaked draft into context, or the model "corrects" it by
-  // repeating it and the reply comes back duplicated.
+  // Leaked Cyrillic/CJK characters — re-issue the request with a warning.
   const corrective = [...messages, {
     role: 'user',
-    content: 'خروجیِ قبلی تو حرفِ چینی/لاتین (غیرفارسی) داشت و ممنوع است. فقط با خط فارسی دوباره بنویس؛ حتی یک حرف غیرفارسی هم جایز نیست.',
+    content: 'خروجیِ قبلی نویسه‌های نامربوط غیرفارسی داشت. لطفاً فقط با خط و زبان فارسی بنویس. فقط متن نهایی را برگردان.',
   }]
   let retried = ''
   for await (const chunk of streamWorkersAi(env, model, corrective, maxTokens, 0.1)) {
     retried += chunk
-    yield chunk
   }
-  if (!retried.trim()) yield firstText.replace(FOREIGN_STRIP, '').trim()
+  if (retried.trim() && !hasCorruptScript(retried)) {
+    yield retried
+    return
+  }
+  yield firstText.replace(CORRUPT_STRIP, '').trim()
 }
 
 // A single Workers AI chat call, streaming text chunks. `stream: true` returns

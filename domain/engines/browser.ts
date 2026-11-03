@@ -11,7 +11,7 @@
 // to import during static prerendering.
 
 import type { WritingMode } from '../modes'
-import { HARDENING_RULE, ONLINE_RULES, brokenReasons, hasMarkdown } from './editing'
+import { HARDENING_RULE, ONLINE_RULES, brokenReasons, hasMarkdown, cleanOutput } from './editing'
 
 // Qwen2.5 writes far better Persian than the old Gemma 1B pick. q4f16 lands at
 // roughly 0.5 bytes/param, so 1.5B ≈ 1 GB and 3B ≈ 1.8 GB — small enough for
@@ -243,30 +243,7 @@ export async function editWithModel(input: string, mode: WritingMode, modelId: L
   }
 }
 
-// Strip the markdown scaffolding and framing quotes the model sometimes wraps a rewrite in.
-function cleanOutput(text: string): string {
-  let t = text
-    .replace(/\*\*(.*?)\*\*/g, '$1')
-    .replace(/\*(.*?)\*/g, '$1')
-    .replace(/^#{1,6}\s*/gm, '')
-    .replace(/^\s*[-*]\s+/gm, '')
-    .replace(/^\s*>\s?/gm, '')
-    .trim()
 
-  if (t.length > 2) {
-    const open = t[0]
-    const close = t[t.length - 1]
-    const pair =
-      (open === '«' && close === '»') ||
-      (open === '"' && close === '"') ||
-      (open === "'" && close === "'")
-    if (pair) {
-      const inner = t.slice(1, -1).trim()
-      if (inner) t = inner
-    }
-  }
-  return t
-}
 
 async function generateText(
   generator: TextGenerator,

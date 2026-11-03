@@ -7,10 +7,10 @@
 // rules, so the app never breaks.
 
 import type { WritingMode } from '../modes'
-import { HARDENING_RULE, ONLINE_RULES, looksBroken } from './editing'
+import { HARDENING_RULE, ONLINE_RULES, looksBroken, cleanOutput } from './editing'
 
 // Kept for the dataset scripts, which import the shared prompt from here.
-export { ONLINE_RULES } from './editing'
+export { ONLINE_RULES, cleanOutput } from './editing'
 
 export interface OnlineOptions {
   endpoint: string
@@ -160,7 +160,7 @@ async function callGeminiDirect(
   const model = modelName.includes('gemini') ? modelName : 'gemini-2.5-flash'
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`
   const systemPrompt = `${mode.instruction}\n\n${ONLINE_RULES}`
-  const userContent = `متن جهت بازنویسی و ویرایش به سبک «${mode.label}»:\n«««\n${input}\n»»»\n\nفقط متن ویرایش‌شده را بدون هیچ توضیح اضافی برگردان.`
+  const userContent = `متن زیر را بدون هیچ توضیح اضافه، مقدمه یا گیومه، فقط به سبک «${mode.label}» بازنویسی کن:\n\n${input}`
 
   const res = await fetch(url, {
     method: 'POST',
@@ -206,7 +206,7 @@ async function callGroqDirect(
 ): Promise<string> {
   const url = 'https://api.groq.com/openai/v1/chat/completions'
   const systemPrompt = `${mode.instruction}\n\n${ONLINE_RULES}`
-  const userContent = `متن جهت بازنویسی و ویرایش به سبک «${mode.label}»:\n«««\n${input}\n»»»\n\nفقط متن ویرایش‌شده را بدون هیچ توضیح اضافی بنویس.`
+  const userContent = `متن زیر را بدون هیچ توضیح اضافه، مقدمه یا گیومه، فقط به سبک «${mode.label}» بازنویسی کن:\n\n${input}`
 
   const res = await fetch(url, {
     method: 'POST',
@@ -250,7 +250,7 @@ async function callCustomEndpoint(
   const ep = endpoint.replace(/\/+$/, '')
   const url = ep.endsWith('/chat/completions') ? ep : `${ep}/chat/completions`
   const systemPrompt = `${mode.instruction}\n\n${ONLINE_RULES}`
-  const userContent = `متن جهت بازنویسی و ویرایش به سبک «${mode.label}»:\n«««\n${input}\n»»»\n\nفقط متن ویرایش‌شده را بدون هیچ توضیح اضافی بنویس.`
+  const userContent = `متن زیر را بدون هیچ توضیح اضافه، مقدمه یا گیومه، فقط به سبک «${mode.label}» بازنویسی کن:\n\n${input}`
 
   const res = await fetch(url, {
     method: 'POST',
@@ -303,7 +303,7 @@ export async function editOnline(
   // 4. Default: Hosted Cloudflare Worker proxy
   const endpoint = opts.endpoint.replace(/\/+$/, '')
   const system = `${mode.instruction}\n\n${ONLINE_RULES}`
-  const userContent = `متن جهت بازنویسی و ویرایش به سبک «${mode.label}»:\n«««\n${input}\n»»»\n\nفقط متن ویرایش‌شده را بنویس.`
+  const userContent = `متن زیر را بدون هیچ توضیح اضافه، مقدمه یا گیومه، فقط به سبک «${mode.label}» بازنویسی کن:\n\n${input}`
   const body = {
     model: opts.model || 'gemini-2.5-flash',
     backend: opts.backend,
@@ -328,7 +328,7 @@ export async function editOnline(
       temperature: 0.1,
       messages: [
         { role: 'system', content: `${system}\n\n${HARDENING_RULE}` },
-        { role: 'user', content: `متن بازنویسی شود:\n«««\n${input}\n»»»\n\nفقط متن نهایی را بدون هیچ کلمه اضافه‌ای بنویس.` },
+        { role: 'user', content: `متن بازنویسی شود:\n\n${input}\n\nفقط متن نهایی را بدون هیچ کلمه اضافه‌ای بنویس.` },
       ],
     },
     opts.onPartial,
@@ -338,28 +338,4 @@ export async function editOnline(
     throw new Error('مدل آنلاین پاسخ معتبری بازنگرداند.')
   }
   return cleanedRetry
-}
-
-export function cleanOutput(text: string): string {
-  let t = text
-    .replace(/\*\*(.*?)\*\*/g, '$1')
-    .replace(/\*(.*?)\*/g, '$1')
-    .replace(/^#{1,6}\s*/gm, '')
-    .replace(/^\s*[-*]\s+/gm, '')
-    .replace(/^\s*>\s?/gm, '')
-    .trim()
-
-  if (t.length > 2) {
-    const open = t[0]
-    const close = t[t.length - 1]
-    const pair =
-      (open === '«' && close === '»') ||
-      (open === '"' && close === '"') ||
-      (open === "'" && close === "'")
-    if (pair) {
-      const inner = t.slice(1, -1).trim()
-      if (inner) t = inner
-    }
-  }
-  return t
 }
