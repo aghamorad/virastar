@@ -102,13 +102,32 @@ function applyOpeners(text: string, mode: WritingMode): { text: string; changed:
 const STANDARD_AND_FORMAL = { ...COLLOQUIAL_TO_STANDARD, ...TO_FORMAL }
 const STANDARD_AND_LITERARY = { ...COLLOQUIAL_TO_STANDARD, ...TO_LITERARY }
 
+const TO_LEGAL: Record<string, string> = {
+  'فروختم': 'منتقل نمودم',
+  'خریدم': 'ابتیاع نمودم',
+  'پول': 'ثمن معامله',
+  'نداد': 'تادیه ننمود',
+  'شکایت دارم': 'تقاضای رسیدگی قضایی دارم',
+}
+
+const TO_DIVANI: Record<string, string> = {
+  'گفتم': 'معروض داشتم',
+  'بگویید': 'اشعار فرمایید',
+  'نامه': 'مرقومه شریفه',
+  'کارمندها': 'کافهٔ اجزا و مستخدمین',
+  'فردا': 'یوم آتی',
+  'چون': 'چه آنکه',
+}
+
 const REGISTER_LEXICON: Record<Register, Record<string, string> | null> = {
   standard: COLLOQUIAL_TO_STANDARD,
   formal: STANDARD_AND_FORMAL,
   academic: { ...COLLOQUIAL_TO_STANDARD, ...TO_FORMAL, ...TO_ACADEMIC },
   admin: { ...COLLOQUIAL_TO_STANDARD, ...TO_FORMAL, ...TO_ADMIN },
+  legal: { ...COLLOQUIAL_TO_STANDARD, ...TO_FORMAL, ...TO_LEGAL },
   casual: TO_CASUAL,
   literary: STANDARD_AND_LITERARY,
+  divani: { ...COLLOQUIAL_TO_STANDARD, ...TO_LITERARY, ...TO_DIVANI },
   street: TO_STREET,
   genz: TO_GENZ,
   taarof: { ...COLLOQUIAL_TO_STANDARD, ...TO_TAAROF },

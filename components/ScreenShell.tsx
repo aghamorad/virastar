@@ -58,6 +58,14 @@ export function ScreenShell({ children }: { children: ReactNode }) {
 
       <main className="v-main mx-auto w-full max-w-5xl flex-1 px-4 pt-6">{children}</main>
 
+      <footer className="hidden md:flex mx-auto w-full max-w-5xl items-center justify-between px-4 py-6 text-xs font-bold text-ink-soft/70 border-t border-border/40 mt-12">
+        <span className="flex items-center gap-1.5">
+          <Star size={12} className="text-brand" />
+          ساخته‌شده با ❤️ توسط مراد (Made by Morad)
+        </span>
+        <span>ویراستار · ابزار هوشمند نگارش و ویرایش زبان فارسی</span>
+      </footer>
+
       <nav className="v-bottomnav fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 md:hidden" aria-label="اصلی">
         {NAV.map((item) => {
           const active = item.href === '/edit' ? pathname.startsWith('/edit') : pathname.startsWith(item.href)

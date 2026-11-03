@@ -88,6 +88,30 @@ export function ModeGlyph({
           <path d="M 78 24 l 3.5 7.5 8 1.2 -5.8 5.6 1.4 8 -7.1 -3.7 -7.1 3.7 1.4 -8 -5.8 -5.6 8 -1.2 Z" fill="currentColor" />
         </svg>
       )
+    case 'hoghooghi':
+      return (
+        <svg {...s} className={className} aria-hidden>
+          <line x1="50" y1="16" x2="50" y2="82" {...stroke} strokeWidth={6} />
+          <line x1="22" y1="30" x2="78" y2="30" {...stroke} strokeWidth={6} />
+          <line x1="22" y1="30" x2="14" y2="52" {...stroke} strokeWidth={4} />
+          <line x1="22" y1="30" x2="30" y2="52" {...stroke} strokeWidth={4} />
+          <path d="M 12 52 Q 22 62 32 52 Z" fill="currentColor" />
+          <line x1="78" y1="30" x2="70" y2="52" {...stroke} strokeWidth={4} />
+          <line x1="78" y1="30" x2="86" y2="52" {...stroke} strokeWidth={4} />
+          <path d="M 68 52 Q 78 62 88 52 Z" fill="currentColor" />
+          <line x1="36" y1="82" x2="64" y2="82" {...stroke} strokeWidth={8} />
+        </svg>
+      )
+    case 'divani':
+      return (
+        <svg {...s} className={className} aria-hidden>
+          <rect x="22" y="16" width="56" height="68" rx="10" {...stroke} strokeWidth={6} />
+          <path d="M 34 32 C 42 26, 58 26, 66 32 C 58 38, 42 38, 34 32 Z" fill="currentColor" />
+          <line x1="32" y1="48" x2="68" y2="48" {...stroke} strokeWidth={6} />
+          <line x1="32" y1="62" x2="58" y2="62" {...stroke} strokeWidth={6} />
+          <circle cx="65" cy="62" r="5" fill="currentColor" />
+        </svg>
+      )
     default:
       return (
         <svg {...s} className={className} aria-hidden>

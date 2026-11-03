@@ -63,6 +63,7 @@ function ModeCard({
   return (
     <Link
       href={`/edit?mode=${modeId}`}
+      prefetch={false}
       className="v-card shadow-soft group flex flex-col gap-3 p-5 transition-transform duration-200 hover:-translate-y-0.5"
     >
       <div className="flex items-center gap-3">

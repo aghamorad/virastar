@@ -6,6 +6,7 @@ import {
   MODEL_OPTIONS,
   modelChoiceFromSettings,
   settingsForModelChoice,
+  type EngineSettings,
   type ModelOption,
 } from '@/domain/engine'
 import {
@@ -14,6 +15,8 @@ import {
   removeModel,
   restoreModel,
   wasModelInstalled,
+  type LocalModelId,
+  type ModelStatus,
 } from '@/domain/engines/browser'
 import { useModelStatus } from '@/hooks/useModelStatus'
 import { useSettings } from '@/hooks/useSettings'
@@ -210,18 +213,14 @@ export function SettingsScreen() {
             </p>
           </div>
         )}
-
-        {option.kind === 'local' && localId && (
-          <LocalModelCard
-            option={option}
-            modelState={model.state}
-            modelId={model.modelId}
-            progress={model.progress}
-            onDownload={() => void downloadModel(localId)}
-            onRemove={() => void removeModel(localId)}
-          />
-        )}
       </section>
+
+      {/* Dedicated Offline Models Download Hub */}
+      <OfflineModelsSection
+        settings={settings}
+        saveSettings={saveSettings}
+        modelStatus={model}
+      />
 
       {/* Themes */}
       <section>
@@ -288,87 +287,171 @@ export function SettingsScreen() {
   )
 }
 
-function LocalModelCard({
-  option,
-  modelState,
-  modelId,
-  progress,
-  onDownload,
-  onRemove,
+function OfflineModelsSection({
+  settings,
+  saveSettings,
+  modelStatus,
 }: {
-  option: ModelOption
-  modelState: string
-  modelId?: string
-  progress: number
-  onDownload: () => void
-  onRemove: () => void
+  settings: EngineSettings
+  saveSettings: (next: EngineSettings) => void
+  modelStatus: ModelStatus
 }) {
-  const localId = option.localModel!
-  const sizeMB = LOCAL_MODELS[localId].sizeMB
-  const thisReady = modelState === 'ready' && modelId === localId
-  const thisDownloading = modelState === 'downloading'
-  const thisError = modelState === 'error'
-  const installed = wasModelInstalled(localId)
+  const localModelsList: Array<{
+    id: LocalModelId
+    name: string
+    size: string
+    badge: string
+    recommendation: string
+    bestFor: string
+    ram: string
+  }> = [
+    {
+      id: 'qwen-0.5b',
+      name: 'قوِن ۰.۵B فوق‌سبک (Qwen 2.5 0.5B)',
+      size: '۳۸۰ مگابایت',
+      badge: 'ویژه تمام گوشی‌ها',
+      recommendation: 'سبک‌ترین مدل؛ سازگار با مرورگر همه آیفون‌ها و گوشی‌های اندروید بدون پر شدن رم یا بسته شدن تب.',
+      bestFor: 'غلط‌گیری املایی، رفع ایرادات تایپی، ویرگول، نیم‌فاصله و نشانه‌گذاری',
+      ram: 'حداقل ۲ گیگابایت رم (تمام موبایل‌ها)',
+    },
+    {
+      id: 'qwen-1.5b',
+      name: 'قوِن ۱.۵B استاندارد (Qwen 2.5 1.5B)',
+      size: '۱.۰ گیگابایت',
+      badge: 'پیشنهادی (موبایل قوی و لپ‌تاپ)',
+      recommendation: 'بهترین تعادل سرعت و کیفیت؛ درک قوی گرامر و ساختار اداری و رسمی.',
+      bestFor: 'بازنویسی ایمیل، نامه‌های اداری، نامه‌های دانشگاهی و متون رسمی',
+      ram: 'حداقل ۴ گیگابایت رم',
+    },
+    {
+      id: 'qwen-3b',
+      name: 'قوِن ۳B پیشرفته (Qwen 2.5 3B)',
+      size: '۱.۸ گیگابایت',
+      badge: 'حرفه‌ای (آیپد و مک)',
+      recommendation: 'بالاترین دایره واژگان؛ توانایی بازنویسی سبک‌های پیچیده، طنز و ادبی.',
+      bestFor: 'سبک‌های دیوانی قدیم، حقوقی، لاتی، طنز و شعر',
+      ram: 'حداقل ۶ تا ۸ گیگابایت رم (آیپد پرو و مک)',
+    },
+  ]
 
   return (
-    <div className="v-card shadow-soft p-5">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <p className="font-black">دانلود روی همین دستگاه — آفلاین و خصوصی</p>
-          <p className="mt-1 text-xs leading-5 text-ink-soft">
-            این مدل را یک بار نصب کن (حدود {faNum(sizeMB)} مگابایت)؛ بعد از آن، ویرایش‌ها
-            بدون اینترنت و بدون اینکه متن از دستگاه خارج شود انجام می‌شود.
-          </p>
+    <section className="space-y-4">
+      <div>
+        <div className="flex items-center gap-2">
+          <Star size={20} className="text-brand" />
+          <h2 className="text-xl font-black">مرکز دانلود مدل‌های آفلاین</h2>
         </div>
-        {thisReady && (
-          <button type="button" onClick={onRemove} className="v-btn-ghost px-4 py-2 text-sm">
-            حذف مدل
-          </button>
-        )}
+        <p className="mt-1 text-xs leading-6 text-ink-soft">
+          مدل‌های زیر مستقیماً داخل حافظه مرورگر دستگاه شما دانلود و ذخیره می‌شوند. پس از یک‌بار دانلود، تمام ویرایش‌ها کاملاً آفلاین، بدون اینترنت و با حریم خصوصی ۱۰۰٪ انجام می‌گردد.
+        </p>
       </div>
 
-      {!thisReady && !thisDownloading && !thisError && !installed && (
-        <button type="button" onClick={onDownload} className="v-btn-primary mt-4 px-6 py-2.5 text-sm">
-          <Star size={16} />
-          نصب مدل محلی (حدود {faNum(sizeMB)} مگابایت)
-        </button>
-      )}
+      <div className="grid gap-4 sm:grid-cols-1">
+        {localModelsList.map((m) => {
+          const isSelected = settings.localModel === m.id
+          const isInstalled = wasModelInstalled(m.id)
+          const isDownloadingThis = modelStatus.state === 'downloading' && modelStatus.modelId === m.id
+          const isReadyThis = modelStatus.state === 'ready' && modelStatus.modelId === m.id
 
-      {thisDownloading && (
-        <div className="mt-4">
-          <div className="flex items-center justify-between text-xs font-bold text-ink-soft">
-            <span>در حال نصب…</span>
-            <span>{faNum(progress)}٪</span>
-          </div>
-          <div
-            role="progressbar"
-            aria-valuenow={progress}
-            aria-valuemin={0}
-            aria-valuemax={100}
-            className="mt-2 h-2 overflow-hidden rounded-full bg-paper-deep"
-          >
-            <div className="h-full rounded-full bg-brand transition-all" style={{ width: `${progress}%` }} />
-          </div>
-          <p className="mt-2 text-xs leading-5 text-ink-soft">فقط یک بار — بعد از آن همهٔ ویرایش‌ها آفلاین انجام می‌شود.</p>
-        </div>
-      )}
+          return (
+            <div
+              key={m.id}
+              className={`v-card shadow-soft p-5 transition-all ${
+                isSelected ? 'ring-2 ring-brand bg-brand/5' : ''
+              }`}
+            >
+              <div className="flex flex-wrap items-start justify-between gap-2">
+                <div>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="font-black text-base text-ink">{m.name}</span>
+                    <span className="rounded-full bg-brand/10 px-2 py-0.5 text-xs font-bold text-brand">
+                      {m.badge}
+                    </span>
+                    <span className="rounded-full bg-paper-deep px-2.5 py-0.5 text-xs font-bold text-ink-soft border border-border">
+                      حجم: {m.size}
+                    </span>
+                  </div>
+                  <p className="mt-2 text-xs leading-5 text-ink-soft">{m.recommendation}</p>
+                  <p className="mt-1.5 text-xs leading-5 text-ink/90 font-bold">
+                    🎯 کاربرد بهینه: <span className="font-normal text-ink-soft">{m.bestFor}</span>
+                  </p>
+                  <p className="text-[11px] text-ink-soft/70">
+                    💾 سخت‌افزار مورد نیاز: {m.ram}
+                  </p>
+                </div>
+              </div>
 
-      {thisReady && (
-        <p className="mt-4 text-sm leading-7 text-ink-soft">
-          مدل آماده است؛ ویرایش‌ها روی همین دستگاه انجام می‌شود، آفلاین و خصوصی.
-        </p>
-      )}
+              {isDownloadingThis && (
+                <div className="mt-4 rounded-xl bg-paper-deep p-3 border border-border">
+                  <div className="flex items-center justify-between text-xs font-bold text-ink">
+                    <span className="flex items-center gap-1.5">
+                      <Star size={13} className="animate-star-busy text-brand" />
+                      در حال دریافت مدل در حافظه دستگاه…
+                    </span>
+                    <span className="font-mono">{faNum(modelStatus.progress)}٪</span>
+                  </div>
+                  <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-paper border border-border">
+                    <div
+                      className="h-full rounded-full bg-brand transition-all duration-300"
+                      style={{ width: `${modelStatus.progress}%` }}
+                    />
+                  </div>
+                </div>
+              )}
 
-      {thisError && (
-        <div className="mt-4">
-          <p className="text-sm leading-7 text-ink-soft">
-            دانلود ناموفق بود. اتصال اینترنت را بررسی کن و دوباره تلاش کن.
-          </p>
-          <button type="button" onClick={onDownload} className="v-btn-ghost mt-3 px-4 py-2 text-sm">
-            تلاش دوباره
-          </button>
-        </div>
-      )}
-    </div>
+              <div className="mt-4 flex flex-wrap items-center justify-between gap-2 border-t border-border pt-3">
+                <div className="flex items-center gap-2 text-xs font-bold">
+                  {isSelected ? (
+                    <span className="flex items-center gap-1 text-success font-black">
+                      ✓ مدل فعال کنونی
+                    </span>
+                  ) : isInstalled ? (
+                    <span className="text-ink-soft">ذخیره شده در کش دستگاه</span>
+                  ) : (
+                    <span className="text-ink-soft/60">هنوز دانلود نشده</span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  {isInstalled && (
+                    <button
+                      type="button"
+                      onClick={() => void removeModel(m.id)}
+                      className="v-btn-ghost px-3 py-1.5 text-xs text-red-500 hover:text-red-700"
+                      title="پاک کردن از حافظه برای خالی شدن فضای گوشی"
+                    >
+                      حذف از حافظه
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      saveSettings(settingsForModelChoice(`local-${m.id}`, settings))
+                      if (!isInstalled && !isReadyThis) {
+                        void downloadModel(m.id)
+                      }
+                    }}
+                    disabled={isDownloadingThis}
+                    className={`px-4 py-2 text-xs font-bold rounded-xl transition-all flex items-center gap-1.5 ${
+                      isSelected
+                        ? 'bg-brand text-on-brand shadow-sm'
+                        : 'bg-paper-deep border border-border text-ink hover:border-brand hover:text-brand'
+                    }`}
+                  >
+                    <Star size={13} />
+                    {isSelected
+                      ? 'انتخاب شده'
+                      : isInstalled
+                      ? 'فعال‌سازی مدل'
+                      : `دانلود و فعال‌سازی (${m.size})`}
+                  </button>
+                </div>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </section>
   )
 }

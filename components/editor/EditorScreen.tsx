@@ -26,6 +26,7 @@ function countWords(s: string): number {
 
 export function EditorScreen({ initialMode }: { initialMode?: string }) {
   const [modeId, setModeId] = useState<string>(initialMode ?? 'tashih')
+  const [activeCategory, setActiveCategory] = useState<'all' | 'practical' | 'playful'>('practical')
   const [input, setInput] = useState('')
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState<EditResult | null>(null)
@@ -44,7 +45,10 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
   const words = countWords(input)
 
   useEffect(() => {
-    if (initialMode && getMode(initialMode)) setModeId(initialMode)
+    if (initialMode && getMode(initialMode)) {
+      setModeId(initialMode)
+      setActiveCategory(getMode(initialMode).group)
+    }
   }, [initialMode])
 
   // Global keyboard shortcuts (⌘+Enter for edit, ⌘+⇧+C for copy)
@@ -172,18 +176,50 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
       {/* سبک selection */}
       <section>
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h2 className="text-sm font-black text-ink-soft">انتخاب سبک</h2>
+          <div className="flex items-center gap-1.5">
+            <h2 className="text-sm font-black text-ink-soft">سبک بازنویسی:</h2>
+            <div className="flex rounded-lg bg-paper-deep p-0.5 border border-border text-xs font-bold">
+              <button
+                type="button"
+                onClick={() => setActiveCategory('practical')}
+                className={`rounded-md px-2.5 py-1 transition-colors ${
+                  activeCategory === 'practical' ? 'bg-brand text-on-brand shadow-xs' : 'text-ink-soft hover:text-ink'
+                }`}
+              >
+                کاربردی و اداری
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveCategory('playful')}
+                className={`rounded-md px-2.5 py-1 transition-colors ${
+                  activeCategory === 'playful' ? 'bg-brand text-on-brand shadow-xs' : 'text-ink-soft hover:text-ink'
+                }`}
+              >
+                بازی با زبان و لحن
+              </button>
+              <button
+                type="button"
+                onClick={() => setActiveCategory('all')}
+                className={`rounded-md px-2 py-1 transition-colors ${
+                  activeCategory === 'all' ? 'bg-brand text-on-brand shadow-xs' : 'text-ink-soft hover:text-ink'
+                }`}
+              >
+                همه
+              </button>
+            </div>
+          </div>
           <button
             type="button"
             onClick={() => setInput(SAMPLE)}
             className="v-btn-ghost px-3 py-1 text-xs"
+            title="جای‌گذاری متن نمونه برای آزمایش"
           >
-            مثال
+            متن نمونه
           </button>
         </div>
 
         <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1">
-          {MODES.map((m) => (
+          {MODES.filter((m) => activeCategory === 'all' || m.group === activeCategory).map((m) => (
             <ModeChip key={m.id} mode={m} active={m.id === modeId} onSelect={() => setModeId(m.id)} />
           ))}
         </div>
@@ -387,13 +423,24 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                 </div>
               </div>
             ) : (
-              <div className="v-card flex flex-col items-center gap-3 border-dashed px-6 py-12 text-center">
-                <Star size={34} className="text-brand opacity-40" hollow />
-                <p className="text-sm leading-7 text-ink-soft">
-                  نتیجهٔ ویرایش اینجا می‌آید.
-                  <br />
-                  بنویس و «ویرایش کن» را بزن.
-                </p>
+              <div className="v-card flex flex-col items-center gap-3 border-dashed px-6 py-10 text-center">
+                <Star size={36} className="text-brand opacity-45" hollow />
+                <div>
+                  <p className="text-base font-extrabold text-ink">
+                    آماده برای ویرایش به سبک «{mode.label}»
+                  </p>
+                  <p className="mt-1.5 text-xs leading-6 text-ink-soft max-w-sm mx-auto">
+                    {mode.description}
+                  </p>
+                </div>
+                <div className="mt-2 flex flex-wrap justify-center gap-2">
+                  <span className="rounded-full bg-paper-deep px-3 py-1 text-xs font-bold text-ink-soft border border-border">
+                    ✓ نشانه‌گذاری و نقطه خودکار
+                  </span>
+                  <span className="rounded-full bg-paper-deep px-3 py-1 text-xs font-bold text-ink-soft border border-border">
+                    ✓ نیم‌فاصله‌های هوشمند
+                  </span>
+                </div>
               </div>
             )}
           </div>
