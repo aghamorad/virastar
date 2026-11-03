@@ -1,5 +1,5 @@
-// The 8 distinct interactive themes of Virastar.
-// Each theme caters to a distinct taste, aesthetic, mood, and interactive feel.
+// Neo-Brutalism themes system (designprompts.dev/neo-brutalism)
+// Cream paper, bold yellow posters, red signals, violet bands, thick black borders, solid offset shadows
 
 export interface ThemePalette {
   paper: string
@@ -12,151 +12,144 @@ export interface ThemePalette {
 export interface AppTheme {
   id: string
   label: string
-  /** The specific taste / aesthetic persona this theme caters to */
   taste: string
-  /** One line of poetry / characterization about the mood */
   blurb: string
-  /** Visual icon / symbol representing this theme */
   icon: string
-  /** Exact hex color palette for live preview swatches */
   palette: ThemePalette
-  /** What makes this theme physically and visually interactive */
   interactiveFeature: string
-  /** The acoustic profile used when interactive typing sounds are enabled */
   soundProfile: 'pen' | 'starlight' | 'crystal' | 'velvet' | 'gilded' | 'cyber' | 'minimal' | 'typewriter'
-  /** Whether this is a dark mood (color-scheme: dark) */
   isDark?: boolean
 }
 
 export const THEMES: AppTheme[] = [
   {
     id: 'virastar',
-    label: 'ویراستار اصیل',
-    taste: 'کلاسیک و تحریری',
-    blurb: 'سفرهٔ کاغذی باوقار، مهر لاکی سرخ و آرامش نگارش روزانه.',
-    icon: '✒️',
+    label: 'نئوبروتال اصیل',
+    taste: 'کاغذ زرد و خطوط مشکی بولد',
+    blurb: 'پوستر زرد، سایه‌های تخت مشکی، نوارهای بنفش و فونت ضخیم مطبوعاتی.',
+    icon: '⚡',
     palette: {
-      paper: '#fbf8f1',
+      paper: '#fff5d6',
       surface: '#ffffff',
-      brand: '#c2362b',
-      ink: '#231f1a',
-      accent: '#d97706',
+      brand: '#ff4332',
+      ink: '#000000',
+      accent: '#d4bdff',
     },
-    interactiveFeature: 'فشار مهر لاکی لعلگون با حس ضربهٔ مهروار و بافت ریز کاغذ تحریری',
-    soundProfile: 'pen',
+    interactiveFeature: 'سایه‌های ضخیم بدون محوشدگی، جهش حسی کلیدها و زوایای تند',
+    soundProfile: 'typewriter',
   },
   {
     id: 'shabnevis',
-    label: 'شب لاجوردی',
-    taste: 'تاریک OLED و کهکشانی',
-    blurb: 'لاجورد کهکشان و زر ناب؛ سکوت خلوت شبانه با ستاره‌های چشمک‌زن.',
+    label: 'نئوبروتال شبانه',
+    taste: 'تاریک اینک و نئون زرد',
+    blurb: 'تیرگی کربنی، کادرهای سپید و تأکیدهای زرد فسفری در عمق شب.',
     icon: '🌌',
     palette: {
-      paper: '#0b0e17',
-      surface: '#121726',
-      brand: '#e6b94d',
-      ink: '#f0f2f8',
-      accent: '#60a5fa',
+      paper: '#0d0e15',
+      surface: '#181926',
+      brand: '#ffed00',
+      ink: '#ffffff',
+      accent: '#c084fc',
     },
-    interactiveFeature: 'ستاره‌های چشمک‌زن آسمان کویر و هالهٔ درخشان طلایی دور دکمه‌ها',
+    interactiveFeature: 'سایه‌های تخت سپید، تضاد شدید در تاریکی و درخشش زرد',
     soundProfile: 'starlight',
     isDark: true,
   },
   {
     id: 'firouzeh',
-    label: 'فیروزه نیشابور',
-    taste: 'معماری و کاشی‌کاری',
-    blurb: 'نغمهٔ کاشی‌کاری معرق اصفهان و فیروزهٔ تراش‌خورده در سپیدهٔ خنک.',
+    label: 'نئوبروتال فیروزه',
+    taste: 'فیروزه برقی و زرد طلایی',
+    blurb: 'کنتراست بالای فیروزه‌ای متالیک، نوارهای مشکی و قرمز جهت‌دار.',
     icon: '🏛️',
     palette: {
-      paper: '#eef7f6',
+      paper: '#e0f7f5',
       surface: '#ffffff',
-      brand: '#008e82',
-      ink: '#0f2625',
-      accent: '#c27803',
+      brand: '#00a896',
+      ink: '#000000',
+      accent: '#ffd700',
     },
-    interactiveFeature: 'موج آبگونه و بازتاب صیقلی سرامیک با گره‌چینی هندسی پس‌زمینه',
+    interactiveFeature: 'خطوط ضخیم ۴ پیکسلی با بازتاب برقی فیروزه',
     soundProfile: 'crystal',
   },
   {
     id: 'golestan',
-    label: 'گلستان و زعفران',
-    taste: 'شاعرانه و رمانتیک',
-    blurb: 'عطر گل سرخ شیراز و زعفران قائنات؛ دفتری مخملین برای شعر و داستان.',
+    label: 'نئوبروتال پاپ رز',
+    taste: 'سرخابی برقی و لیمویی',
+    blurb: 'انرژی رنگ‌های پاپ، سرخابی تند، خطوط مشکی عمیق و کادرهای برشی.',
     icon: '🌹',
     palette: {
-      paper: '#fdf2f4',
+      paper: '#ffeef4',
       surface: '#ffffff',
-      brand: '#a21caf',
-      ink: '#2c121f',
-      accent: '#d97706',
+      brand: '#ff3385',
+      ink: '#000000',
+      accent: '#c084fc',
     },
-    interactiveFeature: 'شکوفایی نرم گلبرگ‌ها هنگام لمس و تپش مخملی یاقوت انار',
+    interactiveFeature: 'شکوفایی بروتالیستی، کادرهای لایه‌لایه و حاشیه‌های پرانرژی',
     soundProfile: 'velvet',
   },
   {
     id: 'termeh',
-    label: 'ترمه یزد',
-    taste: 'میراث صفوی و زربفت',
-    blurb: 'زربفت شاهانهٔ یزد، زرشکی درباری و طلاکاری اسناد کهن.',
+    label: 'نئوبروتال کهن',
+    taste: 'زرشکی و خردلی درباری',
+    blurb: 'اُخرایی گرم، زرشکی تند و کادرهای چاپ سنگی قاجاری با روح بروتال.',
     icon: '👑',
     palette: {
-      paper: '#faf3e8',
-      surface: '#fffcf7',
-      brand: '#941b2c',
-      ink: '#2d1519',
-      accent: '#b8860b',
+      paper: '#fff2db',
+      surface: '#ffffff',
+      brand: '#b91c1c',
+      ink: '#000000',
+      accent: '#fbbf24',
     },
-    interactiveFeature: 'درخشش نوار طلایی متحرک در سربرگ و بافت اصیل بته‌جقه',
+    interactiveFeature: 'خطوط مشکی سنگین و کنتراست شاهانه بر کاغذ خردلی',
     soundProfile: 'gilded',
   },
   {
     id: 'cyber-tehran',
-    label: 'سایبر طهران',
-    taste: 'سایبرپانک و دیجیتال',
-    blurb: 'طهرانِ بارانی آینده؛ نئون زمردی در سیاهی شب و خط فرمان پرشتاب.',
-    icon: '⚡',
+    label: 'نئوبروتال سایبر',
+    taste: 'سبز ماتریسی و صورتی نئون',
+    blurb: 'سیاهی کامل، فسفر سبز زنده و خطوط اسکن با سایه‌های تیز سبز.',
+    icon: '📟',
     palette: {
-      paper: '#0a0b10',
-      surface: '#121520',
-      brand: '#10b981',
-      ink: '#f1f5f9',
-      accent: '#a855f7',
+      paper: '#07090e',
+      surface: '#10141f',
+      brand: '#00ff9d',
+      ink: '#f0fdf4',
+      accent: '#ff0055',
     },
-    interactiveFeature: 'ردیابی پرتوهای نئونی، خط اسکن شبانه و کلیک فوق‌سریع هکری',
+    interactiveFeature: 'سایه‌های نئونی تخت ۴ پیکسلی و کلیک‌های ضربه‌ای سریع',
     soundProfile: 'cyber',
     isDark: true,
   },
   {
     id: 'minimal-barfi',
-    label: 'مینیمال برفی',
-    taste: 'مدرن و تمرکز خالص',
-    blurb: 'سپیدی برف البرز، خطوط شارپ شیشه‌ای و تمرکز مطلق بر واژه‌ها.',
+    label: 'نئوبروتال سیاه و سپید',
+    taste: 'مونوکروم و آبی کبالت',
+    blurb: 'سپیدی مطلق، کادرهای مشکی ۴ پیکسل، زرد تأکیدی و صفر درصد رنگ اضافه.',
     icon: '❄️',
     palette: {
-      paper: '#f8fafc',
+      paper: '#ffffff',
       surface: '#ffffff',
-      brand: '#2563eb',
-      ink: '#0f172a',
-      accent: '#0284c7',
+      brand: '#000000',
+      ink: '#000000',
+      accent: '#ffed00',
     },
-    interactiveFeature: 'حرکت فنری نرم با مقیاس لمسی، شیشهٔ مات بدون هیچ نویز بصری',
+    interactiveFeature: 'کنتراست صددرصد، تمرکز مطلق و سایه‌های سخت و خالص',
     soundProfile: 'minimal',
   },
   {
     id: 'cafe-naderi',
-    label: 'کافه نادری',
-    taste: 'نوستالژیک و کاهی',
-    blurb: 'نادری سال ۱۳۳۵؛ کلیدهای فلزی ماشین‌تحریر، قهوهٔ اسپرسو و کاغذ کاهی.',
+    label: 'نئوبروتال کرافت',
+    taste: 'کاغذ کاهی و جوهر قهوه',
+    blurb: 'کاغذ کرافت کهنه، رنگ قهوهٔ برشته و کلیدهای چکش‌خوردهٔ ماشین‌تحریر.',
     icon: '☕',
     palette: {
-      paper: '#ede3cf',
-      surface: '#f8f2e4',
-      brand: '#a63a1e',
-      ink: '#291c12',
-      accent: '#446353',
+      paper: '#eedfc5',
+      surface: '#fbf5eb',
+      brand: '#b45309',
+      ink: '#1e130a',
+      accent: '#84cc16',
     },
-    interactiveFeature: 'کوبش فنری کلیدهای ماشین‌تحریر، خطوط دفتری و نفس ملایم چراغ کافه',
+    interactiveFeature: 'کوبش فنری کلیدهای فلزی با فرورفتگی سخت در سایه',
     soundProfile: 'typewriter',
   },
 ]

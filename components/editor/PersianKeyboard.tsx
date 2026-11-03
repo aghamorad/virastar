@@ -30,15 +30,15 @@ export function PersianKeyboard({
   const activeTheme = useActiveTheme()
 
   return (
-    <div className="mt-3 rounded-2xl border border-border bg-paper-deep p-3 shadow-lg select-none transition-all">
+    <div className="mt-3 rounded-none border-4 border-black bg-paper p-3 shadow-[6px_6px_0px_#000] select-none">
       {/* Top utility row */}
-      <div className="mb-2.5 flex items-center justify-between border-b border-border/50 pb-2">
+      <div className="mb-2.5 flex items-center justify-between border-b-3 border-black pb-2">
         <div className="flex items-center gap-2">
-          <span className="flex items-center gap-1.5 text-xs font-black text-ink">
-            <Star size={13} className="text-brand" />
+          <span className="flex items-center gap-1.5 text-xs font-black text-ink uppercase tracking-wider">
+            <Star size={13} className="text-signal" />
             صفحه‌کلید فارسی هوشمند
           </span>
-          <span className="rounded-full bg-brand/10 px-2 py-0.5 text-[11px] font-bold text-brand">
+          <span className="rounded-none border-2 border-black bg-emphasis px-2 py-0.5 text-[11px] font-black text-black shadow-[2px_2px_0px_#000]">
             کلیدهای بزرگ و آسان
           </span>
         </div>
@@ -47,14 +47,14 @@ export function PersianKeyboard({
           <button
             type="button"
             onClick={() => setMode(mode === 'alpha' ? 'numeric' : 'alpha')}
-            className="rounded-lg bg-paper px-2.5 py-1 text-xs font-bold text-ink hover:text-brand border border-border"
+            className="rounded-none border-2 border-black bg-white px-2.5 py-1 text-xs font-black text-black shadow-[2px_2px_0px_#000] hover:bg-emphasis hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
           >
             {mode === 'alpha' ? '۱۲۳ (اعداد و علائم)' : 'الفبا'}
           </button>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-lg bg-paper px-2.5 py-1 text-xs font-bold text-ink-soft hover:text-red-500 border border-border"
+            className="rounded-none border-2 border-black bg-signal px-2.5 py-1 text-xs font-black text-white shadow-[2px_2px_0px_#000] hover:bg-black hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
             title="بستن کیبورد مجازی"
           >
             بستن ✕
@@ -86,7 +86,7 @@ export function PersianKeyboard({
                 playTactileSound(activeTheme, 'tap')
                 onBackspace()
               }}
-              className="flex min-h-[44px] flex-1 max-w-[56px] items-center justify-center rounded-xl bg-paper border border-border text-sm font-black text-ink hover:border-brand hover:text-brand active:scale-95 transition-all shadow-sm"
+              className="flex min-h-[44px] flex-1 max-w-[56px] items-center justify-center rounded-none border-2 border-black bg-signal/20 text-sm font-black text-black shadow-[2px_2px_0px_#000] hover:bg-signal hover:text-white hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
               title="پاک کردن"
             >
               ⌫
@@ -104,10 +104,10 @@ export function PersianKeyboard({
                 playTactileSound(activeTheme, 'special')
                 onHalfSpace()
               }}
-              className="min-h-[44px] px-3 rounded-xl bg-brand/10 border border-brand/30 text-xs font-black text-brand hover:bg-brand/20 active:scale-95 transition-all shadow-sm"
+              className="min-h-[44px] px-3.5 rounded-none border-2 border-black bg-field text-black text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-emphasis hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
               title="نیم‌فاصله استاندارد فارسی"
             >
-              نیم‌فاصله
+              [نیم‌فاصله]
             </button>
 
             <button
@@ -116,7 +116,7 @@ export function PersianKeyboard({
                 playTactileSound(activeTheme, 'tap')
                 onInsert(' ')
               }}
-              className="min-h-[44px] flex-1 max-w-[220px] rounded-xl bg-paper border border-border text-xs font-bold text-ink hover:border-brand active:scale-95 transition-all shadow-sm"
+              className="min-h-[44px] flex-1 max-w-[220px] rounded-none border-2 border-black bg-white text-xs font-black text-black shadow-[2px_2px_0px_#000] hover:bg-emphasis hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
             >
               فاصله (Space)
             </button>
@@ -127,7 +127,7 @@ export function PersianKeyboard({
                 playTactileSound(activeTheme, 'tap')
                 onInsert('،')
               }}
-              className="min-h-[44px] w-10 rounded-xl bg-paper border border-border text-sm font-black text-ink hover:border-brand active:scale-95 transition-all shadow-sm"
+              className="min-h-[44px] w-10 rounded-none border-2 border-black bg-white text-sm font-black text-black shadow-[2px_2px_0px_#000] hover:bg-emphasis hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
             >
               ،
             </button>
@@ -138,7 +138,7 @@ export function PersianKeyboard({
                 playTactileSound(activeTheme, 'tap')
                 onInsert('.')
               }}
-              className="min-h-[44px] w-10 rounded-xl bg-paper border border-border text-sm font-black text-ink hover:border-brand active:scale-95 transition-all shadow-sm"
+              className="min-h-[44px] w-10 rounded-none border-2 border-black bg-white text-sm font-black text-black shadow-[2px_2px_0px_#000] hover:bg-emphasis hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
             >
               .
             </button>
@@ -149,7 +149,7 @@ export function PersianKeyboard({
                 playTactileSound(activeTheme, 'special')
                 onNewLine()
               }}
-              className="min-h-[44px] px-3.5 rounded-xl bg-paper border border-border text-xs font-black text-ink hover:border-brand active:scale-95 transition-all shadow-sm"
+              className="min-h-[44px] px-3.5 rounded-none border-2 border-black bg-emphasis text-black text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-black hover:text-white hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
               title="سطر جدید"
             >
               ↵ خط بعد
@@ -176,7 +176,7 @@ export function PersianKeyboard({
                 playTactileSound(activeTheme, 'tap')
                 onInsert('«»')
               }}
-              className="min-h-[44px] px-4 rounded-xl bg-paper border border-border text-sm font-black text-ink hover:border-brand active:scale-95"
+              className="min-h-[44px] px-4 rounded-none border-2 border-black bg-white text-sm font-black text-black shadow-[2px_2px_0px_#000] hover:bg-emphasis hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
             >
               «گیومه»
             </button>
@@ -186,9 +186,9 @@ export function PersianKeyboard({
                 playTactileSound(activeTheme, 'special')
                 onHalfSpace()
               }}
-              className="min-h-[44px] px-4 rounded-xl bg-brand/10 border border-brand/30 text-xs font-black text-brand hover:bg-brand/20 active:scale-95"
+              className="min-h-[44px] px-4 rounded-none border-2 border-black bg-field text-black text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-emphasis hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
             >
-              نیم‌فاصله
+              [نیم‌فاصله]
             </button>
             <button
               type="button"
@@ -196,7 +196,7 @@ export function PersianKeyboard({
                 playTactileSound(activeTheme, 'tap')
                 onBackspace()
               }}
-              className="min-h-[44px] px-4 rounded-xl bg-paper border border-border text-sm font-black text-ink hover:border-brand active:scale-95"
+              className="min-h-[44px] px-4 rounded-none border-2 border-black bg-signal/20 text-black text-sm font-black shadow-[2px_2px_0px_#000] hover:bg-signal hover:text-white hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
             >
               ⌫ پاک کردن
             </button>
@@ -216,7 +216,7 @@ function KeyButton({ label, onClick }: { label: string; onClick: () => void }) {
         playTactileSound(activeTheme, 'tap')
         onClick()
       }}
-      className="flex min-h-[44px] min-w-[28px] sm:min-w-[34px] flex-1 items-center justify-center rounded-xl bg-paper border border-border text-base sm:text-lg font-black text-ink hover:border-brand hover:text-brand hover:shadow active:scale-90 transition-all shadow-sm cursor-pointer"
+      className="flex min-h-[44px] min-w-[28px] sm:min-w-[34px] flex-1 items-center justify-center rounded-none border-2 border-black bg-white text-base sm:text-lg font-black text-black shadow-[2px_2px_0px_#000] hover:bg-emphasis hover:translate-x-[-1px] hover:translate-y-[-1px] hover:shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
     >
       {label}
     </button>

@@ -1,261 +1,277 @@
 @import 'tailwindcss';
 
-@theme {
-  /* ویراستار اصیل (Default) — the classic paper table and crimson seal.
-     Each color is a semantic ROLE token swapped by [data-theme] on <html>.
-     brand = the star / seal, accent = second voice, surface = cards / inputs. */
-  --color-paper: #fbf8f1;
-  --color-paper-deep: #efe5d3;
-  --color-ink: #231f1a;
-  --color-ink-soft: #6f6456;
-  --color-brand: #c2362b;
-  --color-brand-deep: #9e261d;
-  --color-accent: #d97706;
-  --color-success: #2d7a4d;
-  --color-surface: #ffffff;
-  --color-border: #ddd2bf;
-  --color-on-brand: #fff6ea;
-  --color-star: #c2362b;
-
-  --font-sans: var(--font-vazirmatn), 'Segoe UI', Tahoma, ui-sans-serif, system-ui, sans-serif;
-
-  --shadow-card: 0 12px 30px rgb(35 31 26 / 0.09), 0 2px 6px rgb(35 31 26 / 0.04);
-  --shadow-soft: 0 4px 14px rgb(35 31 26 / 0.06);
-  --shadow-float: 0 18px 44px rgb(35 31 26 / 0.15);
-}
-
 /* =========================================================================
-   THE 8 INTERACTIVE THEMES — EACH WITH DISTINCT COLOR, TEXTURE & DRESSING
+   NEO-BRUTALISM DESIGN SYSTEM (designprompts.dev/neo-brutalism)
+   - Cream paper base, heavy black outlines, solid offset shadows
+   - Yellow posters, red signal tiles, violet field bands, white reading ground
+   - Square corners (radius: 0), tight tracking, exposed seams, immediate feedback
+   - Zero gradients, zero blur, zero soft pills
    ========================================================================= */
 
-/* 1. ویراستار اصیل (Classic Virastar) — Fine paper, crimson lacquer seal */
-[data-theme='virastar'] {
-  --color-paper: #fbf8f1;
-  --color-paper-deep: #efe5d3;
-  --color-ink: #231f1a;
-  --color-ink-soft: #6f6456;
-  --color-brand: #c2362b;
-  --color-brand-deep: #9e261d;
-  --color-accent: #d97706;
-  --color-success: #2d7a4d;
-  --color-surface: #ffffff;
-  --color-border: #ddd2bf;
-  --color-on-brand: #fff6ea;
-  --color-star: #c2362b;
-  --shadow-card: 0 12px 30px rgb(35 31 26 / 0.09), 0 2px 6px rgb(35 31 26 / 0.04);
-  --shadow-soft: 0 4px 14px rgb(35 31 26 / 0.06);
-  --shadow-float: 0 18px 44px rgb(35 31 26 / 0.15);
+:root {
+  --dp-color-ground: #fff5d6;
+  --dp-color-ink: #000000;
+  --dp-color-emphasis: #ffed00;
+  --dp-color-signal: #ff4332;
+  --dp-color-field: #d4bdff;
+  --dp-color-contrast: #ffffff;
+
+  --dp-typography-face: "NeoBrutalismHost", var(--font-vazirmatn), 'Segoe UI', Tahoma, ui-sans-serif, system-ui, sans-serif;
+  --dp-typography-body: 17px;
+  --dp-typography-reading: 16px;
+  --dp-typography-small: 14px;
+  --dp-typography-metadata: 13px;
+  --dp-typography-label: 12px;
+  --dp-typography-reading-weight: 700;
+  --dp-typography-emphasis-weight: 800;
+  --dp-typography-display-weight: 900;
+  --dp-typography-display-tracking: -0.045em;
+
+  --dp-spacing-gap: 24px;
+  --dp-spacing-gap-compact: 18px;
+  --dp-radius-control: 0px;
+  --dp-border-panel: 4px;
+  --dp-border-divider: 3px;
+  --dp-border-annotation: 2px;
+  --dp-motion-interaction: 0s;
 }
 
-/* 2. شب لاجوردی (Lapis Night) — Midnight desert sky, gold stars, OLED dark */
-[data-theme='shabnevis'] {
-  color-scheme: dark;
-  --color-paper: #0b0e17;
-  --color-paper-deep: #06080e;
-  --color-ink: #f0f2f8;
-  --color-ink-soft: #8b93a7;
-  --color-brand: #e6b94d;
-  --color-brand-deep: #cca038;
-  --color-accent: #60a5fa;
-  --color-success: #4ade80;
-  --color-surface: #121726;
-  --color-border: #222b42;
-  --color-on-brand: #0d1017;
-  --color-star: #fcd34d;
-  --shadow-card: 0 12px 34px rgb(0 0 0 / 0.5), 0 2px 6px rgb(0 0 0 / 0.4);
-  --shadow-soft: 0 4px 16px rgb(0 0 0 / 0.38);
-  --shadow-float: 0 18px 48px rgb(0 0 0 / 0.6);
-}
-
-/* 3. فیروزه نیشابور (Neyshabur Turquoise) — Persian ceramic tilework & teal */
-[data-theme='firouzeh'] {
-  --color-paper: #eef7f6;
-  --color-paper-deep: #d7ece9;
-  --color-ink: #0f2625;
-  --color-ink-soft: #4d7472;
-  --color-brand: #008e82;
-  --color-brand-deep: #007369;
-  --color-accent: #c27803;
+@theme {
+  --color-paper: var(--dp-color-ground);
+  --color-paper-deep: var(--dp-color-emphasis);
+  --color-ink: var(--dp-color-ink);
+  --color-ink-soft: #262626;
+  --color-brand: var(--dp-color-signal);
+  --color-brand-deep: #cc291b;
+  --color-accent: var(--dp-color-field);
   --color-success: #15803d;
-  --color-surface: #ffffff;
-  --color-border: #bde0dc;
-  --color-on-brand: #f0fdfa;
-  --color-star: #008e82;
-  --shadow-card: 0 12px 30px rgb(15 38 37 / 0.1), 0 2px 6px rgb(15 38 37 / 0.05);
-  --shadow-soft: 0 4px 14px rgb(15 38 37 / 0.07);
-  --shadow-float: 0 18px 44px rgb(15 38 37 / 0.16);
-}
+  --color-surface: var(--dp-color-contrast);
+  --color-border: #000000;
+  --color-on-brand: #ffffff;
+  --color-star: var(--dp-color-signal);
 
-/* 4. گلستان و زعفران (Golestan Rose & Saffron) — Velvet pomegranate & saffron amber */
-[data-theme='golestan'] {
-  --color-paper: #fdf2f4;
-  --color-paper-deep: #f9e1e6;
-  --color-ink: #2c121f;
-  --color-ink-soft: #7c586e;
-  --color-brand: #a21caf;
-  --color-brand-deep: #86198f;
-  --color-accent: #d97706;
-  --color-success: #16a34a;
-  --color-surface: #ffffff;
-  --color-border: #f3cbd6;
-  --color-on-brand: #fdf4ff;
-  --color-star: #c026d3;
-  --shadow-card: 0 12px 30px rgb(44 18 31 / 0.1), 0 2px 6px rgb(44 18 31 / 0.05);
-  --shadow-soft: 0 4px 14px rgb(44 18 31 / 0.07);
-  --shadow-float: 0 18px 44px rgb(44 18 31 / 0.16);
-}
+  --font-sans: "NeoBrutalismHost", var(--font-vazirmatn), 'Segoe UI', Tahoma, ui-sans-serif, system-ui, sans-serif;
 
-/* 5. ترمه یزد (Yazd Termeh) — Gilded royal carmine & antique brass tapestry */
-[data-theme='termeh'] {
-  --color-paper: #faf3e8;
-  --color-paper-deep: #f0e4ce;
-  --color-ink: #2d1519;
-  --color-ink-soft: #755257;
-  --color-brand: #941b2c;
-  --color-brand-deep: #781321;
-  --color-accent: #b8860b;
-  --color-success: #2e7d32;
-  --color-surface: #fffcf7;
-  --color-border: #e2cca8;
-  --color-on-brand: #fff8ed;
-  --color-star: #941b2c;
-  --shadow-card: 0 12px 30px rgb(45 21 25 / 0.12), 0 2px 6px rgb(45 21 25 / 0.06);
-  --shadow-soft: 0 4px 14px rgb(45 21 25 / 0.08);
-  --shadow-float: 0 18px 44px rgb(45 21 25 / 0.18);
-}
-
-/* 6. سایبر طهران (Cyber Tehran) — Obsidian, electric neon emerald, digital speed */
-[data-theme='cyber-tehran'] {
-  color-scheme: dark;
-  --color-paper: #0a0b10;
-  --color-paper-deep: #040507;
-  --color-ink: #f1f5f9;
-  --color-ink-soft: #78829d;
-  --color-brand: #10b981;
-  --color-brand-deep: #059669;
-  --color-accent: #a855f7;
-  --color-success: #22c55e;
-  --color-surface: #121520;
-  --color-border: #1e2436;
-  --color-on-brand: #021b12;
-  --color-star: #34d399;
-  --shadow-card: 0 12px 34px rgb(0 0 0 / 0.55), 0 2px 6px rgb(0 0 0 / 0.45);
-  --shadow-soft: 0 4px 16px rgb(0 0 0 / 0.4);
-  --shadow-float: 0 18px 48px rgb(16 185 129 / 0.2);
-}
-
-/* 7. مینیمال برفی (Nordic Alabaster) — Pure studio white, sapphire focus, zero noise */
-[data-theme='minimal-barfi'] {
-  --color-paper: #f8fafc;
-  --color-paper-deep: #edf2f7;
-  --color-ink: #0f172a;
-  --color-ink-soft: #64748b;
-  --color-brand: #2563eb;
-  --color-brand-deep: #1d4ed8;
-  --color-accent: #0284c7;
-  --color-success: #16a34a;
-  --color-surface: #ffffff;
-  --color-border: #e2e8f0;
-  --color-on-brand: #eff6ff;
-  --color-star: #2563eb;
-  --shadow-card: 0 10px 25px rgb(15 23 42 / 0.07), 0 2px 6px rgb(15 23 42 / 0.03);
-  --shadow-soft: 0 4px 12px rgb(15 23 42 / 0.05);
-  --shadow-float: 0 16px 40px rgb(15 23 42 / 0.12);
-}
-
-/* 8. کافه نادری (1950s Naderi Cafe & Kraft) — Typewriter keys, kraft paper, espresso */
-[data-theme='cafe-naderi'] {
-  --color-paper: #ede3cf;
-  --color-paper-deep: #ddd0b6;
-  --color-ink: #291c12;
-  --color-ink-soft: #705943;
-  --color-brand: #a63a1e;
-  --color-brand-deep: #862c14;
-  --color-accent: #446353;
-  --color-success: #446353;
-  --color-surface: #f8f2e4;
-  --color-border: #c7b897;
-  --color-on-brand: #fcf7ed;
-  --color-star: #a63a1e;
-  --shadow-card: 0 10px 26px rgb(41 28 18 / 0.16), 0 2px 6px rgb(41 28 18 / 0.08);
-  --shadow-soft: 0 4px 12px rgb(41 28 18 / 0.09);
-  --shadow-float: 0 16px 40px rgb(41 28 18 / 0.22);
-}
-
-/* Legacy theme alias fallbacks so existing saved sessions map gracefully */
-[data-theme='cafe-tehran'] {
-  --color-paper: #ede3cf;
-  --color-paper-deep: #ddd0b6;
-  --color-ink: #291c12;
-  --color-ink-soft: #705943;
-  --color-brand: #a63a1e;
-  --color-brand-deep: #862c14;
-  --color-accent: #446353;
-  --color-success: #446353;
-  --color-surface: #f8f2e4;
-  --color-border: #c7b897;
-  --color-on-brand: #fcf7ed;
-  --color-star: #a63a1e;
-}
-[data-theme='johar-benafsh'] {
-  --color-paper: #fdf2f4;
-  --color-paper-deep: #f9e1e6;
-  --color-ink: #2c121f;
-  --color-ink-soft: #7c586e;
-  --color-brand: #a21caf;
-  --color-brand-deep: #86198f;
-  --color-accent: #d97706;
-  --color-success: #16a34a;
-  --color-surface: #ffffff;
-  --color-border: #f3cbd6;
-  --color-on-brand: #fdf4ff;
-  --color-star: #c026d3;
-}
-[data-theme='mashin-tahrir'] {
-  --color-paper: #ede3cf;
-  --color-paper-deep: #ddd0b6;
-  --color-ink: #291c12;
-  --color-ink-soft: #705943;
-  --color-brand: #a63a1e;
-  --color-brand-deep: #862c14;
-  --color-accent: #446353;
-  --color-success: #446353;
-  --color-surface: #f8f2e4;
-  --color-border: #c7b897;
-  --color-on-brand: #fcf7ed;
-  --color-star: #a63a1e;
-}
-[data-theme='gramophone'] {
-  --color-paper: #faf3e8;
-  --color-paper-deep: #f0e4ce;
-  --color-ink: #2d1519;
-  --color-ink-soft: #755257;
-  --color-brand: #941b2c;
-  --color-brand-deep: #781321;
-  --color-accent: #b8860b;
-  --color-success: #2e7d32;
-  --color-surface: #fffcf7;
-  --color-border: #e2cca8;
-  --color-on-brand: #fff8ed;
-  --color-star: #941b2c;
-}
-[data-theme='ruzname'] {
-  --color-paper: #ede3cf;
-  --color-paper-deep: #ddd0b6;
-  --color-ink: #291c12;
-  --color-ink-soft: #705943;
-  --color-brand: #a63a1e;
-  --color-brand-deep: #862c14;
-  --color-accent: #446353;
-  --color-success: #446353;
-  --color-surface: #f8f2e4;
-  --color-border: #c7b897;
-  --color-on-brand: #fcf7ed;
-  --color-star: #a63a1e;
+  --shadow-card: 6px 6px 0px #000000;
+  --shadow-soft: 4px 4px 0px #000000;
+  --shadow-float: 8px 8px 0px #000000;
 }
 
 /* =========================================================================
-   BASE STYLES & INTERACTIVE CONTROLS
+   THEMES IN NEO-BRUTALISM ARCHITECTURE
+   ========================================================================= */
+
+/* 1. ویراستار اصیل (Authoritative Neo-Brutalist Press Sheet) */
+[data-theme='virastar'] {
+  --dp-color-ground: #fff5d6;
+  --dp-color-ink: #000000;
+  --dp-color-emphasis: #ffed00;
+  --dp-color-signal: #ff4332;
+  --dp-color-field: #d4bdff;
+  --dp-color-contrast: #ffffff;
+  --color-paper: #fff5d6;
+  --color-paper-deep: #ffed00;
+  --color-ink: #000000;
+  --color-ink-soft: #222222;
+  --color-brand: #ff4332;
+  --color-brand-deep: #cc291b;
+  --color-accent: #d4bdff;
+  --color-success: #15803d;
+  --color-surface: #ffffff;
+  --color-border: #000000;
+  --color-on-brand: #ffffff;
+  --color-star: #ff4332;
+  --shadow-card: 6px 6px 0px #000000;
+  --shadow-soft: 4px 4px 0px #000000;
+  --shadow-float: 8px 8px 0px #000000;
+}
+
+/* 2. شب لاجوردی (Neo-Brutalist Dark Ink) */
+[data-theme='shabnevis'] {
+  color-scheme: dark;
+  --dp-color-ground: #0d0e15;
+  --dp-color-ink: #ffffff;
+  --dp-color-emphasis: #ffed00;
+  --dp-color-signal: #ff4332;
+  --dp-color-field: #c084fc;
+  --dp-color-contrast: #181926;
+  --color-paper: #0d0e15;
+  --color-paper-deep: #ffed00;
+  --color-ink: #ffffff;
+  --color-ink-soft: #cccccc;
+  --color-brand: #ffed00;
+  --color-brand-deep: #e6b800;
+  --color-accent: #c084fc;
+  --color-success: #4ade80;
+  --color-surface: #181926;
+  --color-border: #ffffff;
+  --color-on-brand: #000000;
+  --color-star: #ffed00;
+  --shadow-card: 6px 6px 0px #ffffff;
+  --shadow-soft: 4px 4px 0px #ffffff;
+  --shadow-float: 8px 8px 0px #ffed00;
+}
+
+/* 3. فیروزه نیشابور (Neo-Brutalist Electric Teal) */
+[data-theme='firouzeh'] {
+  --dp-color-ground: #e0f7f5;
+  --dp-color-ink: #000000;
+  --dp-color-emphasis: #00f0d4;
+  --dp-color-signal: #ff4332;
+  --dp-color-field: #ffd700;
+  --dp-color-contrast: #ffffff;
+  --color-paper: #e0f7f5;
+  --color-paper-deep: #00f0d4;
+  --color-ink: #000000;
+  --color-ink-soft: #1a2e2b;
+  --color-brand: #00a896;
+  --color-brand-deep: #028090;
+  --color-accent: #ffd700;
+  --color-success: #15803d;
+  --color-surface: #ffffff;
+  --color-border: #000000;
+  --color-on-brand: #ffffff;
+  --color-star: #00a896;
+  --shadow-card: 6px 6px 0px #000000;
+  --shadow-soft: 4px 4px 0px #000000;
+  --shadow-float: 8px 8px 0px #000000;
+}
+
+/* 4. گلستان و زعفران (Neo-Brutalist Pop Rose) */
+[data-theme='golestan'] {
+  --dp-color-ground: #ffeef4;
+  --dp-color-ink: #000000;
+  --dp-color-emphasis: #ff3385;
+  --dp-color-signal: #ffed00;
+  --dp-color-field: #c084fc;
+  --dp-color-contrast: #ffffff;
+  --color-paper: #ffeef4;
+  --color-paper-deep: #ff3385;
+  --color-ink: #000000;
+  --color-ink-soft: #2e1220;
+  --color-brand: #ff3385;
+  --color-brand-deep: #db2777;
+  --color-accent: #ffed00;
+  --color-success: #15803d;
+  --color-surface: #ffffff;
+  --color-border: #000000;
+  --color-on-brand: #ffffff;
+  --color-star: #ff3385;
+  --shadow-card: 6px 6px 0px #000000;
+  --shadow-soft: 4px 4px 0px #000000;
+  --shadow-float: 8px 8px 0px #000000;
+}
+
+/* 5. ترمه یزد (Neo-Brutalist Imperial Carmine) */
+[data-theme='termeh'] {
+  --dp-color-ground: #fff2db;
+  --dp-color-ink: #000000;
+  --dp-color-emphasis: #fbbf24;
+  --dp-color-signal: #b91c1c;
+  --dp-color-field: #8b5cf6;
+  --dp-color-contrast: #ffffff;
+  --color-paper: #fff2db;
+  --color-paper-deep: #fbbf24;
+  --color-ink: #000000;
+  --color-ink-soft: #2b1812;
+  --color-brand: #b91c1c;
+  --color-brand-deep: #991b1b;
+  --color-accent: #fbbf24;
+  --color-success: #15803d;
+  --color-surface: #ffffff;
+  --color-border: #000000;
+  --color-on-brand: #ffffff;
+  --color-star: #b91c1c;
+  --shadow-card: 6px 6px 0px #000000;
+  --shadow-soft: 4px 4px 0px #000000;
+  --shadow-float: 8px 8px 0px #000000;
+}
+
+/* 6. سایبر طهران (Neo-Brutalist Cyberpunk) */
+[data-theme='cyber-tehran'] {
+  color-scheme: dark;
+  --dp-color-ground: #07090e;
+  --dp-color-ink: #00ff9d;
+  --dp-color-emphasis: #00ff9d;
+  --dp-color-signal: #ff0055;
+  --dp-color-field: #a855f7;
+  --dp-color-contrast: #10141f;
+  --color-paper: #07090e;
+  --color-paper-deep: #00ff9d;
+  --color-ink: #f0fdf4;
+  --color-ink-soft: #86efac;
+  --color-brand: #00ff9d;
+  --color-brand-deep: #059669;
+  --color-accent: #ff0055;
+  --color-success: #00ff9d;
+  --color-surface: #10141f;
+  --color-border: #00ff9d;
+  --color-on-brand: #000000;
+  --color-star: #00ff9d;
+  --shadow-card: 6px 6px 0px #00ff9d;
+  --shadow-soft: 4px 4px 0px #00ff9d;
+  --shadow-float: 8px 8px 0px #ff0055;
+}
+
+/* 7. مینیمال برفی (Neo-Brutalist Stark Mono) */
+[data-theme='minimal-barfi'] {
+  --dp-color-ground: #ffffff;
+  --dp-color-ink: #000000;
+  --dp-color-emphasis: #ffed00;
+  --dp-color-signal: #000000;
+  --dp-color-field: #e2e8f0;
+  --dp-color-contrast: #ffffff;
+  --color-paper: #ffffff;
+  --color-paper-deep: #f1f5f9;
+  --color-ink: #000000;
+  --color-ink-soft: #334155;
+  --color-brand: #000000;
+  --color-brand-deep: #1e293b;
+  --color-accent: #ffed00;
+  --color-success: #15803d;
+  --color-surface: #ffffff;
+  --color-border: #000000;
+  --color-on-brand: #ffffff;
+  --color-star: #000000;
+  --shadow-card: 6px 6px 0px #000000;
+  --shadow-soft: 4px 4px 0px #000000;
+  --shadow-float: 8px 8px 0px #000000;
+}
+
+/* 8. کافه نادری (Neo-Brutalist Kraft & Espresso) */
+[data-theme='cafe-naderi'] {
+  --dp-color-ground: #eedfc5;
+  --dp-color-ink: #1e130a;
+  --dp-color-emphasis: #eab308;
+  --dp-color-signal: #b45309;
+  --dp-color-field: #84cc16;
+  --dp-color-contrast: #fbf5eb;
+  --color-paper: #eedfc5;
+  --color-paper-deep: #eab308;
+  --color-ink: #1e130a;
+  --color-ink-soft: #452a17;
+  --color-brand: #b45309;
+  --color-brand-deep: #92400e;
+  --color-accent: #84cc16;
+  --color-success: #15803d;
+  --color-surface: #fbf5eb;
+  --color-border: #1e130a;
+  --color-on-brand: #ffffff;
+  --color-star: #b45309;
+  --shadow-card: 6px 6px 0px #1e130a;
+  --shadow-soft: 4px 4px 0px #1e130a;
+  --shadow-float: 8px 8px 0px #1e130a;
+}
+
+/* Aliases for legacy saved sessions */
+[data-theme='cafe-tehran'] { --color-paper: #eedfc5; --color-border: #1e130a; }
+[data-theme='johar-benafsh'] { --color-paper: #ffeef4; --color-border: #000000; }
+[data-theme='mashin-tahrir'] { --color-paper: #eedfc5; --color-border: #1e130a; }
+[data-theme='gramophone'] { --color-paper: #fff2db; --color-border: #000000; }
+[data-theme='ruzname'] { --color-paper: #eedfc5; --color-border: #1e130a; }
+
+/* =========================================================================
+   BASE NEO-BRUTALIST STYLING
    ========================================================================= */
 
 @layer base {
@@ -267,739 +283,341 @@
     background-color: var(--color-paper);
     color: var(--color-ink);
     min-height: 100dvh;
-    transition: background-color 0.35s ease, color 0.25s ease;
+    font-family: var(--dp-typography-face);
+    transition: none; /* Neo-brutalist interaction is immediate */
+  }
+
+  ::selection {
+    background-color: var(--dp-color-emphasis);
+    color: #000000;
   }
 }
 
-/* Base control tokens */
+/* =========================================================================
+   NEO-BRUTALIST COMPONENTS (0px Radius, Thick Outlines, Solid Hard Shadows)
+   ========================================================================= */
+
+/* Primary Action Button */
 .v-btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  border-radius: 9999px;
-  background-color: var(--color-brand);
-  color: var(--color-on-brand);
-  font-weight: 700;
-  padding: 0.75rem 1.25rem;
-  transition: transform 0.15s ease, box-shadow 0.18s ease, filter 0.15s ease;
+  border-radius: var(--dp-radius-control);
+  border: var(--dp-border-divider) solid var(--color-border);
+  background-color: var(--dp-color-signal);
+  color: #ffffff;
+  font-weight: 900;
+  font-size: 1rem;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 4px 4px 0px var(--color-border);
   cursor: pointer;
   user-select: none;
+  transition: transform 0.05s ease, box-shadow 0.05s ease;
 }
 .v-btn-primary:hover:not(:disabled) {
-  filter: brightness(1.06);
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0px var(--color-border);
 }
 .v-btn-primary:active:not(:disabled) {
-  transform: scale(0.98);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px var(--color-border);
 }
 .v-btn-primary:disabled {
-  opacity: 0.45;
+  opacity: 0.4;
   cursor: not-allowed;
+  transform: none;
+  box-shadow: 2px 2px 0px var(--color-border);
+}
+.v-btn-primary:focus-visible {
+  outline: 3px solid #000000;
+  outline-offset: 2px;
 }
 
+/* Ghost / Secondary Button */
 .v-btn-ghost {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  border-radius: 9999px;
-  border: 1px solid var(--color-border);
-  background-color: transparent;
+  border-radius: var(--dp-radius-control);
+  border: var(--dp-border-divider) solid var(--color-border);
+  background-color: var(--color-surface);
   color: var(--color-ink);
-  font-weight: 600;
-  padding: 0.5rem 0.9rem;
+  font-weight: 800;
+  padding: 0.5rem 1rem;
   font-size: 0.875rem;
-  transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.12s ease;
+  box-shadow: 3px 3px 0px var(--color-border);
   cursor: pointer;
+  transition: transform 0.05s ease, box-shadow 0.05s ease;
 }
 .v-btn-ghost:hover:not(:disabled) {
-  background-color: color-mix(in srgb, var(--color-brand) 8%, transparent);
-  border-color: var(--color-brand);
+  background-color: var(--dp-color-emphasis);
+  color: #000000;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0px var(--color-border);
 }
 .v-btn-ghost:active:not(:disabled) {
-  transform: scale(0.97);
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0px var(--color-border);
+}
+.v-btn-ghost:focus-visible {
+  outline: 3px solid #000000;
+  outline-offset: 2px;
 }
 
+/* Chips / Tags */
 .v-chip {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  border-radius: 9999px;
-  border: 1px solid var(--color-border);
+  border-radius: var(--dp-radius-control);
+  border: var(--dp-border-annotation) solid var(--color-border);
   background-color: var(--color-surface);
   color: var(--color-ink);
   padding: 0.4rem 0.85rem;
   font-size: 0.875rem;
-  font-weight: 600;
-  transition: all 0.15s ease;
+  font-weight: 800;
+  box-shadow: 2px 2px 0px var(--color-border);
   cursor: pointer;
   user-select: none;
+  transition: transform 0.05s ease, box-shadow 0.05s ease;
 }
 .v-chip:hover {
-  border-color: var(--color-brand);
+  background-color: var(--dp-color-emphasis);
+  color: #000000;
+  transform: translate(-1px, -1px);
+  box-shadow: 3px 3px 0px var(--color-border);
 }
 .v-chip:active {
-  transform: scale(0.96);
+  transform: translate(1px, 1px);
+  box-shadow: 1px 1px 0px var(--color-border);
 }
-
 .v-chip-active {
-  background-color: var(--color-brand);
-  border-color: var(--color-brand);
-  color: var(--color-on-brand);
+  background-color: var(--dp-color-emphasis);
+  color: #000000;
+  border-color: var(--color-border);
+  box-shadow: 3px 3px 0px var(--color-border);
+  font-weight: 900;
 }
 
-.v-card {
-  border-radius: 1.25rem;
-  border: 1px solid var(--color-border);
+/* Panels & Cards */
+.v-card, .v-folio {
+  border-radius: var(--dp-radius-control);
+  border: var(--dp-border-panel) solid var(--color-border);
   background-color: var(--color-surface);
   color: var(--color-ink);
-  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  box-shadow: 6px 6px 0px var(--color-border);
+  position: relative;
 }
 
+/* Input Fields */
 .v-field {
   width: 100%;
-  border-radius: 1rem;
-  border: 1px solid var(--color-border);
+  border-radius: var(--dp-radius-control);
+  border: var(--dp-border-divider) solid var(--color-border);
   background-color: var(--color-surface);
   color: var(--color-ink);
-  padding: 0.75rem 1rem;
+  padding: 0.85rem 1rem;
+  font-weight: 700;
   outline: none;
-  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+  box-shadow: 3px 3px 0px var(--color-border);
 }
 .v-field:focus {
-  border-color: var(--color-brand);
+  background-color: #ffffff;
+  outline: 3px solid var(--color-border);
+  box-shadow: 5px 5px 0px var(--color-border);
 }
 
+/* Header Masthead */
 .v-header {
   position: sticky;
   top: 0;
-  z-index: 20;
-  border-bottom: 1px solid var(--color-border);
-  background-color: color-mix(in srgb, var(--color-paper) 88%, transparent);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-
-/* =========================================================================
-   ARTISANAL BOOKCRAFT & MANUSCRIPT DESK SYSTEM (میز کار هنرورزانه ویراستار)
-   ========================================================================= */
-
-/* The Master Writing Folio — physical manuscript sheet with depth & deckled margin */
-.v-folio {
-  position: relative;
-  border-radius: 1.5rem;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  box-shadow:
-    0 1px 3px rgb(0 0 0 / 0.05),
-    0 10px 30px rgb(0 0 0 / 0.06),
-    0 25px 60px rgb(0 0 0 / 0.05),
-    inset 0 0 0 1px rgb(255 255 255 / 0.6);
-  transition: box-shadow 0.25s ease, border-color 0.25s ease;
-}
-
-[data-theme='shabnevis'] .v-folio,
-[data-theme='cyber-tehran'] .v-folio {
-  box-shadow:
-    0 1px 3px rgb(0 0 0 / 0.4),
-    0 14px 40px rgb(0 0 0 / 0.5),
-    0 30px 70px rgb(0 0 0 / 0.6),
-    inset 0 1px 0 rgb(255 255 255 / 0.08);
-}
-
-/* Calligraphic corner brackets (گوشه‌بندی تذهیب) */
-.v-folio::before,
-.v-folio::after {
-  content: '';
-  position: absolute;
-  width: 14px;
-  height: 14px;
-  pointer-events: none;
-  opacity: 0.35;
-  transition: opacity 0.2s ease;
-}
-.v-folio::before {
-  top: 12px;
-  right: 12px;
-  border-top: 2px solid var(--color-brand);
-  border-right: 2px solid var(--color-brand);
-  border-top-right-radius: 4px;
-}
-.v-folio::after {
-  bottom: 12px;
-  left: 12px;
-  border-bottom: 2px solid var(--color-brand);
-  border-left: 2px solid var(--color-brand);
-  border-bottom-left-radius: 4px;
-}
-.v-folio:hover::before,
-.v-folio:hover::after {
-  opacity: 0.75;
-}
-
-/* The Master Lacquer Seal Button (مهر لاکی ویراستار) */
-.v-seal-master {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.65rem;
-  padding: 0.9rem 2.25rem;
-  border-radius: 9999px;
-  font-weight: 900;
-  font-size: 1.05rem;
-  color: var(--color-on-brand);
-  background-image: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--color-brand) 70%, #fff) 0%, var(--color-brand) 55%, var(--color-brand-deep) 100%);
-  border: 2px solid color-mix(in srgb, var(--color-brand) 80%, #fff);
-  box-shadow:
-    0 8px 24px color-mix(in srgb, var(--color-brand) 40%, transparent),
-    inset 0 2px 2px rgb(255 255 255 / 0.5),
-    inset 0 -3px 4px rgb(0 0 0 / 0.3),
-    0 0 0 4px color-mix(in srgb, var(--color-brand) 18%, transparent);
-  transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
-  cursor: pointer;
-  user-select: none;
-}
-.v-seal-master:hover:not(:disabled) {
-  transform: translateY(-2px) scale(1.02);
-  box-shadow:
-    0 12px 32px color-mix(in srgb, var(--color-brand) 50%, transparent),
-    inset 0 2px 3px rgb(255 255 255 / 0.6),
-    inset 0 -3px 4px rgb(0 0 0 / 0.25),
-    0 0 0 6px color-mix(in srgb, var(--color-brand) 25%, transparent);
-}
-.v-seal-master:active:not(:disabled) {
-  transform: translateY(2px) scale(0.97);
-  box-shadow:
-    0 3px 10px color-mix(in srgb, var(--color-brand) 45%, transparent),
-    inset 0 3px 6px rgb(0 0 0 / 0.4),
-    0 0 0 3px color-mix(in srgb, var(--color-brand) 15%, transparent);
-}
-.v-seal-master:disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-  transform: none;
-}
-
-/* Drafting Ruler Toolbar (خط‌کش و نوار قلم) */
-.v-ruler-toolbar {
-  background-color: color-mix(in srgb, var(--color-paper-deep) 75%, transparent);
-  border-top: 1px solid var(--color-border);
-  border-bottom-left-radius: 1.5rem;
-  border-bottom-right-radius: 1.5rem;
-  backdrop-filter: blur(8px);
-}
-
-/* Calligrapher's Stylus Tray (قلم‌دان سبک‌ها) */
-.v-qalamdan {
-  background-color: color-mix(in srgb, var(--color-surface) 60%, var(--color-paper-deep));
-  border: 1px solid var(--color-border);
-  border-radius: 1.25rem;
-  box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.04);
-}
-
-/* Master editorial marginalia highlight */
-.v-marginalia-diff-del {
-  background-color: color-mix(in srgb, #ef4444 14%, transparent);
-  color: #dc2626;
-  text-decoration: line-through;
-  text-decoration-color: #ef4444;
-  padding: 0 4px;
-  border-radius: 4px;
-  margin: 0 1px;
-}
-.v-marginalia-diff-add {
-  background-color: color-mix(in srgb, #10b981 18%, transparent);
-  color: #047857;
-  font-weight: 800;
-  padding: 0 4px;
-  border-radius: 4px;
-  margin: 0 1px;
-  box-shadow: 0 0 0 1px color-mix(in srgb, #10b981 30%, transparent);
-}
-
-/* Luxury gemstone status indicator */
-.v-gem-status {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.35rem 0.85rem;
-  border-radius: 9999px;
-  font-size: 0.75rem;
-  font-weight: 800;
-  border: 1px solid var(--color-border);
-  background-color: color-mix(in srgb, var(--color-surface) 80%, transparent);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.5), 0 2px 6px rgb(0 0 0 / 0.04);
+  z-index: 40;
+  border-bottom: var(--dp-border-panel) solid var(--color-border);
+  background-color: var(--color-paper);
 }
 
 .v-link {
-  color: var(--color-ink-soft);
-  font-weight: 600;
-  transition: color 0.15s ease;
+  color: var(--color-ink);
+  font-weight: 800;
+  border: 2px solid transparent;
+  padding: 0.35rem 0.75rem;
 }
 .v-link:hover,
 .v-link[aria-current='page'] {
-  color: var(--color-brand);
+  background-color: var(--dp-color-emphasis);
+  border-color: var(--color-border);
+  color: #000000;
+  box-shadow: 2px 2px 0px var(--color-border);
 }
 
+/* Bottom Nav */
 .v-bottomnav {
   position: fixed;
   bottom: 0;
   inset-inline: 0;
-  z-index: 20;
-  border-top: 1px solid var(--color-border);
-  background-color: color-mix(in srgb, var(--color-paper) 92%, transparent);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
-  transition: background-color 0.3s ease, border-color 0.3s ease;
-}
-.v-bottomnav a {
-  color: var(--color-ink-soft);
-  transition: color 0.15s ease, transform 0.15s ease;
-}
-.v-bottomnav a:hover,
-.v-bottomnav a[aria-current='page'] {
-  color: var(--color-brand);
+  z-index: 40;
+  border-top: var(--dp-border-panel) solid var(--color-border);
+  background-color: var(--color-paper);
 }
 
 /* =========================================================================
-   AMBIENT TEXTURES & BACKGROUND IDENTITY PER THEME
+   NEO-BRUTALIST SPECIFIC PATTERNS & TOKENS
    ========================================================================= */
 
-/* 1. ویراستار اصیل: بافت بسیار ریز و تمیز کاغذ دست‌ساز */
-[data-theme='virastar'] body {
-  background-image: radial-gradient(rgb(35 31 26 / 0.04) 1px, transparent 1px);
-  background-size: 24px 24px;
+/* Oversized Headline Strip */
+.nb-strip-yellow {
+  background-color: var(--dp-color-emphasis);
+  color: #000000;
+  border: var(--dp-border-divider) solid #000000;
+  box-shadow: 4px 4px 0px #000000;
+  font-weight: 900;
+  padding: 0.5rem 1rem;
+  display: inline-block;
 }
 
-/* 2. شب لاجوردی: کهکشان پرستاره در شب کویر با گرادیان طلایی ملایم */
-[data-theme='shabnevis'] body {
-  background-image:
-    radial-gradient(1.4px 1.4px at 20% 30%, rgb(255 255 255 / 0.25), transparent 100%),
-    radial-gradient(1px 1px at 70% 18%, rgb(255 255 255 / 0.2), transparent 100%),
-    radial-gradient(1.2px 1.2px at 45% 62%, rgb(255 255 255 / 0.18), transparent 100%),
-    radial-gradient(1px 1px at 88% 70%, rgb(255 255 255 / 0.15), transparent 100%),
-    radial-gradient(1.1px 1.1px at 8% 80%, rgb(255 255 255 / 0.18), transparent 100%),
-    radial-gradient(120% 55% at 50% 0%, rgb(230 185 77 / 0.08), transparent 60%);
+.nb-strip-black {
+  background-color: #000000;
+  color: #ffffff;
+  border: var(--dp-border-divider) solid #000000;
+  box-shadow: 4px 4px 0px #000000;
+  font-weight: 900;
+  padding: 0.5rem 1rem;
+  display: inline-block;
 }
 
-/* 3. فیروزه نیشابور: بافت ملایم لعاب کاشی معرق اصفهان */
-[data-theme='firouzeh'] body {
-  background-image:
-    radial-gradient(rgb(0 142 130 / 0.06) 1.2px, transparent 1.2px),
-    radial-gradient(100% 45% at 50% 0%, rgb(0 142 130 / 0.08), transparent 60%);
-  background-size: 20px 20px, 100% 100%;
+.nb-strip-red {
+  background-color: var(--dp-color-signal);
+  color: #ffffff;
+  border: var(--dp-border-divider) solid #000000;
+  box-shadow: 4px 4px 0px #000000;
+  font-weight: 900;
+  padding: 0.5rem 1rem;
+  display: inline-block;
 }
 
-/* 4. گلستان و زعفران: گرمای مخملین گلبرگ و هالهٔ نرم اناری */
-[data-theme='golestan'] body {
-  background-image:
-    radial-gradient(rgb(162 28 175 / 0.04) 1px, transparent 1px),
-    radial-gradient(110% 50% at 50% 0%, rgb(162 28 175 / 0.07), transparent 55%);
-  background-size: 22px 22px, 100% 100%;
+.nb-strip-violet {
+  background-color: var(--dp-color-field);
+  color: #000000;
+  border: var(--dp-border-divider) solid #000000;
+  box-shadow: 4px 4px 0px #000000;
+  font-weight: 900;
+  padding: 0.5rem 1rem;
+  display: inline-block;
 }
 
-/* 5. ترمه یزد: خطوط بافت ابریشم و زربفت صفوی */
-[data-theme='termeh'] body {
-  background-image:
-    repeating-linear-gradient(45deg, rgb(148 27 44 / 0.02) 0 1px, transparent 1px 12px),
-    radial-gradient(90% 45% at 50% 0%, rgb(184 134 11 / 0.08), transparent 60%);
-  background-size: 100% 100%;
+/* Master Brutalist Seal Button */
+.v-seal-master {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1rem 2rem;
+  border-radius: var(--dp-radius-control);
+  font-weight: 900;
+  font-size: 1.15rem;
+  background-color: var(--dp-color-emphasis);
+  color: #000000;
+  border: var(--dp-border-panel) solid #000000;
+  box-shadow: 6px 6px 0px #000000;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.05s ease, box-shadow 0.05s ease;
+}
+.v-seal-master:hover:not(:disabled) {
+  transform: translate(-3px, -3px);
+  box-shadow: 9px 9px 0px #000000;
+  background-color: #ffe600;
+}
+.v-seal-master:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  box-shadow: 3px 3px 0px #000000;
+}
+.v-seal-master:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: 3px 3px 0px #000000;
 }
 
-/* 6. سایبر طهران: ماتریس دیجیتال و شبکهٔ اسکن شتابان */
-[data-theme='cyber-tehran'] body {
-  background-image:
-    linear-gradient(rgb(16 185 129 / 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgb(16 185 129 / 0.04) 1px, transparent 1px);
-  background-size: 28px 28px;
+/* Ruled Ledger Section */
+.nb-ledger {
+  border: var(--dp-border-panel) solid #000000;
+  background-color: var(--color-surface);
+  box-shadow: 6px 6px 0px #000000;
+}
+.nb-ledger-row {
+  border-bottom: var(--dp-border-divider) solid #000000;
+}
+.nb-ledger-row:last-child {
+  border-bottom: none;
 }
 
-/* 7. مینیمال برفی: زمینهٔ خالص و سپید بدون نویز */
-[data-theme='minimal-barfi'] body {
-  background-image: none;
+/* Violet Band / Explanation Container */
+.nb-violet-band {
+  background-color: var(--dp-color-field);
+  border: var(--dp-border-panel) solid #000000;
+  box-shadow: 6px 6px 0px #000000;
+  color: #000000;
+  padding: 1.25rem;
 }
 
-/* 8. کافه نادری: خطوط افقی دفتری ماشین‌تحریر و بافت کاغذ کرافت */
-[data-theme='cafe-naderi'] body {
-  background-image:
-    repeating-linear-gradient(0deg, rgb(41 28 18 / 0.05) 0, rgb(41 28 18 / 0.05) 1px, transparent 1px, transparent 34px),
-    radial-gradient(rgb(41 28 18 / 0.04) 1px, transparent 1px);
-  background-size: 100% 100%, 16px 16px;
+/* Red Signal Tile */
+.nb-signal-tile {
+  background-color: var(--dp-color-signal);
+  color: #ffffff;
+  border: var(--dp-border-divider) solid #000000;
+  box-shadow: 4px 4px 0px #000000;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* =========================================================================
-   THEME-SPECIFIC BUTTON DRESSING, FOCUS & SELECTION
-   ========================================================================= */
-
-/* 1. ویراستار اصیل */
-[data-theme='virastar'] .v-btn-primary {
-  box-shadow: 0 4px 14px rgb(194 54 43 / 0.28), inset 0 1px 0 rgb(255 255 255 / 0.3);
-}
-[data-theme='virastar'] .v-btn-primary:active:not(:disabled) {
-  box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.25), 0 1px 0 rgb(0 0 0 / 0.2);
-  transform: translateY(1px) scale(0.985);
-}
-[data-theme='virastar'] .v-field:focus {
-  box-shadow: inset 0 2px 4px rgb(35 31 26 / 0.05), 0 0 0 4px color-mix(in srgb, var(--color-brand) 15%, transparent);
-}
-[data-theme='virastar'] ::selection {
-  background-color: var(--color-brand);
-  color: var(--color-on-brand);
+/* Gemstone status indicator in brutalist style */
+.v-gem-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--dp-radius-control);
+  font-size: 0.75rem;
+  font-weight: 900;
+  border: var(--dp-border-annotation) solid #000000;
+  background-color: var(--dp-color-contrast);
+  box-shadow: 2px 2px 0px #000000;
+  color: #000000;
 }
 
-/* 2. شب لاجوردی */
-[data-theme='shabnevis'] .v-btn-primary {
-  box-shadow: 0 6px 24px rgb(230 185 77 / 0.32), inset 0 1px 0 rgb(255 255 255 / 0.4);
-}
-[data-theme='shabnevis'] .v-btn-primary:hover:not(:disabled) {
-  box-shadow: 0 8px 30px rgb(230 185 77 / 0.45);
-}
-[data-theme='shabnevis'] .v-btn-primary:active:not(:disabled) {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-brand) 24%, transparent), 0 4px 16px rgb(230 185 77 / 0.35);
-}
-[data-theme='shabnevis'] .v-field {
-  box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.5), 0 1px 0 rgb(255 255 255 / 0.05);
-}
-[data-theme='shabnevis'] .v-field:focus {
-  box-shadow: inset 0 2px 6px rgb(0 0 0 / 0.45), 0 0 0 3px color-mix(in srgb, var(--color-brand) 25%, transparent);
-}
-[data-theme='shabnevis'] ::selection {
-  background-color: var(--color-brand);
-  color: var(--color-on-brand);
+/* Drafting Ruler Toolbar */
+.v-ruler-toolbar {
+  background-color: var(--dp-color-emphasis);
+  border-top: var(--dp-border-divider) solid #000000;
+  color: #000000;
 }
 
-/* 3. فیروزه نیشابور */
-[data-theme='firouzeh'] .v-btn-primary {
-  border-radius: 14px;
-  box-shadow: 0 6px 20px rgb(0 142 130 / 0.3), inset 0 1px 0 rgb(255 255 255 / 0.35);
+/* Editorial Marginalia in Neo-Brutalism */
+.v-marginalia-diff-del {
+  background-color: var(--dp-color-signal);
+  color: #ffffff;
+  text-decoration: line-through;
+  padding: 1px 5px;
+  border: 1px solid #000000;
+  margin: 0 2px;
+  font-weight: 800;
 }
-[data-theme='firouzeh'] .v-btn-primary:hover:not(:disabled) {
-  box-shadow: 0 8px 26px rgb(0 142 130 / 0.42);
-}
-[data-theme='firouzeh'] .v-btn-primary:active:not(:disabled) {
-  transform: translateY(2px) scale(0.985);
-  box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.25), 0 2px 8px rgb(0 142 130 / 0.25);
-}
-[data-theme='firouzeh'] .v-chip {
-  border-radius: 12px;
-}
-[data-theme='firouzeh'] .v-chip-active {
-  border-radius: 12px;
-}
-[data-theme='firouzeh'] .v-field {
-  border-radius: 12px;
-}
-[data-theme='firouzeh'] .v-field:focus {
-  box-shadow: inset 0 2px 5px rgb(15 38 37 / 0.08), 0 0 0 4px color-mix(in srgb, var(--color-brand) 18%, transparent);
-}
-[data-theme='firouzeh'] ::selection {
-  background-color: var(--color-brand);
-  color: var(--color-on-brand);
+.v-marginalia-diff-add {
+  background-color: var(--dp-color-emphasis);
+  color: #000000;
+  font-weight: 900;
+  padding: 1px 5px;
+  border: 2px solid #000000;
+  box-shadow: 2px 2px 0px #000000;
+  margin: 0 2px;
 }
 
-/* 4. گلستان و زعفران */
-[data-theme='golestan'] .v-btn-primary {
-  border-radius: 9999px;
-  box-shadow: 0 6px 22px rgb(162 28 175 / 0.3), inset 0 1px 0 rgb(255 255 255 / 0.3);
-}
-[data-theme='golestan'] .v-btn-primary:hover:not(:disabled) {
-  box-shadow: 0 8px 28px rgb(162 28 175 / 0.4);
-}
-[data-theme='golestan'] .v-btn-primary:active:not(:disabled) {
-  transform: translateY(1px) scale(0.98);
-  box-shadow: 0 0 0 5px color-mix(in srgb, var(--color-brand) 20%, transparent);
-}
-[data-theme='golestan'] .v-field:focus {
-  box-shadow: inset 0 2px 5px rgb(44 18 31 / 0.08), 0 0 0 4px color-mix(in srgb, var(--color-brand) 16%, transparent);
-}
-[data-theme='golestan'] ::selection {
-  background-color: var(--color-brand);
-  color: var(--color-on-brand);
-}
-
-/* 5. ترمه یزد */
-[data-theme='termeh'] .v-btn-primary {
-  border-radius: 10px;
-  border: 1px solid #b8860b;
-  box-shadow: 0 6px 20px rgb(148 27 44 / 0.32), inset 0 1px 0 rgb(255 255 255 / 0.35);
-  background-image: linear-gradient(180deg, #aa2437 0%, var(--color-brand) 60%, var(--color-brand-deep) 100%);
-}
-[data-theme='termeh'] .v-btn-primary:hover:not(:disabled) {
-  box-shadow: 0 8px 26px rgb(148 27 44 / 0.42);
-}
-[data-theme='termeh'] .v-btn-primary:active:not(:disabled) {
-  transform: translateY(2px);
-  box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.3), 0 1px 0 rgb(0 0 0 / 0.2);
-}
-[data-theme='termeh'] .v-header {
-  border-bottom: 2px solid #b8860b;
-}
-[data-theme='termeh'] .v-field:focus {
-  border-color: var(--color-brand);
-  box-shadow: inset 0 2px 5px rgb(45 21 25 / 0.1), 0 0 0 3px color-mix(in srgb, #b8860b 25%, transparent);
-}
-[data-theme='termeh'] ::selection {
-  background-color: var(--color-brand);
-  color: var(--color-on-brand);
-}
-
-/* 6. سایبر طهران */
-[data-theme='cyber-tehran'] .v-btn-primary {
-  border-radius: 6px;
-  font-family: monospace, var(--font-sans);
-  letter-spacing: -0.02em;
-  box-shadow: 0 0 18px rgb(16 185 129 / 0.35), inset 0 1px 0 rgb(255 255 255 / 0.4);
-}
-[data-theme='cyber-tehran'] .v-btn-primary:hover:not(:disabled) {
-  box-shadow: 0 0 28px rgb(16 185 129 / 0.55);
-}
-[data-theme='cyber-tehran'] .v-btn-primary:active:not(:disabled) {
-  transform: translateY(1px);
-  box-shadow: 0 0 10px rgb(16 185 129 / 0.6);
-}
-[data-theme='cyber-tehran'] .v-chip {
-  border-radius: 6px;
-}
-[data-theme='cyber-tehran'] .v-chip-active {
-  border-radius: 6px;
-}
-[data-theme='cyber-tehran'] .v-card {
-  border-radius: 8px;
-}
-[data-theme='cyber-tehran'] .v-field {
-  border-radius: 6px;
-  background-color: #0e111a;
-  border-color: #242c42;
-}
-[data-theme='cyber-tehran'] .v-field:focus {
-  border-color: #10b981;
-  box-shadow: 0 0 14px rgb(16 185 129 / 0.3), inset 0 2px 4px rgb(0 0 0 / 0.5);
-}
-[data-theme='cyber-tehran'] ::selection {
-  background-color: #10b981;
-  color: #021b12;
-}
-
-/* 7. مینیمال برفی */
-[data-theme='minimal-barfi'] .v-btn-primary {
-  border-radius: 12px;
-  box-shadow: 0 4px 14px rgb(37 99 235 / 0.25);
-  transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease;
-}
-[data-theme='minimal-barfi'] .v-btn-primary:hover:not(:disabled) {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 18px rgb(37 99 235 / 0.32);
-}
-[data-theme='minimal-barfi'] .v-btn-primary:active:not(:disabled) {
-  transform: scale(0.97);
-}
-[data-theme='minimal-barfi'] .v-chip {
-  border-radius: 10px;
-}
-[data-theme='minimal-barfi'] .v-chip-active {
-  border-radius: 10px;
-}
-[data-theme='minimal-barfi'] .v-card {
-  border-radius: 14px;
-}
-[data-theme='minimal-barfi'] .v-field {
-  border-radius: 12px;
-}
-[data-theme='minimal-barfi'] .v-field:focus {
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 18%, transparent);
-}
-[data-theme='minimal-barfi'] ::selection {
-  background-color: var(--color-brand);
-  color: var(--color-on-brand);
-}
-
-/* 8. کافه نادری */
-[data-theme='cafe-naderi'] .v-btn-primary {
-  border-radius: 8px;
-  border-width: 2px;
-  border-color: #862c14;
-  background-image: linear-gradient(180deg, #b84324 0%, var(--color-brand) 55%, var(--color-brand-deep) 100%);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.3), inset 0 -2px 0 rgb(0 0 0 / 0.2), 0 2px 0 #5f1f0e, 0 5px 12px rgb(41 28 18 / 0.2);
-}
-[data-theme='cafe-naderi'] .v-btn-primary:active:not(:disabled) {
-  transform: translateY(2px);
-  box-shadow: inset 0 2px 4px rgb(0 0 0 / 0.3), 0 1px 0 rgb(0 0 0 / 0.2);
-}
-[data-theme='cafe-naderi'] .v-chip {
-  border-radius: 6px;
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.35), 0 1px 0 rgb(41 28 18 / 0.08);
-}
-[data-theme='cafe-naderi'] .v-chip:active {
-  transform: translateY(1px);
-}
-[data-theme='cafe-naderi'] .v-field {
-  border-radius: 8px;
-  border-color: #bfae8c;
-  background-color: #faf3e1;
-  background-image: repeating-linear-gradient(0deg, rgb(41 28 18 / 0.05) 0, rgb(41 28 18 / 0.05) 1px, transparent 1px, transparent 32px);
-  box-shadow: inset 0 2px 5px rgb(41 28 18 / 0.12), 0 1px 0 rgb(255 255 255 / 0.6);
-}
-[data-theme='cafe-naderi'] .v-field:focus {
-  border-color: var(--color-brand);
-  box-shadow: inset 0 2px 5px rgb(41 28 18 / 0.1), 0 0 0 3px color-mix(in srgb, var(--color-brand) 18%, transparent);
-}
-[data-theme='cafe-naderi'] ::selection {
-  background-color: var(--color-brand);
-  color: var(--color-on-brand);
-}
-
-/* =========================================================================
-   ANIMATIONS & KEYFRAMES
-   ========================================================================= */
-
-@keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes star-turn {
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes star-breathe {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.035);
-  }
-}
-
-.animate-fade-up {
-  animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-}
-
-.animate-star-turn {
-  animation: star-turn 28s linear infinite;
-}
-
-.animate-star-breathe {
-  animation: star-breathe 7s ease-in-out infinite;
-}
-
-.animate-star-busy {
-  animation: star-turn 0.9s linear infinite;
-}
-
-/* Settle animation upon switching theme */
-@media (prefers-reduced-motion: no-preference) {
-  @keyframes theme-settle {
-    0% {
-      opacity: 0.45;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
-  html.theme-settle {
-    animation: theme-settle 0.35s ease both;
-  }
-
-  @keyframes twinkle {
-    0%,
-    100% {
-      opacity: 0.4;
-    }
-    50% {
-      opacity: 0.95;
-    }
-  }
-
-  @keyframes lamp-breath {
-    0%,
-    100% {
-      opacity: 0.45;
-    }
-    50% {
-      opacity: 0.95;
-    }
-  }
-
-  @keyframes gold-ribbon {
-    0% {
-      background-position: 200% 0;
-    }
-    100% {
-      background-position: -200% 0;
-    }
-  }
-
-  @keyframes cyber-scan {
-    0% {
-      background-position: 0 0;
-    }
-    100% {
-      background-position: 0 56px;
-    }
-  }
-}
-
-/* Ambient layer above paper, below content */
-body {
-  isolation: isolate;
-}
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  pointer-events: none;
-}
-
-/* Animated theme overlays */
-@media (prefers-reduced-motion: no-preference) {
-  /* Shabnevis: twinkling starfield */
-  [data-theme='shabnevis'] body::after {
-    background-image:
-      radial-gradient(1.2px 1.2px at 12% 22%, rgb(255 255 255 / 0.5), transparent 100%),
-      radial-gradient(1px 1px at 36% 12%, rgb(255 255 255 / 0.42), transparent 100%),
-      radial-gradient(1.4px 1.4px at 60% 28%, rgb(255 255 255 / 0.38), transparent 100%),
-      radial-gradient(1px 1px at 82% 18%, rgb(255 255 255 / 0.45), transparent 100%),
-      radial-gradient(1.1px 1.1px at 28% 48%, rgb(255 255 255 / 0.36), transparent 100%),
-      radial-gradient(1px 1px at 72% 60%, rgb(255 255 255 / 0.32), transparent 100%),
-      radial-gradient(1.3px 1.3px at 90% 48%, rgb(255 255 255 / 0.4), transparent 100%),
-      radial-gradient(1px 1px at 46% 74%, rgb(255 255 255 / 0.34), transparent 100%);
-    animation: twinkle 5.5s ease-in-out infinite;
-  }
-
-  /* Termeh: gold shimmer line in header */
-  [data-theme='termeh'] .v-header::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    pointer-events: none;
-    background-image: linear-gradient(105deg, transparent 40%, rgb(255 215 0 / 0.08) 50%, transparent 60%);
-    background-size: 200% 100%;
-    animation: gold-ribbon 8s linear infinite;
-  }
-
-  /* Cafe Naderi: breathing warm cafe lamp */
-  [data-theme='cafe-naderi'] body::after {
-    background-image: radial-gradient(65% 40% at 75% 0%, rgb(166 58 30 / 0.08), transparent 65%);
-    animation: lamp-breath 7.5s ease-in-out infinite;
-  }
-
-  /* Cyber Tehran: moving scanline */
-  [data-theme='cyber-tehran'] body::after {
-    background-image: linear-gradient(rgba(16, 185, 129, 0) 50%, rgba(16, 185, 129, 0.02) 50%);
-    background-size: 100% 4px;
-    animation: cyber-scan 12s linear infinite;
-  }
+/* Rotated clipping badge */
+.nb-badge-tilted {
+  display: inline-block;
+  transform: rotate(-1.5deg);
 }
