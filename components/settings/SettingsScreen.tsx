@@ -1,8 +1,9 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { THEMES } from '@/domain/themes'
 import {
+  HOSTED_ENDPOINT,
   MODEL_OPTIONS,
   modelChoiceFromSettings,
   settingsForModelChoice,
@@ -43,6 +44,120 @@ export function SettingsScreen() {
 
   function handleChoiceChange(value: string) {
     saveSettings(settingsForModelChoice(value, settings))
+  }
+
+  const [testStatus, setTestStatus] = useState<{
+    type: 'gemini' | 'groq' | 'worker'
+    state: 'testing' | 'success' | 'error'
+    message: string
+  } | null>(null)
+
+  async function pasteFromClipboard(onPaste: (text: string) => void) {
+    try {
+      const text = await navigator.clipboard.readText()
+      if (text && text.trim()) onPaste(text.trim())
+    } catch (err) {
+      console.warn('Clipboard read error:', err)
+    }
+  }
+
+  async function testGeminiKey(key: string) {
+    if (!key.trim()) return
+    setTestStatus({ type: 'gemini', state: 'testing', message: 'در حال بررسی اعتبار کلید گوگل…' })
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models?key=${key.trim()}`,
+      )
+      if (res.ok) {
+        setTestStatus({
+          type: 'gemini',
+          state: 'success',
+          message: '✓ کلید گوگل معتبر است! روزانه تا ۱۵۰۰ ویرایش رایگان برای شما فعال است.',
+        })
+      } else {
+        setTestStatus({
+          type: 'gemini',
+          state: 'error',
+          message: `خطای سرور گوگل (${res.status})؛ لطفاً کد کلید را مجدداً بررسی کنید.`,
+        })
+      }
+    } catch {
+      setTestStatus({
+        type: 'gemini',
+        state: 'error',
+        message: 'عدم دسترسی به سرور گوگل؛ لطفاً اتصال اینترنت خود را چک کنید.',
+      })
+    }
+  }
+
+  async function testGroqKey(key: string) {
+    if (!key.trim()) return
+    setTestStatus({ type: 'groq', state: 'testing', message: 'در حال بررسی کلید گروک…' })
+    try {
+      const res = await fetch('https://api.groq.com/openai/v1/models', {
+        headers: { Authorization: `Bearer ${key.trim()}` },
+      })
+      if (res.ok) {
+        setTestStatus({
+          type: 'groq',
+          state: 'success',
+          message: '✓ کلید Groq معتبر است! سرعت فوق‌سریع ۳۰۰ کلمه بر ثانیه فعال شد.',
+        })
+      } else {
+        setTestStatus({
+          type: 'groq',
+          state: 'error',
+          message: `خطای گروک (${res.status})؛ لطفاً کد کلید را مجدداً بررسی کنید.`,
+        })
+      }
+    } catch {
+      setTestStatus({
+        type: 'groq',
+        state: 'error',
+        message: 'عدم دسترسی به سرور Groq؛ لطفاً اتصال اینترنت را چک کنید.',
+      })
+    }
+  }
+
+  async function testWorkerUrl(url: string) {
+    const ep = url.trim().replace(/\/+$/, '')
+    if (!ep) return
+    setTestStatus({ type: 'worker', state: 'testing', message: 'در حال ارسال درخواست آزمایشی به سرور…' })
+    try {
+      const res = await fetch(ep, { method: 'OPTIONS' }).catch(() => null)
+      if (res && (res.ok || res.status === 204 || res.status === 405 || res.status === 200)) {
+        setTestStatus({
+          type: 'worker',
+          state: 'success',
+          message: '✓ اتصال به سرور کلودفلر با موفقیت برقرار شد! سرور اختصاصی شما آماده است.',
+        })
+      } else {
+        const postRes = await fetch(ep, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({}),
+        }).catch(() => null)
+        if (postRes && postRes.status < 500) {
+          setTestStatus({
+            type: 'worker',
+            state: 'success',
+            message: '✓ سرور کلودفلر فعال و پاسخگو است! آماده ویرایش متون.',
+          })
+        } else {
+          setTestStatus({
+            type: 'worker',
+            state: 'error',
+            message: 'سرور در دسترس نبود یا آدرس وارد شده نادرست است.',
+          })
+        }
+      }
+    } catch {
+      setTestStatus({
+        type: 'worker',
+        state: 'error',
+        message: 'خطا در برقراری ارتباط با سرور؛ لطفاً آدرس را بررسی کنید.',
+      })
+    }
   }
 
   return (
@@ -95,36 +210,198 @@ export function SettingsScreen() {
           </div>
         )}
 
+        {/* Custom Cloudflare Worker (1-Click Deploy) */}
+        {option.id === 'custom-worker' && (
+          <div className="v-card shadow-soft space-y-4 p-5">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="font-black text-ink text-base">سرور اختصاصی Cloudflare شما (کاملاً رایگان)</span>
+              <span className="rounded-full bg-orange-500/10 px-2.5 py-0.5 text-xs font-bold text-orange-600">
+                بدون نیاز به کدنویسی (۱ کلیک)
+              </span>
+            </div>
+
+            <p className="text-xs leading-6 text-ink-soft">
+              با ساخت سرور ابری اختصاصی، شما یک شعبهٔ مستقل از ویراستار روی سرورهای جهانی Cloudflare خواهید داشت که نامحدود، پرسرعت و رایگان است و ظرفیت پردازش آن با هیچ کاربر دیگری به اشتراک گذاشته نمی‌شود.
+            </p>
+
+            <a
+              href="https://deploy.workers.cloudflare.com/?url=https://github.com/aghamorad/virastar/tree/main/worker"
+              target="_blank"
+              rel="noreferrer"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-orange-600 px-4 py-3 text-sm font-bold text-white shadow-sm transition-all hover:bg-orange-700 active:scale-[0.99]"
+            >
+              <Star size={16} />
+              <span>🌐 ۱. ساخت و راه‌اندازی سرور در Cloudflare (با ۱ کلیک)</span>
+            </a>
+
+            <div className="rounded-xl bg-paper-deep p-4 text-xs leading-6 text-ink-soft space-y-2 border border-border">
+              <p className="font-bold text-ink">مراحل ساده ساخت سرور (حتی برای افراد غیرفنی):</p>
+              <p>۱. روی دکمه نارنجی بالا بزنید تا صفحه رسمی Cloudflare باز شود و با ایمیل یا حساب گوگل خود وارد شوید.</p>
+              <p>۲. در صفحه بازشده، روی دکمه آبی‌رنگ <strong>«Deploy»</strong> بزنید. کلودفلر ظرف ۲۰ ثانیه سرور رایگان شما را می‌سازد.</p>
+              <p>۳. آدرس سرور ساخته‌شده (مانند <code className="bg-paper px-1.5 py-0.5 rounded text-brand font-mono">https://virastar-edit.yourname.workers.dev</code>) را کپی کرده و در کادر زیر قرار دهید.</p>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between">
+                <label htmlFor="custom-worker-url" className="block text-xs font-bold text-ink-soft">
+                  آدرس سرور اختصاصی شما
+                </label>
+                {settings.endpoint !== HOSTED_ENDPOINT && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      saveSettings({ ...settings, endpoint: HOSTED_ENDPOINT })
+                      setTestStatus(null)
+                    }}
+                    className="text-xs font-bold text-brand hover:underline"
+                  >
+                    بازنشانی به سرور پیش‌فرض ویراستار
+                  </button>
+                )}
+              </div>
+
+              <div className="mt-2 flex flex-col sm:flex-row gap-2">
+                <input
+                  id="custom-worker-url"
+                  type="url"
+                  placeholder="https://virastar-edit.yourname.workers.dev"
+                  value={settings.endpoint}
+                  onChange={(e) => {
+                    saveSettings({ ...settings, endpoint: e.target.value.trim() })
+                    setTestStatus(null)
+                  }}
+                  className="flex-1 rounded-xl border border-border bg-paper-deep px-4 py-2.5 font-mono text-xs text-ink outline-none focus:ring-2 focus:ring-brand"
+                />
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      void pasteFromClipboard((val) => {
+                        saveSettings({ ...settings, endpoint: val })
+                        void testWorkerUrl(val)
+                      })
+                    }
+                    className="v-btn-secondary px-3 py-2 text-xs font-bold whitespace-nowrap"
+                    title="چسباندن آدرس کپی‌شده از حافظه"
+                  >
+                    📋 چسباندن از حافظه
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => void testWorkerUrl(settings.endpoint)}
+                    className="v-btn-primary px-3 py-2 text-xs font-bold whitespace-nowrap"
+                  >
+                    ⚡ آزمایش اتصال
+                  </button>
+                </div>
+              </div>
+
+              {testStatus?.type === 'worker' && (
+                <div
+                  className={`mt-2 rounded-xl p-3 text-xs font-bold border ${
+                    testStatus.state === 'success'
+                      ? 'bg-success/10 border-success/30 text-success'
+                      : testStatus.state === 'testing'
+                      ? 'bg-brand/10 border-brand/30 text-brand'
+                      : 'bg-red-500/10 border-red-500/30 text-red-600'
+                  }`}
+                >
+                  {testStatus.message}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* Direct Gemini API Key Guide & Input */}
         {(option.id === 'direct-gemini' || settings.geminiApiKey) && (
           <div className="v-card shadow-soft space-y-4 p-5">
-            <div className="flex items-center justify-between">
-              <span className="font-black text-ink">کلید رایگان Google Gemini API</span>
-              <span className="rounded-full bg-brand/10 px-2 py-0.5 text-xs font-bold text-brand">۱۵۰۰ درخواست رایگان در روز</span>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="font-black text-ink text-base">کلید رایگان Google Gemini API</span>
+              <span className="rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-bold text-brand">
+                ۱۵۰۰ درخواست رایگان در روز
+              </span>
             </div>
-            
-            <div className="rounded-xl bg-paper-deep p-4 text-xs leading-6 text-ink-soft space-y-1.5 border border-border">
-              <p className="font-bold text-ink">نحوه دریافت کلید رایگان (۱ دقیقه زمان می‌برد):</p>
-              <p>۱. وارد سایت رسمی <a href="https://aistudio.google.com" target="_blank" rel="noreferrer" className="text-brand underline font-bold">Google AI Studio</a> شوید و با اکانت گوگل خود ورود کنید.</p>
-              <p>۲. روی دکمه آبی‌رنگ <strong>«Get API key»</strong> در گوشه بالا کلیک کنید.</p>
-              <p>۳. گزینه <strong>«Create API key»</strong> را بزنید و کد نمایش‌داده‌شده را کپی کنید.</p>
-              <p>۴. کلید را در کادر زیر وارد کنید. (کاملاً رایگان، بدون نیاز به کارت اعتباری).</p>
+
+            <p className="text-xs leading-6 text-ink-soft">
+              گوگل برای هر حساب کاربری جیمیل، سهمیه روزانه ۱۵۰۰ ویرایش رایگان با بهترین کیفیت و هوش مصنوعی فارسی قرار داده است.
+            </p>
+
+            <a
+              href="https://aistudio.google.com/app/apikey"
+              target="_blank"
+              rel="noreferrer"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-brand px-4 py-3 text-sm font-bold text-on-brand shadow-sm transition-all hover:bg-brand-deep active:scale-[0.99]"
+            >
+              <Star size={16} />
+              <span>🌐 ۱. باز کردن صفحه دریافت کلید رایگان گوگل (۱ کلیک)</span>
+            </a>
+
+            <div className="rounded-xl bg-paper-deep p-4 text-xs leading-6 text-ink-soft space-y-2 border border-border">
+              <p className="font-bold text-ink">مراحل دریافت کلید (کمتر از ۱ دقیقه):</p>
+              <p>۱. روی دکمه بالا بزنید تا سایت رسمی گوگل باز شود و با ایمیل خود وارد شوید.</p>
+              <p>۲. روی دکمه آبی‌رنگ <strong>«Create API key»</strong> بزنید و کد کلید را کپی کنید.</p>
+              <p>۳. به این صفحه بازگردید و روی دکمه <strong>«چسباندن از حافظه»</strong> بزنید. تمام!</p>
             </div>
 
             <div>
               <label htmlFor="gemini-key" className="block text-xs font-bold text-ink-soft">
                 کد کلید API گوگل (Gemini API Key)
               </label>
-              <input
-                id="gemini-key"
-                type="password"
-                placeholder="AIzaSy..."
-                value={settings.geminiApiKey ?? ''}
-                onChange={(e) => saveSettings({ ...settings, geminiApiKey: e.target.value.trim() })}
-                className="mt-2 w-full rounded-xl border border-border bg-paper-deep px-4 py-2.5 font-mono text-sm text-ink outline-none focus:ring-2 focus:ring-brand"
-              />
-              {settings.geminiApiKey && (
-                <p className="mt-1.5 text-xs text-success font-bold">✓ کلید ذخیره شد و در ویرایش‌ها مستقیماً استفاده می‌شود.</p>
+
+              <div className="mt-2 flex flex-col sm:flex-row gap-2">
+                <input
+                  id="gemini-key"
+                  type="password"
+                  placeholder="AIzaSy..."
+                  value={settings.geminiApiKey ?? ''}
+                  onChange={(e) => {
+                    saveSettings({ ...settings, geminiApiKey: e.target.value.trim() })
+                    setTestStatus(null)
+                  }}
+                  className="flex-1 rounded-xl border border-border bg-paper-deep px-4 py-2.5 font-mono text-xs text-ink outline-none focus:ring-2 focus:ring-brand"
+                />
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      void pasteFromClipboard((val) => {
+                        saveSettings({ ...settings, geminiApiKey: val })
+                        void testGeminiKey(val)
+                      })
+                    }
+                    className="v-btn-secondary px-3 py-2 text-xs font-bold whitespace-nowrap"
+                    title="چسباندن کلید از حافظه گوشی یا مک"
+                  >
+                    📋 چسباندن از حافظه
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => void testGeminiKey(settings.geminiApiKey ?? '')}
+                    disabled={!settings.geminiApiKey}
+                    className="v-btn-primary px-3 py-2 text-xs font-bold whitespace-nowrap disabled:opacity-50"
+                  >
+                    ⚡ آزمایش کلید
+                  </button>
+                </div>
+              </div>
+
+              {testStatus?.type === 'gemini' && (
+                <div
+                  className={`mt-2 rounded-xl p-3 text-xs font-bold border ${
+                    testStatus.state === 'success'
+                      ? 'bg-success/10 border-success/30 text-success'
+                      : testStatus.state === 'testing'
+                      ? 'bg-brand/10 border-brand/30 text-brand'
+                      : 'bg-red-500/10 border-red-500/30 text-red-600'
+                  }`}
+                >
+                  {testStatus.message}
+                </div>
               )}
             </div>
           </div>
@@ -133,32 +410,90 @@ export function SettingsScreen() {
         {/* Direct Groq API Key Guide & Input */}
         {(option.id === 'direct-groq' || settings.groqApiKey) && (
           <div className="v-card shadow-soft space-y-4 p-5">
-            <div className="flex items-center justify-between">
-              <span className="font-black text-ink">کلید رایگان Groq (فوق سریع)</span>
-              <span className="rounded-full bg-brand/10 px-2 py-0.5 text-xs font-bold text-brand">مدل Qwen 2.5 32B</span>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="font-black text-ink text-base">کلید رایگان Groq (فوق‌سریع)</span>
+              <span className="rounded-full bg-brand/10 px-2.5 py-0.5 text-xs font-bold text-brand">
+                مدل Qwen 2.5 32B (۳۰۰ کلمه بر ثانیه)
+              </span>
             </div>
-            
-            <div className="rounded-xl bg-paper-deep p-4 text-xs leading-6 text-ink-soft space-y-1.5 border border-border">
-              <p className="font-bold text-ink">نحوه دریافت کلید رایگان Groq:</p>
-              <p>۱. وارد سایت <a href="https://console.groq.com" target="_blank" rel="noreferrer" className="text-brand underline font-bold">Groq Console</a> شوید.</p>
-              <p>۲. در منوی سمت چپ به بخش <strong>«API Keys»</strong> رفته و کلید بسازید.</p>
-              <p>۳. کلید را در کادر زیر قرار دهید. (سرعت بیش از ۳۰۰ کلمه بر ثانیه با کیفیت عالی فارسی).</p>
+
+            <p className="text-xs leading-6 text-ink-soft">
+              سرویس Groq سریع‌ترین پردازشگر ابری جهان است که مدل قدرتمند Qwen 2.5 را به رایگان و بدون تأخیر در اختیار شما می‌گذارد.
+            </p>
+
+            <a
+              href="https://console.groq.com/keys"
+              target="_blank"
+              rel="noreferrer"
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-ink text-paper font-bold px-4 py-3 text-sm shadow-sm transition-all hover:bg-ink/80 active:scale-[0.99]"
+            >
+              <Star size={16} />
+              <span>🌐 ۱. باز کردن صفحه دریافت کلید Groq (۱ کلیک)</span>
+            </a>
+
+            <div className="rounded-xl bg-paper-deep p-4 text-xs leading-6 text-ink-soft space-y-2 border border-border">
+              <p className="font-bold text-ink">مراحل دریافت کلید Groq:</p>
+              <p>۱. روی دکمه مشکی بالا بزنید تا وارد سایت Groq شوید.</p>
+              <p>۲. دکمه <strong>«Create API Key»</strong> را بزنید و کلید ساخته‌شده را کپی کنید.</p>
+              <p>۳. در این صفحه دکمه <strong>«چسباندن از حافظه»</strong> را بزنید.</p>
             </div>
 
             <div>
               <label htmlFor="groq-key" className="block text-xs font-bold text-ink-soft">
                 کد کلید API گروک (Groq API Key)
               </label>
-              <input
-                id="groq-key"
-                type="password"
-                placeholder="gsk_..."
-                value={settings.groqApiKey ?? ''}
-                onChange={(e) => saveSettings({ ...settings, groqApiKey: e.target.value.trim() })}
-                className="mt-2 w-full rounded-xl border border-border bg-paper-deep px-4 py-2.5 font-mono text-sm text-ink outline-none focus:ring-2 focus:ring-brand"
-              />
-              {settings.groqApiKey && (
-                <p className="mt-1.5 text-xs text-success font-bold">✓ کلید ذخیره شد و ویرایش‌ها با سرعت فوق‌العاده انجام می‌شود.</p>
+
+              <div className="mt-2 flex flex-col sm:flex-row gap-2">
+                <input
+                  id="groq-key"
+                  type="password"
+                  placeholder="gsk_..."
+                  value={settings.groqApiKey ?? ''}
+                  onChange={(e) => {
+                    saveSettings({ ...settings, groqApiKey: e.target.value.trim() })
+                    setTestStatus(null)
+                  }}
+                  className="flex-1 rounded-xl border border-border bg-paper-deep px-4 py-2.5 font-mono text-xs text-ink outline-none focus:ring-2 focus:ring-brand"
+                />
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      void pasteFromClipboard((val) => {
+                        saveSettings({ ...settings, groqApiKey: val })
+                        void testGroqKey(val)
+                      })
+                    }
+                    className="v-btn-secondary px-3 py-2 text-xs font-bold whitespace-nowrap"
+                    title="چسباندن کلید از حافظه"
+                  >
+                    📋 چسباندن از حافظه
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => void testGroqKey(settings.groqApiKey ?? '')}
+                    disabled={!settings.groqApiKey}
+                    className="v-btn-primary px-3 py-2 text-xs font-bold whitespace-nowrap disabled:opacity-50"
+                  >
+                    ⚡ آزمایش کلید
+                  </button>
+                </div>
+              </div>
+
+              {testStatus?.type === 'groq' && (
+                <div
+                  className={`mt-2 rounded-xl p-3 text-xs font-bold border ${
+                    testStatus.state === 'success'
+                      ? 'bg-success/10 border-success/30 text-success'
+                      : testStatus.state === 'testing'
+                      ? 'bg-brand/10 border-brand/30 text-brand'
+                      : 'bg-red-500/10 border-red-500/30 text-red-600'
+                  }`}
+                >
+                  {testStatus.message}
+                </div>
               )}
             </div>
           </div>

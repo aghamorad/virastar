@@ -104,6 +104,15 @@ export const MODEL_OPTIONS: ModelOption[] = [
     model: 'qwen-2.5-32b',
   },
   {
+    id: 'custom-worker',
+    kind: 'online',
+    label: 'سرور اختصاصی Cloudflare شما (رایگان با ۱ کلیک)',
+    description: 'استفاده از Worker اختصاصی خودتان روی سرورهای ابری کلودفلر؛ با دکمه ساخت خودکار و بدون نیاز به برنامه‌نویسی.',
+    badge: 'سرور شخصی',
+    backend: 'custom-worker',
+    model: 'gemini-2.5-flash',
+  },
+  {
     id: 'local-ollama',
     kind: 'online',
     label: 'سرور محلی Ollama (مخصوص مک و کامپیوتر)',
@@ -153,6 +162,7 @@ export function modelChoiceFromSettings(s: EngineSettings): string {
   if (s.engine === 'offline') return 'rules'
   if (s.backend === 'direct-gemini') return 'direct-gemini'
   if (s.backend === 'direct-groq') return 'direct-groq'
+  if (s.backend === 'custom-worker') return 'custom-worker'
   if (s.backend === 'local-ollama') return 'local-ollama'
   if (s.backend === 'workersai') return 'online-qwen'
   return 'online-gemini'
@@ -242,6 +252,8 @@ export async function runEdit(
         engineDescription = 'سرور محلی Ollama'
       } else if (settings.backend === 'workersai') {
         engineDescription = 'قوِن کلودفلر'
+      } else if (settings.backend === 'custom-worker') {
+        engineDescription = 'سرور اختصاصی Cloudflare'
       }
 
       return {
