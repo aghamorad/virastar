@@ -3,6 +3,11 @@
 import { useEffect, useState } from 'react'
 import { THEMES } from '@/domain/themes'
 import {
+  playTactileSound,
+  isAudioFeedbackEnabled,
+  setAudioFeedbackEnabled,
+} from '@/domain/audioFeedback'
+import {
   HOSTED_ENDPOINT,
   MODEL_OPTIONS,
   modelChoiceFromSettings,
@@ -44,6 +49,23 @@ export function SettingsScreen() {
 
   function handleChoiceChange(value: string) {
     saveSettings(settingsForModelChoice(value, settings))
+  }
+
+  const [audioEnabled, setAudioEnabled] = useState(false)
+  const [sandboxText, setSandboxText] = useState('بهار آمد و گلزار پر از نغمه شد.')
+  const [sandboxStyle, setSandboxStyle] = useState('rasmi')
+
+  useEffect(() => {
+    setAudioEnabled(isAudioFeedbackEnabled())
+  }, [])
+
+  function toggleAudio() {
+    const next = !audioEnabled
+    setAudioEnabled(next)
+    setAudioFeedbackEnabled(next)
+    if (next) {
+      playTactileSound(active, 'special')
+    }
   }
 
   const [testStatus, setTestStatus] = useState<{
@@ -591,30 +613,216 @@ export function SettingsScreen() {
         </div>
       </section>
 
-      {/* Themes */}
+      {/* Themes — 8 Distinct Interactive Moods & Aesthetic Personas */}
       <section>
-        <h2 className="mb-3 text-xl font-black">پوسته</h2>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-2">
+          <div>
+            <h2 className="text-xl font-black">پوسته‌های زنده و تعاملی</h2>
+            <p className="mt-1 text-xs text-ink-soft">
+              ۸ سبک دیداری با پالت رنگی متمایز، بافت محیطی، حس فیزیکی کلیدها، و مناسب برای هر سلیقه و سن
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={toggleAudio}
+            className={`v-chip px-3 py-1.5 text-xs font-bold transition-all ${
+              audioEnabled ? 'v-chip-active shadow-xs' : 'hover:border-brand/40'
+            }`}
+            title="روشن یا خاموش کردن صدای لمس کلیدها در تمام بخش‌ها"
+          >
+            <span>{audioEnabled ? '🔊 صدای تعاملی: روشن' : '🔇 صدای تعاملی: خاموش'}</span>
+          </button>
+        </div>
+
+        <div className="grid gap-3.5 sm:grid-cols-2">
           {THEMES.map((t) => {
             const isActive = t.id === active
             return (
               <button
                 key={t.id}
                 type="button"
-                onClick={() => applyTheme(t.id)}
+                onClick={() => {
+                  applyTheme(t.id)
+                  playTactileSound(t.id, 'special')
+                }}
                 aria-pressed={isActive}
-                className={`v-card shadow-soft flex items-start gap-3 p-4 text-start transition-all ${
-                  isActive ? 'ring-2 ring-brand' : 'hover:-translate-y-0.5'
+                className={`v-card p-4 text-start transition-all cursor-pointer relative overflow-hidden ${
+                  isActive
+                    ? 'ring-3 ring-brand shadow-card scale-[1.01]'
+                    : 'hover:-translate-y-0.5 hover:shadow-soft opacity-90 hover:opacity-100'
                 }`}
               >
-                <Star size={22} className={`mt-0.5 shrink-0 ${isActive ? 'text-brand' : 'text-ink-soft'}`} />
-                <span>
-                  <span className="block font-black">{t.label}</span>
-                  <span className="mt-1 block text-xs leading-5 text-ink-soft">{t.blurb}</span>
-                </span>
+                {isActive && (
+                  <div className="absolute top-0 end-0 bg-brand text-on-brand text-[10px] font-black px-2.5 py-0.5 rounded-es-xl shadow-xs">
+                    فعال
+                  </div>
+                )}
+
+                <div className="flex items-start gap-3">
+                  <span className="text-2xl shrink-0 leading-none pt-0.5" aria-hidden="true">
+                    {t.icon}
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex flex-wrap items-center gap-1.5 mb-1">
+                      <span className="font-black text-sm sm:text-base text-ink">{t.label}</span>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full font-bold bg-brand/10 text-brand">
+                        {t.taste}
+                      </span>
+                    </div>
+
+                    <p className="text-xs leading-5 text-ink-soft mb-2">{t.blurb}</p>
+
+                    <div className="text-[11px] leading-4 text-ink/75 bg-brand/5 border border-brand/10 rounded-xl px-2.5 py-1.5 mb-2.5">
+                      <span className="font-bold text-brand">حس تعاملی: </span>
+                      {t.interactiveFeature}
+                    </div>
+
+                    {/* Palette Dots */}
+                    <div className="flex items-center justify-between pt-1 border-t border-border/50">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-[10px] font-bold text-ink-soft">پالت:</span>
+                        <div className="flex items-center gap-1">
+                          <span
+                            className="w-4 h-4 rounded-full border border-black/15 shadow-xs inline-block"
+                            style={{ backgroundColor: t.palette.paper }}
+                            title="کاغذ زمینه"
+                          />
+                          <span
+                            className="w-4 h-4 rounded-full border border-black/15 shadow-xs inline-block"
+                            style={{ backgroundColor: t.palette.surface }}
+                            title="کارت‌ها"
+                          />
+                          <span
+                            className="w-4 h-4 rounded-full border border-black/15 shadow-xs inline-block"
+                            style={{ backgroundColor: t.palette.brand }}
+                            title="رنگ اصلی / نشان"
+                          />
+                          <span
+                            className="w-4 h-4 rounded-full border border-black/15 shadow-xs inline-block"
+                            style={{ backgroundColor: t.palette.ink }}
+                            title="رنگ نوشته"
+                          />
+                          <span
+                            className="w-4 h-4 rounded-full border border-black/15 shadow-xs inline-block"
+                            style={{ backgroundColor: t.palette.accent }}
+                            title="چاشنی و چاشنی فرعی"
+                          />
+                        </div>
+                      </div>
+
+                      <span className="text-[10px] font-bold text-brand underline">
+                        {isActive ? 'پوستهٔ شما' : 'لمس برای انتخاب'}
+                      </span>
+                    </div>
+                  </div>
+                </div>
               </button>
             )
           })}
+        </div>
+
+        {/* Live Interactive Sandbox / Theme Playground */}
+        <div className="mt-4 v-card p-4 sm:p-5 border-2 border-brand/20 shadow-soft">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-3">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">✨</span>
+              <div>
+                <h3 className="font-black text-sm sm:text-base">آزمایشگاه زندهٔ پوسته</h3>
+                <p className="text-[11px] text-ink-soft">
+                  حس کلیدها، بازتاب نور، رنگ متن و صدای این پوسته را همین‌جا بیازمایید
+                </p>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => playTactileSound(active, 'special')}
+              className="v-btn-ghost text-xs px-3 py-1 flex items-center gap-1.5"
+            >
+              <span>🎵 آزمایش صدای این پوسته</span>
+            </button>
+          </div>
+
+          <div className="space-y-3">
+            {/* Style selector pills in sandbox */}
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-xs font-bold text-ink-soft">نمونهٔ لحن:</span>
+              {[
+                { id: 'rasmi', label: 'رسمی' },
+                { id: 'edari', label: 'اداری' },
+                { id: 'hoghooghi', label: 'حقوقی' },
+                { id: 'divani', label: 'دیوانی' },
+                { id: 'khodemani', label: 'خودمانی' },
+              ].map((s) => (
+                <button
+                  key={s.id}
+                  type="button"
+                  onClick={() => {
+                    setSandboxStyle(s.id)
+                    playTactileSound(active, 'tap')
+                  }}
+                  className={`v-chip text-xs px-2.5 py-1 ${
+                    sandboxStyle === s.id ? 'v-chip-active' : ''
+                  }`}
+                >
+                  {s.label}
+                </button>
+              ))}
+            </div>
+
+            {/* Live Text Area in sandbox */}
+            <textarea
+              rows={2}
+              value={sandboxText}
+              onChange={(e) => {
+                setSandboxText(e.target.value)
+                playTactileSound(active, 'tap')
+              }}
+              className="v-field text-sm sm:text-base leading-6 resize-none"
+              placeholder="اینجا چیزی بنویسید تا حس و رنگ این پوسته را ببینید..."
+            />
+
+            {/* Interactive Actions in active theme dressing */}
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+              <div className="flex items-center gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSandboxText((prev) => prev + '\u200c')
+                    playTactileSound(active, 'special')
+                  }}
+                  className="v-btn-ghost text-xs px-2.5 py-1 font-bold"
+                  title="افزودن نیم‌فاصله"
+                >
+                  [نیم‌فاصله]
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSandboxText((prev) => prev + ' «»')
+                    playTactileSound(active, 'tap')
+                  }}
+                  className="v-btn-ghost text-xs px-2.5 py-1 font-bold"
+                >
+                  «گیومه»
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => {
+                  playTactileSound(active, 'action')
+                  // Flash visual reassurance
+                  const t = sandboxText
+                  setSandboxText('✨ در حال ویراستاری...')
+                  setTimeout(() => setSandboxText(t), 400)
+                }}
+                className="v-btn-primary text-xs sm:text-sm px-4 py-2"
+              >
+                <span>✨ آزمایش کلید اصلی</span>
+              </button>
+            </div>
+          </div>
         </div>
       </section>
 

@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 import { Star } from '../Star'
+import { useActiveTheme } from '@/hooks/useActiveTheme'
+import { playTactileSound } from '@/domain/audioFeedback'
 
 interface PersianKeyboardProps {
   onInsert: (char: string) => void
@@ -25,6 +27,7 @@ export function PersianKeyboard({
   onClose,
 }: PersianKeyboardProps) {
   const [mode, setMode] = useState<'alpha' | 'numeric'>('alpha')
+  const activeTheme = useActiveTheme()
 
   return (
     <div className="mt-3 rounded-2xl border border-border bg-paper-deep p-3 shadow-lg select-none transition-all">
@@ -79,7 +82,10 @@ export function PersianKeyboard({
           <div className="flex justify-center gap-1">
             <button
               type="button"
-              onClick={onBackspace}
+              onClick={() => {
+                playTactileSound(activeTheme, 'tap')
+                onBackspace()
+              }}
               className="flex min-h-[44px] flex-1 max-w-[56px] items-center justify-center rounded-xl bg-paper border border-border text-sm font-black text-ink hover:border-brand hover:text-brand active:scale-95 transition-all shadow-sm"
               title="پاک کردن"
             >
@@ -94,7 +100,10 @@ export function PersianKeyboard({
           <div className="flex items-center justify-center gap-1 pt-1">
             <button
               type="button"
-              onClick={onHalfSpace}
+              onClick={() => {
+                playTactileSound(activeTheme, 'special')
+                onHalfSpace()
+              }}
               className="min-h-[44px] px-3 rounded-xl bg-brand/10 border border-brand/30 text-xs font-black text-brand hover:bg-brand/20 active:scale-95 transition-all shadow-sm"
               title="نیم‌فاصله استاندارد فارسی"
             >
@@ -103,7 +112,10 @@ export function PersianKeyboard({
 
             <button
               type="button"
-              onClick={() => onInsert(' ')}
+              onClick={() => {
+                playTactileSound(activeTheme, 'tap')
+                onInsert(' ')
+              }}
               className="min-h-[44px] flex-1 max-w-[220px] rounded-xl bg-paper border border-border text-xs font-bold text-ink hover:border-brand active:scale-95 transition-all shadow-sm"
             >
               فاصله (Space)
@@ -111,7 +123,10 @@ export function PersianKeyboard({
 
             <button
               type="button"
-              onClick={() => onInsert('،')}
+              onClick={() => {
+                playTactileSound(activeTheme, 'tap')
+                onInsert('،')
+              }}
               className="min-h-[44px] w-10 rounded-xl bg-paper border border-border text-sm font-black text-ink hover:border-brand active:scale-95 transition-all shadow-sm"
             >
               ،
@@ -119,7 +134,10 @@ export function PersianKeyboard({
 
             <button
               type="button"
-              onClick={() => onInsert('.')}
+              onClick={() => {
+                playTactileSound(activeTheme, 'tap')
+                onInsert('.')
+              }}
               className="min-h-[44px] w-10 rounded-xl bg-paper border border-border text-sm font-black text-ink hover:border-brand active:scale-95 transition-all shadow-sm"
             >
               .
@@ -127,7 +145,10 @@ export function PersianKeyboard({
 
             <button
               type="button"
-              onClick={onNewLine}
+              onClick={() => {
+                playTactileSound(activeTheme, 'special')
+                onNewLine()
+              }}
               className="min-h-[44px] px-3.5 rounded-xl bg-paper border border-border text-xs font-black text-ink hover:border-brand active:scale-95 transition-all shadow-sm"
               title="سطر جدید"
             >
@@ -151,21 +172,30 @@ export function PersianKeyboard({
           <div className="flex items-center justify-center gap-2 pt-1">
             <button
               type="button"
-              onClick={() => onInsert('«»')}
+              onClick={() => {
+                playTactileSound(activeTheme, 'tap')
+                onInsert('«»')
+              }}
               className="min-h-[44px] px-4 rounded-xl bg-paper border border-border text-sm font-black text-ink hover:border-brand active:scale-95"
             >
               «گیومه»
             </button>
             <button
               type="button"
-              onClick={onHalfSpace}
+              onClick={() => {
+                playTactileSound(activeTheme, 'special')
+                onHalfSpace()
+              }}
               className="min-h-[44px] px-4 rounded-xl bg-brand/10 border border-brand/30 text-xs font-black text-brand hover:bg-brand/20 active:scale-95"
             >
               نیم‌فاصله
             </button>
             <button
               type="button"
-              onClick={onBackspace}
+              onClick={() => {
+                playTactileSound(activeTheme, 'tap')
+                onBackspace()
+              }}
               className="min-h-[44px] px-4 rounded-xl bg-paper border border-border text-sm font-black text-ink hover:border-brand active:scale-95"
             >
               ⌫ پاک کردن
@@ -178,11 +208,15 @@ export function PersianKeyboard({
 }
 
 function KeyButton({ label, onClick }: { label: string; onClick: () => void }) {
+  const activeTheme = useActiveTheme()
   return (
     <button
       type="button"
-      onClick={onClick}
-      className="flex min-h-[44px] min-w-[28px] sm:min-w-[34px] flex-1 items-center justify-center rounded-xl bg-paper border border-border text-base sm:text-lg font-black text-ink hover:border-brand hover:text-brand hover:shadow active:scale-90 transition-all shadow-sm"
+      onClick={() => {
+        playTactileSound(activeTheme, 'tap')
+        onClick()
+      }}
+      className="flex min-h-[44px] min-w-[28px] sm:min-w-[34px] flex-1 items-center justify-center rounded-xl bg-paper border border-border text-base sm:text-lg font-black text-ink hover:border-brand hover:text-brand hover:shadow active:scale-90 transition-all shadow-sm cursor-pointer"
     >
       {label}
     </button>

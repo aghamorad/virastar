@@ -7,6 +7,8 @@ import { restoreModel } from '@/domain/engines/browser'
 import { useSettings } from '@/hooks/useSettings'
 import { useHistory } from '@/hooks/useHistory'
 import { useDictation } from '@/hooks/useDictation'
+import { useActiveTheme } from '@/hooks/useActiveTheme'
+import { playTactileSound } from '@/domain/audioFeedback'
 import { clearDraft, readDraft } from '@/services/draft'
 import { Star } from '../Star'
 import { ModeGlyph } from './ModeGlyph'
@@ -36,6 +38,7 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
   const [saved, setSaved] = useState(false)
   const [showDiff, setShowDiff] = useState(false)
   const [showKeyboard, setShowKeyboard] = useState(false)
+  const activeTheme = useActiveTheme()
   const [settings] = useSettings()
   const { add } = useHistory()
   const resultRef = useRef<HTMLDivElement>(null)
@@ -44,6 +47,7 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
   const anchorRef = useRef<{ before: string; after: string } | null>(null)
 
   function insertAtCursor(text: string) {
+    playTactileSound(activeTheme, text === '\u200c' ? 'special' : 'tap')
     const el = inputRef.current
     if (!el) {
       setInput((prev) => prev + text)
@@ -62,6 +66,7 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
   }
 
   function backspaceAtCursor() {
+    playTactileSound(activeTheme, 'tap')
     const el = inputRef.current
     if (!el) {
       setInput((prev) => prev.slice(0, -1))
@@ -138,6 +143,7 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
   async function handleEdit() {
     const text = input.trim()
     if (!text || busy) return
+    playTactileSound(activeTheme, 'action')
     setBusy(true)
     setCopied(false)
     setSaved(false)
@@ -268,7 +274,15 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
 
         <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-1">
           {MODES.filter((m) => activeCategory === 'all' || m.group === activeCategory).map((m) => (
-            <ModeChip key={m.id} mode={m} active={m.id === modeId} onSelect={() => setModeId(m.id)} />
+            <ModeChip
+              key={m.id}
+              mode={m}
+              active={m.id === modeId}
+              onSelect={() => {
+                setModeId(m.id)
+                playTactileSound(activeTheme, 'tap')
+              }}
+            />
           ))}
         </div>
         <p className="mt-3 text-sm leading-6 text-ink-soft">
