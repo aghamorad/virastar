@@ -37,70 +37,68 @@ export function HomeScreen() {
   const sample = SAMPLES[activeStyle] ?? SAMPLES.rasmi
 
   return (
-    <div className="space-y-10 py-6 max-w-5xl mx-auto">
-      {/* 1. Yellow Poster carrying oversized headline strips & Red Arrow Accent */}
-      <section className="border-4 border-black bg-[#ffed00] p-6 sm:p-10 shadow-[8px_8px_0px_#000] relative">
+    <div className="space-y-12 py-6 max-w-5xl mx-auto">
+      {/* 1. Large Handwritten Statement beside cluster of notes & tape strip */}
+      <section className="v-card p-6 sm:p-10 relative">
+        <div className="sketch-tape" aria-hidden="true" />
+
         <div className="flex flex-wrap items-center gap-2 mb-4">
-          <span className="nb-strip-black text-sm uppercase">
-            نسخه ۱.۶.۰ · NEO-BRUTALISM EDITION
+          <span className="sketch-blue-note text-xs">
+            ✎ برگهٔ کاری و تحریریهٔ فارسی
           </span>
-          <span className="nb-strip-red text-sm uppercase">
-            بدون لکنت املایی
+          <span className="sketch-highlight text-xs font-bold">
+            بدون لکنت و غلط املایی
           </span>
         </div>
 
-        <div className="space-y-3">
-          <div className="flex flex-wrap items-center gap-3">
-            <span className="nb-strip-black text-3xl sm:text-5xl md:text-6xl font-black">
-              ویراستار فارسی
-            </span>
-            <span className="nb-signal-tile w-12 h-12 sm:w-16 sm:h-16 text-2xl sm:text-3xl font-black">
-              →
-            </span>
-          </div>
-
-          <div className="block">
-            <span className="bg-white text-black border-4 border-black px-4 py-2 text-2xl sm:text-4xl md:text-5xl font-black shadow-[4px_4px_0px_#000] inline-block">
-              بهتر بنویس، بی‌نقص بگو
-            </span>
-          </div>
+        <div className="space-y-2">
+          <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-ink tracking-tight leading-tight">
+            بهتر بنویس، <span className="sketch-highlight">بی‌نقص بگو</span>
+          </h1>
+          <p className="text-xl sm:text-2xl font-bold text-accent pt-1">
+            دستیار هوشمند پیرایش، ویرایش و بازنویسی زبان فارسی
+          </p>
         </div>
 
-        <p className="mt-6 text-base sm:text-lg font-black text-black max-w-2xl leading-8">
-          ابزار مقتدر پیرایش و بازآفرینی زبان فارسی. غلط‌گیری دقیق املایی، درج خودکار نیم‌فاصله‌ها و تبدیل جملات عامیانه به ۱۳ لحن رسمی، اداری، حقوقی و ادبی.
+        <p className="mt-5 text-base sm:text-lg text-ink-soft max-w-2xl leading-relaxed font-normal">
+          جملات خود را با خیال راحت بنویسید؛ ویراستار غلط‌های املایی را می‌گیرد، نیم‌فاصله‌ها و علائم نگارشی را در جای درست می‌نشاند و لحن متن شما را به ۱۳ سبک مختلف دگرگون می‌سازد.
         </p>
 
-        {/* Action Buttons in Yellow Poster */}
+        {/* Action Buttons & Hand-drawn arrow */}
         <div className="mt-8 flex flex-wrap items-center gap-4">
           <Link
             href="/edit"
-            className="v-btn-primary text-base sm:text-lg px-8 py-3.5 bg-[#ff4332] text-white hover:bg-black shadow-[6px_6px_0px_#000]"
+            className="v-btn-primary text-base px-6 py-3"
           >
             <span>✒️</span>
             <span>ورود به میز ویرایش متن</span>
           </Link>
           <Link
             href="/styles"
-            className="v-btn-ghost text-base sm:text-lg px-6 py-3.5 bg-white text-black shadow-[6px_6px_0px_#000]"
+            className="v-btn-ghost text-base px-5 py-3"
           >
             <span>قلم‌دان ۱۳ لحن فارسی</span>
           </Link>
+          <span className="text-xs text-ink-soft hidden sm:inline-flex items-center gap-1 font-bold">
+            <span className="text-brand">⤹</span> آماده نگارش بدون نیاز به ثبت‌نام
+          </span>
         </div>
       </section>
 
-      {/* 2. Violet Band beneath holding explanation & live transformation */}
-      <section className="nb-violet-band space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b-3 border-black pb-3">
+      {/* 2. Process / Comparison Row: Raw vs Refined on a Taped Sheet */}
+      <section className="v-card p-6 sm:p-8 space-y-6 relative">
+        <div className="sketch-tape" aria-hidden="true" />
+
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border/80 pb-3">
           <div className="flex items-center gap-2">
-            <span className="bg-black text-yellow-300 font-black px-2 py-0.5 text-xs border border-black">
-              کارگاه
-            </span>
-            <h2 className="text-xl sm:text-2xl font-black text-black">
+            <span className="sketch-bracket text-lg">[</span>
+            <h2 className="text-xl sm:text-2xl font-black text-ink">
               آزمایشگاه زندهٔ دگرگونی لحن در زبان فارسی
             </h2>
+            <span className="sketch-bracket text-lg">]</span>
           </div>
-          <span className="text-xs font-black text-black bg-white px-3 py-1 border-2 border-black shadow-[2px_2px_0px_#000]">
-            روی سبک‌ها کلیک کنید
+          <span className="text-xs font-bold text-accent bg-paper px-2.5 py-1 border border-border rounded-[6px_3px_8px_4px]">
+            روی هر لحن بزنید تا بازنویسی آن را ببینید ✎
           </span>
         </div>
 
@@ -113,13 +111,11 @@ export function HomeScreen() {
                 key={key}
                 type="button"
                 onClick={() => setActiveStyle(key)}
-                className={`border-3 border-black px-3.5 py-1.5 text-xs sm:text-sm font-black transition-all cursor-pointer ${
-                  isActive
-                    ? 'bg-[#ffed00] text-black shadow-[4px_4px_0px_#000] translate-x-[-2px] translate-y-[-2px]'
-                    : 'bg-white text-black shadow-[2px_2px_0px_#000] hover:bg-[#ffed00]'
+                className={`v-chip px-3 py-1.5 text-xs sm:text-sm font-bold ${
+                  isActive ? 'v-chip-active' : ''
                 }`}
               >
-                <span className="ml-1">{item.icon}</span>
+                <span>{item.icon}</span>
                 <span>{item.label}</span>
               </button>
             )
@@ -128,102 +124,103 @@ export function HomeScreen() {
 
         {/* Comparison Row: Raw vs Refined */}
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="border-3 border-black bg-white p-4 shadow-[4px_4px_0px_#000]">
-            <div className="flex items-center justify-between border-b-2 border-black pb-2 mb-3">
-              <span className="text-xs font-black bg-black text-white px-2 py-0.5">
+          {/* Raw Draft Scrap */}
+          <div className="bg-paper p-4 rounded-[10px_5px_12px_6px] border border-border shadow-soft">
+            <div className="flex items-center justify-between border-b border-border pb-2 mb-3">
+              <span className="text-xs font-bold text-ink-soft">
                 ورودی خام محاوره‌ای
               </span>
-              <span className="text-xs font-black text-[#ff4332]">بدون ویرایش</span>
+              <span className="text-xs text-brand font-bold">بدون ویرایش</span>
             </div>
-            <p className="text-sm sm:text-base leading-7 font-black text-black">
+            <p className="text-sm sm:text-base leading-relaxed text-ink-soft font-medium">
               «سلام استاد خسته نباشین من تمرین رو فرستادم کی جواب میدین ممنون»
             </p>
           </div>
 
-          <div className="border-3 border-black bg-[#ffed00] p-4 shadow-[4px_4px_0px_#000]">
-            <div className="flex items-center justify-between border-b-2 border-black pb-2 mb-3">
-              <span className="text-xs font-black bg-[#ff4332] text-white px-2 py-0.5 border border-black">
-                نسخه پیراسته ({sample.label})
+          {/* Refined Sheet Highlighted */}
+          <div className="bg-highlight/50 p-4 rounded-[10px_5px_12px_6px] border border-ink/30 shadow-soft">
+            <div className="flex items-center justify-between border-b border-ink/20 pb-2 mb-3">
+              <span className="text-xs font-bold text-ink flex items-center gap-1">
+                <span>✓</span> نسخهٔ پیراسته ({sample.label})
               </span>
-              <span className="text-xs font-black text-black">✓ مهر تأیید ویراستار</span>
+              <span className="text-xs text-accent font-bold">تأیید ویراستار</span>
             </div>
-            <p className="text-sm sm:text-base leading-7 font-black text-black">
+            <p className="text-sm sm:text-base leading-relaxed font-bold text-ink">
               {sample.text}
             </p>
           </div>
         </div>
       </section>
 
-      {/* 3. Ruled Ledger: Features with clear internal divisions */}
-      <section className="nb-ledger">
-        <div className="p-4 bg-black text-white border-b-4 border-black flex items-center justify-between">
-          <h3 className="font-black text-base sm:text-lg">ویژگی‌های بنیادی ویراستار</h3>
-          <span className="text-xs font-mono font-bold bg-[#ffed00] text-black px-2 py-0.5">
-            SPECIFICATION
-          </span>
+      {/* 3. Features as Open Thoughts with Circled Numbers */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-2">
+          <span className="sketch-bracket text-lg">[</span>
+          <h3 className="font-black text-lg text-ink">ویژگی‌های بنیادی دفترچهٔ ویراستار</h3>
+          <span className="sketch-bracket text-lg">]</span>
         </div>
 
-        <div className="grid sm:grid-cols-3 divide-y-3 sm:divide-y-0 sm:divide-x-3 sm:divide-x-reverse divide-black bg-white">
+        <div className="grid sm:grid-cols-3 gap-4">
           <Link
             href="/history"
-            className="p-5 hover:bg-[#fff5d6] transition-colors group flex flex-col justify-between"
+            className="v-card p-5 group flex flex-col justify-between hover:border-ink transition-all"
           >
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="bg-[#ffed00] p-2 border-2 border-black shadow-[2px_2px_0px_#000]">
-                  <HistoryGlyph size={20} />
+              <div className="flex items-center justify-between mb-3">
+                <span className="bg-highlight p-2 border border-border rounded-[8px_4px_10px_4px] shadow-soft">
+                  <HistoryGlyph size={18} />
                 </span>
-                <span className="text-xs font-black bg-black text-white px-2 py-0.5">۰۱</span>
+                <span className="text-xs font-bold text-accent bg-paper px-2 py-0.5 rounded-[4px] border border-border">①</span>
               </div>
-              <h4 className="font-black text-base text-black mb-1">دفتر نگارش‌های آفلاین</h4>
-              <p className="text-xs font-bold text-black/80 leading-5">
-                تمام نوشته‌ها در حافظه دستگاه شما ثبت می‌شوند؛ بدون نیاز به اینترنت و بدون ردیابی.
+              <h4 className="font-bold text-base text-ink mb-1">دفتر نگارش‌های آفلاین</h4>
+              <p className="text-xs text-ink-soft leading-relaxed font-normal">
+                تمام نوشته‌ها فقط در حافظهٔ دستگاه شما ثبت می‌شوند؛ بدون نیاز به اینترنت و بدون ردیابی.
               </p>
             </div>
-            <span className="mt-4 text-xs font-black text-[#ff4332] group-hover:underline">
-              مشاهده نوشته‌ها →
+            <span className="mt-4 text-xs font-bold text-brand group-hover:underline">
+              مشاهده نوشته‌ها ←
             </span>
           </Link>
 
           <Link
             href="/styles"
-            className="p-5 hover:bg-[#fff5d6] transition-colors group flex flex-col justify-between"
+            className="v-card p-5 group flex flex-col justify-between hover:border-ink transition-all"
           >
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="bg-[#d4bdff] p-2 border-2 border-black shadow-[2px_2px_0px_#000]">
-                  <StylesGlyph size={20} />
+              <div className="flex items-center justify-between mb-3">
+                <span className="bg-paper-deep p-2 border border-border rounded-[8px_4px_10px_4px] shadow-soft">
+                  <StylesGlyph size={18} />
                 </span>
-                <span className="text-xs font-black bg-black text-white px-2 py-0.5">۰۲</span>
+                <span className="text-xs font-bold text-accent bg-paper px-2 py-0.5 rounded-[4px] border border-border">②</span>
               </div>
-              <h4 className="font-black text-base text-black mb-1">قلم‌دان سیزده لحن</h4>
-              <p className="text-xs font-bold text-black/80 leading-5">
+              <h4 className="font-bold text-base text-ink mb-1">قلم‌دان سیزده لحن</h4>
+              <p className="text-xs text-ink-soft leading-relaxed font-normal">
                 از لوایح دادگستری و نامه‌های اداری تا نثر گلستان، شوخی‌های روزمره و اصطلاحات جوانان.
               </p>
             </div>
-            <span className="mt-4 text-xs font-black text-[#ff4332] group-hover:underline">
-              آزمایش سبک‌ها →
+            <span className="mt-4 text-xs font-bold text-brand group-hover:underline">
+              آزمایش سبک‌ها ←
             </span>
           </Link>
 
           <Link
             href="/settings"
-            className="p-5 hover:bg-[#fff5d6] transition-colors group flex flex-col justify-between"
+            className="v-card p-5 group flex flex-col justify-between hover:border-ink transition-all"
           >
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <span className="bg-[#ff4332] text-white p-2 border-2 border-black shadow-[2px_2px_0px_#000]">
-                  <SettingsGlyph size={20} />
+              <div className="flex items-center justify-between mb-3">
+                <span className="bg-surface p-2 border border-border rounded-[8px_4px_10px_4px] shadow-soft">
+                  <SettingsGlyph size={18} />
                 </span>
-                <span className="text-xs font-black bg-black text-white px-2 py-0.5">۰۳</span>
+                <span className="text-xs font-bold text-accent bg-paper px-2 py-0.5 rounded-[4px] border border-border">③</span>
               </div>
-              <h4 className="font-black text-base text-black mb-1">مرکز مدل‌های هوش مصنوعی</h4>
-              <p className="text-xs font-bold text-black/80 leading-5">
+              <h4 className="font-bold text-base text-ink mb-1">مرکز مدل‌های هوش مصنوعی</h4>
+              <p className="text-xs text-ink-soft leading-relaxed font-normal">
                 دانلود مدل‌های آفلاین روی گوشی، اتصال ۱-کلیکه به سرور Cloudflare یا کلید رایگان Gemini.
               </p>
             </div>
-            <span className="mt-4 text-xs font-black text-[#ff4332] group-hover:underline">
-              پیکربندی هوش مصنوعی →
+            <span className="mt-4 text-xs font-bold text-brand group-hover:underline">
+              پیکربندی هوش مصنوعی ←
             </span>
           </Link>
         </div>

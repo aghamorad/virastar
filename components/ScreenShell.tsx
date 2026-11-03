@@ -24,39 +24,39 @@ export function ScreenShell({ children }: { children: ReactNode }) {
   const option = MODEL_OPTIONS.find((o) => o.id === currentChoice) ?? MODEL_OPTIONS[0]
 
   return (
-    <div className="flex min-h-dvh flex-col pb-24 md:pb-8 bg-paper">
-      {/* Neo-Brutalist Masthead */}
-      <header className="v-header border-b-4 border-black bg-paper">
+    <div className="flex min-h-dvh flex-col pb-24 md:pb-8 bg-paper text-ink transition-colors duration-150">
+      {/* Sketch Working Sheet Masthead */}
+      <header className="v-header border-b border-border bg-paper/90 backdrop-blur-sm sticky top-0 z-40">
         <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-3">
             <Link
               href="/"
-              className="flex items-center gap-2.5 bg-black text-white px-3 py-1.5 border-3 border-black shadow-[3px_3px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[5px_5px_0px_#000] transition-all cursor-pointer"
+              className="flex items-center gap-2 bg-surface text-ink px-3 py-1.5 border border-border rounded-[8px_4px_12px_5px] shadow-soft hover:bg-highlight hover:border-ink hover:rotate-[-1deg] transition-all cursor-pointer"
               aria-label="ویراستار — خانه"
             >
-              <span className="text-yellow-400 font-black">
-                <Star size={20} />
+              <span className="text-brand">
+                <Star size={18} />
               </span>
-              <span className="text-xl font-black tracking-tight leading-none uppercase">
+              <span className="text-xl font-black tracking-tight leading-none">
                 ویراستار
               </span>
             </Link>
 
-            {/* Engine status indicator tile */}
+            {/* Engine status note */}
             <Link
               href="/settings"
-              className="v-gem-status hover:bg-yellow-300 transition-colors hidden sm:inline-flex"
+              className="v-gem-status hover:border-ink hover:bg-highlight transition-all hidden sm:inline-flex"
               title="تغییر موتور هوش مصنوعی در تنظیمات"
             >
-              <span>{option.kind === 'local' || option.kind === 'rules' ? '💎' : option.id === 'custom-worker' ? '⚡' : '✨'}</span>
-              <span className="text-black font-black text-xs truncate max-w-[140px]">
+              <span className="text-accent">{option.kind === 'local' || option.kind === 'rules' ? '✎' : option.id === 'custom-worker' ? '⚡' : '✨'}</span>
+              <span className="text-ink font-bold text-xs truncate max-w-[140px]">
                 {option.label}
               </span>
             </Link>
           </div>
 
-          <div className="flex items-center gap-3">
-            <nav className="hidden items-center gap-2 md:flex" aria-label="اصلی">
+          <div className="flex items-center gap-2.5">
+            <nav className="hidden items-center gap-1.5 md:flex" aria-label="اصلی">
               {NAV.map((item) => {
                 const active =
                   item.href === '/edit'
@@ -68,10 +68,10 @@ export function ScreenShell({ children }: { children: ReactNode }) {
                     href={item.href}
                     prefetch={false}
                     aria-current={active ? 'page' : undefined}
-                    className={`border-3 border-black px-4 py-1.5 text-sm font-black transition-all cursor-pointer ${
+                    className={`px-3.5 py-1.5 text-sm font-bold border rounded-[7px_3px_10px_4px] transition-all cursor-pointer ${
                       active
-                        ? 'bg-[#ffed00] text-black shadow-[4px_4px_0px_#000] translate-x-[-2px] translate-y-[-2px]'
-                        : 'bg-white text-black shadow-[2px_2px_0px_#000] hover:bg-[#ffed00] hover:shadow-[4px_4px_0px_#000]'
+                        ? 'bg-highlight text-ink border-ink shadow-soft rotate-[-0.5deg] font-extrabold'
+                        : 'bg-surface text-ink-soft border-border hover:border-ink hover:text-ink hover:bg-paper-deep'
                     }`}
                   >
                     {item.label}
@@ -89,43 +89,48 @@ export function ScreenShell({ children }: { children: ReactNode }) {
 
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 sm:px-6 pt-6">{children}</main>
 
-      {/* Neo-Brutalist Grouped Footer */}
-      <footer className="hidden md:flex mx-auto w-full max-w-6xl items-center justify-between px-6 py-6 border-t-4 border-black bg-white mt-16 shadow-[6px_6px_0px_#000]">
+      {/* Sketch Footnote / Lightly Divided Footer */}
+      <footer className="hidden md:flex mx-auto w-full max-w-6xl items-center justify-between px-6 py-6 border-t border-border mt-16 bg-surface/60 rounded-[12px_6px_14px_6px] shadow-soft">
         <div className="flex items-center gap-3">
-          <span className="bg-[#ff4332] text-white px-2.5 py-1 text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000]">
-            MADE BY MORAD
+          <span className="bg-brand text-white px-2.5 py-0.5 text-xs font-bold rounded-[6px_3px_8px_4px] shadow-soft">
+            Made by Morad
           </span>
-          <span className="text-xs font-black text-black">
-            ویراستار · ابزار هوشمند پیرایش و ویرایش زبان فارسی
+          <span className="text-xs text-ink-soft font-medium">
+            ویراستار · برگهٔ دستیار نگارش و بازنویسی زبان فارسی
           </span>
         </div>
-        <div className="flex items-center gap-2 text-xs font-black text-black">
-          <span className="bg-[#d4bdff] px-2 py-0.5 border border-black shadow-[1px_1px_0px_#000]">۱۰۰٪ خصوصی</span>
-          <span className="bg-[#ffed00] px-2 py-0.5 border border-black shadow-[1px_1px_0px_#000]">بدون نیاز به ثبت‌نام</span>
+        <div className="flex items-center gap-2 text-xs font-bold text-accent">
+          <span className="bg-surface px-2.5 py-1 border border-border rounded-[6px_3px_8px_4px] shadow-soft">
+            ✎ ۱۰۰٪ حریم خصوصی در دستگاه
+          </span>
+          <span className="bg-highlight/80 text-ink px-2.5 py-1 border border-border rounded-[6px_3px_8px_4px] shadow-soft">
+            ✓ بدون نیاز به حساب کاربری
+          </span>
         </div>
       </footer>
 
       {/* Mobile Bottom Dock */}
       <nav
-        className="v-bottomnav fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t-4 border-black bg-[#fff5d6] p-1.5 md:hidden shadow-[0_-4px_0px_#000]"
+        className="v-bottomnav fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-border bg-paper/95 backdrop-blur-md p-1.5 md:hidden shadow-soft"
         aria-label="اصلی"
       >
         {NAV.map((item) => {
           const active = item.href === '/edit' ? pathname.startsWith('/edit') : pathname.startsWith(item.href)
+          const Icon = item.icon
           return (
             <Link
               key={item.href}
               href={item.href}
               prefetch={false}
               aria-current={active ? 'page' : undefined}
-              className={`flex flex-col items-center justify-center py-2 px-1 border-2 transition-all ${
+              className={`flex flex-col items-center justify-center gap-1 py-1.5 rounded-[8px_4px_10px_4px] text-xs font-bold transition-all ${
                 active
-                  ? 'bg-[#ffed00] text-black border-black shadow-[3px_3px_0px_#000] font-black'
-                  : 'bg-white text-black border-black/30 font-bold'
+                  ? 'bg-highlight text-ink border border-ink shadow-soft'
+                  : 'text-ink-soft hover:text-ink'
               }`}
             >
-              <item.icon size={18} className="text-black" />
-              <span className="text-[11px] mt-0.5 leading-none font-black">{item.label}</span>
+              <Icon size={18} />
+              <span>{item.label}</span>
             </Link>
           )
         })}

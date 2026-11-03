@@ -182,38 +182,42 @@ export function SettingsScreen() {
 
   return (
     <div className="space-y-10 max-w-5xl mx-auto pb-12">
-      {/* Neo-Brutalist Strip Header */}
-      <header className="border-b-4 border-black pb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-none border-2 border-black bg-emphasis text-black text-xs font-black shadow-[2px_2px_0px_#000] uppercase mb-4">
-          <Star size={13} className="text-signal fill-signal" />
-          <span>پیکربندی سامانه و موتورهای هوشمند</span>
+      {/* Sketch Header Scrap */}
+      <header className="v-card p-6 sm:p-8 relative">
+        <div className="sketch-tape" aria-hidden="true" />
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <span className="sketch-blue-note text-xs">
+            ✎ تنظیمات دفترچهٔ ویراستار
+          </span>
+          <span className="sketch-highlight text-xs font-bold">
+            پوسته‌ها و موتورهای هوشمند
+          </span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-black text-ink tracking-tight uppercase leading-tight">
-          تنظیمات ویراستار
+        <h1 className="text-2xl sm:text-3xl font-bold text-ink tracking-tight">
+          پیکربندی و تنظیمات
         </h1>
-        <p className="mt-3 max-w-2xl text-sm sm:text-base leading-7 text-ink font-bold">
-          پوستهٔ دیداری ویراستار، اتصال به سرورهای ابری اختصاصی، کلیدهای رایگان، و دانلود مدل‌های ۱۰۰٪ آفلاین بدون اینترنت.
+        <p className="mt-2 max-w-2xl text-xs sm:text-sm leading-relaxed text-ink-soft font-normal">
+          پوستهٔ دیداری ویراستار، اتصال به سرورهای ابری اختصاصی، کلیدهای رایگان، و دانلود مدل‌های ۱۰۰٪ آفلاین بدون نیاز به اینترنت.
         </p>
       </header>
 
       {/* Engine Selection */}
       <section className="space-y-4">
-        <div className="flex items-center gap-2 border-b-3 border-black pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-none border-2 border-black bg-emphasis text-black font-black text-sm shadow-[2px_2px_0px_#000]">
-            ⚡
-          </span>
-          <h2 className="text-xl sm:text-2xl font-black text-ink">موتور و مدل پردازش متن</h2>
+        <div className="flex items-center gap-2 border-b border-border/80 pb-2">
+          <span className="sketch-bracket text-base">[</span>
+          <h2 className="text-lg sm:text-xl font-bold text-ink">موتور و شیوهٔ ویرایش</h2>
+          <span className="sketch-bracket text-base">]</span>
         </div>
 
-        <div className="rounded-none border-4 border-black bg-white p-5 shadow-[6px_6px_0px_#000]">
-          <label htmlFor="model-choice" className="block text-base font-black text-black mb-2">
-            شیوهٔ ویرایش و مدل اجرایی
+        <div className="v-card p-5 space-y-3">
+          <label htmlFor="model-choice" className="block text-sm font-bold text-ink">
+            مدل و شیوهٔ پردازش متن
           </label>
           <select
             id="model-choice"
             value={option.id}
             onChange={(e) => handleChoiceChange(e.target.value)}
-            className="w-full rounded-none border-3 border-black bg-paper px-4 py-3 text-base font-black text-black shadow-[3px_3px_0px_#000] outline-none cursor-pointer"
+            className="w-full rounded-[8px_4px_10px_4px] border border-border bg-paper px-4 py-2.5 text-sm font-bold text-ink outline-none cursor-pointer shadow-soft focus:border-ink"
           >
             {MODEL_OPTIONS.map((o) => (
               <option key={o.id} value={o.id}>
@@ -221,61 +225,66 @@ export function SettingsScreen() {
               </option>
             ))}
           </select>
-          <p className="mt-3 text-xs sm:text-sm leading-6 text-black/80 font-bold">{option.description}</p>
+          <p className="text-xs text-ink-soft leading-relaxed font-normal">{option.description}</p>
         </div>
 
         {option.id === 'online-gemini' && (
-          <div className="rounded-none border-4 border-black bg-emphasis p-5 shadow-[6px_6px_0px_#000] text-black">
-            <p className="font-black text-base uppercase">سرور ابری ویراستار (پیش‌فرض)</p>
-            <p className="mt-1 text-xs sm:text-sm leading-6 font-bold text-black/90">
-              متن به صورت خودکار از طریق سرور اختصاصی ویراستار با مدل Google Gemini پردازش می‌شود؛ بدون نیاز به هیچ کلید، تنظیم، یا پیچیدگی فنی.
+          <div className="v-card p-4 bg-highlight/40 border border-ink/30 space-y-1">
+            <p className="font-bold text-sm text-ink flex items-center gap-1.5">
+              <span>✨</span> سرور ابری ویراستار (پیش‌فرض)
+            </p>
+            <p className="text-xs text-ink-soft leading-relaxed font-normal">
+              متن به صورت خودکار از طریق سرور اختصاصی ویراستار با مدل Google Gemini پردازش می‌شود؛ بدون نیاز به هیچ کلید یا تنظیمی.
             </p>
           </div>
         )}
 
         {option.id === 'online-qwen' && (
-          <div className="rounded-none border-4 border-black bg-field p-5 shadow-[6px_6px_0px_#000] text-black">
-            <p className="font-black text-base uppercase">قوِن آنلاین (Cloudflare Workers AI)</p>
-            <p className="mt-1 text-xs sm:text-sm leading-6 font-bold text-black/90">
-              متن از طریق سرور جهانی Cloudflare و مدل قدرتمند Qwen 2.5 7B ویرایش می‌شود؛ پایدار، رایگان و بدون نیاز به نصب هیچ ابزاری.
+          <div className="v-card p-4 bg-paper space-y-1">
+            <p className="font-bold text-sm text-ink flex items-center gap-1.5">
+              <span>⚡</span> قوِن آنلاین (Cloudflare Workers AI)
+            </p>
+            <p className="text-xs text-ink-soft leading-relaxed font-normal">
+              متن از طریق سرور جهانی Cloudflare و مدل Qwen 2.5 7B ویرایش می‌شود؛ نیازی به نصب یا کلید ندارد.
             </p>
           </div>
         )}
 
         {/* Custom Cloudflare Worker (1-Click Deploy) */}
         {option.id === 'custom-worker' && (
-          <div className="rounded-none border-4 border-black bg-white p-5 shadow-[6px_6px_0px_#000] space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-black pb-2">
-              <span className="font-black text-black text-base sm:text-lg">سرور اختصاصی Cloudflare شما (کاملاً رایگان)</span>
-              <span className="rounded-none border-2 border-black bg-emphasis px-2.5 py-0.5 text-xs font-black text-black shadow-[2px_2px_0px_#000]">
+          <div className="v-card p-5 space-y-4 relative">
+            <div className="sketch-tape" aria-hidden="true" />
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2">
+              <span className="font-bold text-ink text-sm sm:text-base">سرور اختصاصی Cloudflare شما (کاملاً رایگان)</span>
+              <span className="sketch-highlight text-xs font-bold">
                 بدون نیاز به کدنویسی (۱ کلیک)
               </span>
             </div>
 
-            <p className="text-xs sm:text-sm leading-6 text-black/85 font-medium">
-              با ساخت سرور ابری اختصاصی، شما یک شعبهٔ مستقل از ویراستار روی سرورهای جهانی Cloudflare خواهید داشت که نامحدود، پرسرعت و رایگان است و ظرفیت پردازش آن با هیچ کاربر دیگری به اشتراک گذاشته نمی‌شود.
+            <p className="text-xs text-ink-soft leading-relaxed font-normal">
+              با ساخت سرور ابری اختصاصی، شما یک شعبهٔ مستقل از ویراستار روی سرورهای جهانی Cloudflare خواهید داشت که نامحدود، پرسرعت و رایگان است و ظرفیت آن با هیچ کاربر دیگری به اشتراک گذاشته نمی‌شود.
             </p>
 
             <a
               href="https://deploy.workers.cloudflare.com/?url=https://github.com/aghamorad/virastar/tree/main/worker"
               target="_blank"
               rel="noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-none border-3 border-black bg-emphasis px-4 py-3.5 text-sm font-black text-black shadow-[4px_4px_0px_#000] hover:bg-black hover:text-emphasis active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-none"
+              className="v-btn-primary w-full text-xs sm:text-sm py-2.5 flex items-center justify-center gap-2"
             >
-              <Star size={16} className="text-signal fill-signal" />
+              <Star size={15} />
               <span>🌐 ۱. ساخت و راه‌اندازی سرور در Cloudflare (با ۱ کلیک)</span>
             </a>
 
-            <div className="rounded-none border-2 border-black bg-paper p-4 text-xs leading-6 text-black space-y-2 shadow-[2px_2px_0px_#000]">
-              <p className="font-black text-sm">مراحل ساده ساخت سرور (حتی برای افراد غیرفنی):</p>
-              <p>۱. روی دکمهٔ زردرنگ بالا بزنید تا صفحه رسمی Cloudflare باز شود و با ایمیل یا حساب گوگل خود وارد شوید.</p>
+            <div className="bg-paper p-3.5 rounded-[8px_4px_10px_4px] border border-border text-xs leading-relaxed text-ink-soft space-y-1.5 font-normal">
+              <p className="font-bold text-ink">مراحل ساده ساخت سرور (حتی برای افراد غیرفنی):</p>
+              <p>۱. روی دکمه بالا بزنید تا صفحه رسمی Cloudflare باز شود و با ایمیل یا حساب گوگل خود وارد شوید.</p>
               <p>۲. در صفحه بازشده، روی دکمه آبی‌رنگ <strong>«Deploy»</strong> بزنید. کلودفلر ظرف ۲۰ ثانیه سرور رایگان شما را می‌سازد.</p>
-              <p>۳. آدرس سرور ساخته‌شده (مانند <code className="bg-white px-1.5 py-0.5 border border-black font-mono font-bold">https://virastar-edit.yourname.workers.dev</code>) را کپی کرده و در کادر زیر قرار دهید.</p>
+              <p>۳. آدرس سرور ساخته‌شده (مانند <code className="bg-surface px-1.5 py-0.5 rounded border border-border text-brand font-mono">https://virastar-edit.yourname.workers.dev</code>) را کپی کرده و در کادر زیر قرار دهید.</p>
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-2">
-                <label htmlFor="custom-worker-url" className="block text-xs font-black text-black">
+              <div className="flex items-center justify-between mb-1.5">
+                <label htmlFor="custom-worker-url" className="block text-xs font-bold text-ink">
                   آدرس سرور اختصاصی شما
                 </label>
                 {settings.endpoint !== HOSTED_ENDPOINT && (
@@ -285,7 +294,7 @@ export function SettingsScreen() {
                       saveSettings({ ...settings, endpoint: HOSTED_ENDPOINT })
                       setTestStatus(null)
                     }}
-                    className="text-xs font-black text-signal underline hover:text-black cursor-pointer"
+                    className="text-xs text-brand underline hover:text-ink cursor-pointer font-bold"
                   >
                     بازنشانی به سرور پیش‌فرض ویراستار
                   </button>
@@ -302,7 +311,7 @@ export function SettingsScreen() {
                     saveSettings({ ...settings, endpoint: e.target.value.trim() })
                     setTestStatus(null)
                   }}
-                  className="flex-1 rounded-none border-3 border-black bg-white px-4 py-2.5 font-mono text-xs font-bold text-black shadow-[3px_3px_0px_#000] outline-none"
+                  className="v-field font-mono text-xs flex-1"
                 />
 
                 <div className="flex items-center gap-2">
@@ -314,16 +323,16 @@ export function SettingsScreen() {
                         void testWorkerUrl(val)
                       })
                     }
-                    className="rounded-none border-2 border-black bg-white px-3 py-2 text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-emphasis active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer whitespace-nowrap"
+                    className="v-btn-ghost px-3 py-2 text-xs font-bold whitespace-nowrap"
                     title="چسباندن آدرس کپی‌شده از حافظه"
                   >
-                    📋 چسباندن از حافظه
+                    📋 چسباندن
                   </button>
 
                   <button
                     type="button"
                     onClick={() => void testWorkerUrl(settings.endpoint)}
-                    className="rounded-none border-2 border-black bg-signal text-white px-3 py-2 text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-black active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer whitespace-nowrap"
+                    className="v-btn-primary px-3 py-2 text-xs font-bold whitespace-nowrap"
                   >
                     ⚡ آزمایش اتصال
                   </button>
@@ -332,12 +341,12 @@ export function SettingsScreen() {
 
               {testStatus?.type === 'worker' && (
                 <div
-                  className={`mt-3 rounded-none border-3 border-black p-3 text-xs font-black shadow-[3px_3px_0px_#000] ${
+                  className={`mt-2.5 rounded-[6px_3px_8px_3px] p-2.5 text-xs font-bold border ${
                     testStatus.state === 'success'
-                      ? 'bg-emphasis text-black'
+                      ? 'bg-success/10 border-success/30 text-success'
                       : testStatus.state === 'testing'
-                      ? 'bg-field text-black'
-                      : 'bg-signal text-white'
+                      ? 'bg-accent/10 border-accent/30 text-accent'
+                      : 'bg-brand/10 border-brand/30 text-brand'
                   }`}
                 >
                   {testStatus.message}
@@ -349,15 +358,16 @@ export function SettingsScreen() {
 
         {/* Direct Gemini API Key Guide & Input */}
         {(option.id === 'direct-gemini' || settings.geminiApiKey) && (
-          <div className="rounded-none border-4 border-black bg-white p-5 shadow-[6px_6px_0px_#000] space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-black pb-2">
-              <span className="font-black text-black text-base sm:text-lg">کلید رایگان Google Gemini API</span>
-              <span className="rounded-none border-2 border-black bg-emphasis px-2.5 py-0.5 text-xs font-black text-black shadow-[2px_2px_0px_#000]">
+          <div className="v-card p-5 space-y-4 relative">
+            <div className="sketch-tape" aria-hidden="true" />
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2">
+              <span className="font-bold text-ink text-sm sm:text-base">کلید رایگان Google Gemini API</span>
+              <span className="sketch-highlight text-xs font-bold">
                 ۱۵۰۰ درخواست رایگان در روز
               </span>
             </div>
 
-            <p className="text-xs sm:text-sm leading-6 text-black/85 font-medium">
+            <p className="text-xs text-ink-soft leading-relaxed font-normal">
               گوگل برای هر حساب کاربری جیمیل، سهمیه روزانه ۱۵۰۰ ویرایش رایگان با بهترین کیفیت و هوش مصنوعی فارسی قرار داده است.
             </p>
 
@@ -365,21 +375,21 @@ export function SettingsScreen() {
               href="https://aistudio.google.com/app/apikey"
               target="_blank"
               rel="noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-none border-3 border-black bg-signal px-4 py-3.5 text-sm font-black text-white shadow-[4px_4px_0px_#000] hover:bg-black hover:text-white active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-none"
+              className="v-btn-primary w-full text-xs sm:text-sm py-2.5 flex items-center justify-center gap-2"
             >
-              <Star size={16} />
+              <Star size={15} />
               <span>🌐 ۱. باز کردن صفحه دریافت کلید رایگان گوگل (۱ کلیک)</span>
             </a>
 
-            <div className="rounded-none border-2 border-black bg-paper p-4 text-xs leading-6 text-black space-y-2 shadow-[2px_2px_0px_#000]">
-              <p className="font-black text-sm">مراحل دریافت کلید (کمتر از ۱ دقیقه):</p>
+            <div className="bg-paper p-3.5 rounded-[8px_4px_10px_4px] border border-border text-xs leading-relaxed text-ink-soft space-y-1.5 font-normal">
+              <p className="font-bold text-ink">مراحل دریافت کلید (کمتر از ۱ دقیقه):</p>
               <p>۱. روی دکمه بالا بزنید تا سایت رسمی گوگل باز شود و با ایمیل خود وارد شوید.</p>
               <p>۲. روی دکمه آبی‌رنگ <strong>«Create API key»</strong> بزنید و کد کلید را کپی کنید.</p>
               <p>۳. به این صفحه بازگردید و روی دکمهٔ <strong>«چسباندن از حافظه»</strong> بزنید. تمام!</p>
             </div>
 
             <div>
-              <label htmlFor="gemini-key" className="block text-xs font-black text-black mb-2">
+              <label htmlFor="gemini-key" className="block text-xs font-bold text-ink mb-1.5">
                 کد کلید API گوگل (Gemini API Key)
               </label>
 
@@ -393,7 +403,7 @@ export function SettingsScreen() {
                     saveSettings({ ...settings, geminiApiKey: e.target.value.trim() })
                     setTestStatus(null)
                   }}
-                  className="flex-1 rounded-none border-3 border-black bg-white px-4 py-2.5 font-mono text-xs font-bold text-black shadow-[3px_3px_0px_#000] outline-none"
+                  className="v-field font-mono text-xs flex-1"
                 />
 
                 <div className="flex items-center gap-2">
@@ -405,17 +415,17 @@ export function SettingsScreen() {
                         void testGeminiKey(val)
                       })
                     }
-                    className="rounded-none border-2 border-black bg-white px-3 py-2 text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-emphasis active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer whitespace-nowrap"
-                    title="چسباندن کلید از حافظه گوشی یا مک"
+                    className="v-btn-ghost px-3 py-2 text-xs font-bold whitespace-nowrap"
+                    title="چسباندن کلید از حافظه"
                   >
-                    📋 چسباندن از حافظه
+                    📋 چسباندن
                   </button>
 
                   <button
                     type="button"
                     onClick={() => void testGeminiKey(settings.geminiApiKey ?? '')}
                     disabled={!settings.geminiApiKey}
-                    className="rounded-none border-2 border-black bg-signal text-white px-3 py-2 text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-black active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer whitespace-nowrap disabled:opacity-40"
+                    className="v-btn-primary px-3 py-2 text-xs font-bold whitespace-nowrap disabled:opacity-40"
                   >
                     ⚡ آزمایش کلید
                   </button>
@@ -424,12 +434,12 @@ export function SettingsScreen() {
 
               {testStatus?.type === 'gemini' && (
                 <div
-                  className={`mt-3 rounded-none border-3 border-black p-3 text-xs font-black shadow-[3px_3px_0px_#000] ${
+                  className={`mt-2.5 rounded-[6px_3px_8px_3px] p-2.5 text-xs font-bold border ${
                     testStatus.state === 'success'
-                      ? 'bg-emphasis text-black'
+                      ? 'bg-success/10 border-success/30 text-success'
                       : testStatus.state === 'testing'
-                      ? 'bg-field text-black'
-                      : 'bg-signal text-white'
+                      ? 'bg-accent/10 border-accent/30 text-accent'
+                      : 'bg-brand/10 border-brand/30 text-brand'
                   }`}
                 >
                   {testStatus.message}
@@ -441,15 +451,16 @@ export function SettingsScreen() {
 
         {/* Direct Groq API Key Guide & Input */}
         {(option.id === 'direct-groq' || settings.groqApiKey) && (
-          <div className="rounded-none border-4 border-black bg-white p-5 shadow-[6px_6px_0px_#000] space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-black pb-2">
-              <span className="font-black text-black text-base sm:text-lg">کلید رایگان Groq (فوق‌سریع)</span>
-              <span className="rounded-none border-2 border-black bg-emphasis px-2.5 py-0.5 text-xs font-black text-black shadow-[2px_2px_0px_#000]">
+          <div className="v-card p-5 space-y-4 relative">
+            <div className="sketch-tape" aria-hidden="true" />
+            <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2">
+              <span className="font-bold text-ink text-sm sm:text-base">کلید رایگان Groq (فوق‌سریع)</span>
+              <span className="sketch-highlight text-xs font-bold">
                 مدل Qwen 2.5 32B (۳۰۰ کلمه بر ثانیه)
               </span>
             </div>
 
-            <p className="text-xs sm:text-sm leading-6 text-black/85 font-medium">
+            <p className="text-xs text-ink-soft leading-relaxed font-normal">
               سرویس Groq سریع‌ترین پردازشگر ابری جهان است که مدل قدرتمند Qwen 2.5 را به رایگان و بدون تأخیر در اختیار شما می‌گذارد.
             </p>
 
@@ -457,21 +468,21 @@ export function SettingsScreen() {
               href="https://console.groq.com/keys"
               target="_blank"
               rel="noreferrer"
-              className="flex w-full items-center justify-center gap-2 rounded-none border-3 border-black bg-black text-white font-black px-4 py-3.5 text-sm shadow-[4px_4px_0px_#000] hover:bg-emphasis hover:text-black active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-none"
+              className="v-btn-primary w-full text-xs sm:text-sm py-2.5 flex items-center justify-center gap-2"
             >
-              <Star size={16} />
+              <Star size={15} />
               <span>🌐 ۱. باز کردن صفحه دریافت کلید Groq (۱ کلیک)</span>
             </a>
 
-            <div className="rounded-none border-2 border-black bg-paper p-4 text-xs leading-6 text-black space-y-2 shadow-[2px_2px_0px_#000]">
-              <p className="font-black text-sm">مراحل دریافت کلید Groq:</p>
-              <p>۱. روی دکمه مشکی بالا بزنید تا وارد سایت Groq شوید.</p>
+            <div className="bg-paper p-3.5 rounded-[8px_4px_10px_4px] border border-border text-xs leading-relaxed text-ink-soft space-y-1.5 font-normal">
+              <p className="font-bold text-ink">مراحل دریافت کلید Groq:</p>
+              <p>۱. روی دکمه بالا بزنید تا وارد سایت Groq شوید.</p>
               <p>۲. دکمه <strong>«Create API Key»</strong> را بزنید و کلید ساخته‌شده را کپی کنید.</p>
               <p>۳. در این صفحه دکمهٔ <strong>«چسباندن از حافظه»</strong> را بزنید.</p>
             </div>
 
             <div>
-              <label htmlFor="groq-key" className="block text-xs font-black text-black mb-2">
+              <label htmlFor="groq-key" className="block text-xs font-bold text-ink mb-1.5">
                 کد کلید API گروک (Groq API Key)
               </label>
 
@@ -485,7 +496,7 @@ export function SettingsScreen() {
                     saveSettings({ ...settings, groqApiKey: e.target.value.trim() })
                     setTestStatus(null)
                   }}
-                  className="flex-1 rounded-none border-3 border-black bg-white px-4 py-2.5 font-mono text-xs font-bold text-black shadow-[3px_3px_0px_#000] outline-none"
+                  className="v-field font-mono text-xs flex-1"
                 />
 
                 <div className="flex items-center gap-2">
@@ -497,17 +508,17 @@ export function SettingsScreen() {
                         void testGroqKey(val)
                       })
                     }
-                    className="rounded-none border-2 border-black bg-white px-3 py-2 text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-emphasis active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer whitespace-nowrap"
+                    className="v-btn-ghost px-3 py-2 text-xs font-bold whitespace-nowrap"
                     title="چسباندن کلید از حافظه"
                   >
-                    📋 چسباندن از حافظه
+                    📋 چسباندن
                   </button>
 
                   <button
                     type="button"
                     onClick={() => void testGroqKey(settings.groqApiKey ?? '')}
                     disabled={!settings.groqApiKey}
-                    className="rounded-none border-2 border-black bg-signal text-white px-3 py-2 text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-black active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer whitespace-nowrap disabled:opacity-40"
+                    className="v-btn-primary px-3 py-2 text-xs font-bold whitespace-nowrap disabled:opacity-40"
                   >
                     ⚡ آزمایش کلید
                   </button>
@@ -516,12 +527,12 @@ export function SettingsScreen() {
 
               {testStatus?.type === 'groq' && (
                 <div
-                  className={`mt-3 rounded-none border-3 border-black p-3 text-xs font-black shadow-[3px_3px_0px_#000] ${
+                  className={`mt-2.5 rounded-[6px_3px_8px_3px] p-2.5 text-xs font-bold border ${
                     testStatus.state === 'success'
-                      ? 'bg-emphasis text-black'
+                      ? 'bg-success/10 border-success/30 text-success'
                       : testStatus.state === 'testing'
-                      ? 'bg-field text-black'
-                      : 'bg-signal text-white'
+                      ? 'bg-accent/10 border-accent/30 text-accent'
+                      : 'bg-brand/10 border-brand/30 text-brand'
                   }`}
                 >
                   {testStatus.message}
@@ -533,11 +544,11 @@ export function SettingsScreen() {
 
         {/* Local Ollama / Mac Guide & Input */}
         {option.id === 'local-ollama' && (
-          <div className="rounded-none border-4 border-black bg-white p-5 shadow-[6px_6px_0px_#000] space-y-4">
-            <p className="font-black text-black text-base">اتصال به مدل آفلاین روی مک (Ollama / LM Studio)</p>
-            <div className="rounded-none border-2 border-black bg-paper p-4 text-xs leading-6 text-black space-y-2 shadow-[2px_2px_0px_#000]">
-              <p className="font-black">اجرای ساده در ترمینال مک:</p>
-              <code className="block bg-white border-2 border-black px-3 py-2 text-black font-mono font-bold text-xs select-all shadow-[2px_2px_0px_#000]">
+          <div className="v-card p-5 space-y-4">
+            <p className="font-bold text-ink text-sm sm:text-base">اتصال به مدل آفلاین روی مک (Ollama / LM Studio)</p>
+            <div className="bg-paper p-3.5 rounded-[8px_4px_10px_4px] border border-border text-xs leading-relaxed text-ink-soft space-y-1.5 font-normal">
+              <p className="font-bold text-ink">اجرای ساده در ترمینال مک:</p>
+              <code className="block bg-surface border border-border px-3 py-1.5 rounded text-ink font-mono font-bold text-xs select-all">
                 ollama run qwen2.5:1.5b
               </code>
               <p>به محض اجرای دستور فوق، ویراستار به صورت کاملاً آفلاین و با بیشترین سرعت به مدل متصل خواهد شد.</p>
@@ -545,7 +556,7 @@ export function SettingsScreen() {
 
             <div className="grid gap-3 sm:grid-cols-2">
               <div>
-                <label htmlFor="ollama-endpoint" className="block text-xs font-black text-black mb-1">
+                <label htmlFor="ollama-endpoint" className="block text-xs font-bold text-ink mb-1">
                   آدرس سرور محلی
                 </label>
                 <input
@@ -553,11 +564,11 @@ export function SettingsScreen() {
                   type="text"
                   value={settings.customEndpoint ?? 'http://localhost:11434/v1'}
                   onChange={(e) => saveSettings({ ...settings, customEndpoint: e.target.value.trim() })}
-                  className="w-full rounded-none border-3 border-black bg-white px-4 py-2 font-mono text-xs font-bold text-black shadow-[3px_3px_0px_#000] outline-none"
+                  className="v-field font-mono text-xs"
                 />
               </div>
               <div>
-                <label htmlFor="ollama-model" className="block text-xs font-black text-black mb-1">
+                <label htmlFor="ollama-model" className="block text-xs font-bold text-ink mb-1">
                   نام مدل (Ollama Model Name)
                 </label>
                 <input
@@ -565,7 +576,7 @@ export function SettingsScreen() {
                   type="text"
                   value={settings.customModel ?? 'qwen2.5:1.5b'}
                   onChange={(e) => saveSettings({ ...settings, customModel: e.target.value.trim() })}
-                  className="w-full rounded-none border-3 border-black bg-white px-4 py-2 font-mono text-xs font-bold text-black shadow-[3px_3px_0px_#000] outline-none"
+                  className="v-field font-mono text-xs"
                 />
               </div>
             </div>
@@ -573,9 +584,9 @@ export function SettingsScreen() {
         )}
 
         {option.kind === 'rules' && (
-          <div className="rounded-none border-4 border-black bg-field p-5 shadow-[6px_6px_0px_#000] text-black">
-            <p className="font-black text-base uppercase">بدون هوش مصنوعی (فقط قواعد نگارش)</p>
-            <p className="mt-1 text-xs sm:text-sm leading-6 font-bold text-black/90">
+          <div className="v-card p-4 bg-paper space-y-1">
+            <p className="font-bold text-sm text-ink">بدون هوش مصنوعی (فقط قواعد دستوری و املایی)</p>
+            <p className="text-xs text-ink-soft leading-relaxed font-normal">
               ویرایش فقط با قواعد دستوری، اصلاح نیم‌فاصله‌ها و غلط‌های املایی فارسی انجام می‌شود؛ هیچ داده‌ای از دستگاه خارج نمی‌شود.
             </p>
           </div>
@@ -591,67 +602,64 @@ export function SettingsScreen() {
 
       {/* Smart Keyboard Integration Guide */}
       <section className="space-y-4">
-        <div className="flex items-center gap-2 border-b-3 border-black pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-none border-2 border-black bg-emphasis text-black font-black text-sm shadow-[2px_2px_0px_#000]">
-            ⌨️
-          </span>
-          <h2 className="text-xl sm:text-2xl font-black text-ink">کیبورد هوشمند ویراستار (ویژه موبایل و پیام‌رسان‌ها)</h2>
+        <div className="flex items-center gap-2 border-b border-border/80 pb-2">
+          <span className="sketch-bracket text-base">[</span>
+          <h2 className="text-lg sm:text-xl font-bold text-ink">کیبورد هوشمند ویراستار (ویژه موبایل و پیام‌رسان‌ها)</h2>
+          <span className="sketch-bracket text-base">]</span>
         </div>
 
-        <div className="rounded-none border-4 border-black bg-white p-5 shadow-[6px_6px_0px_#000] space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b-2 border-black pb-2">
-            <span className="font-black text-black text-base sm:text-lg">استفاده مستقیم داخل واتس‌اپ، تلگرام، اینستاگرام و یادداشت‌ها</span>
-            <span className="rounded-none border-2 border-black bg-emphasis px-2.5 py-0.5 text-xs font-black text-black shadow-[2px_2px_0px_#000]">
+        <div className="v-card p-5 space-y-3 relative">
+          <div className="sketch-tape" aria-hidden="true" />
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2">
+            <span className="font-bold text-ink text-sm sm:text-base">استفاده مستقیم داخل واتس‌اپ، تلگرام، اینستاگرام و یادداشت‌ها</span>
+            <span className="sketch-highlight text-xs font-bold">
               iOS Keyboard Extension
             </span>
           </div>
 
-          <p className="text-xs sm:text-sm leading-6 text-black/85 font-medium">
-            با کیبورد ویراستار، نیازی به کپی و جابه‌جایی متن نیست! در هر برنامه‌ای که تایپ می‌کنید، کیبورد ویراستار متن را مستقیماً ویرایش کرده، نیم‌فاصله‌ها و نشانه‌گذاری را درست می‌کند و لحن دلخواه شما (رسمی، اداری، حقوقی، لاتی و غیره) را اعمال می‌کند.
+          <p className="text-xs text-ink-soft leading-relaxed font-normal">
+            با کیبورد ویراستار، نیازی به کپی و جابه‌جایی متن نیست! در هر برنامه‌ای که تایپ می‌کنید، کیبورد ویراستار متن را مستقیماً ویرایش کرده، نیم‌فاصله‌ها و نشانه‌گذاری را درست می‌کند و لحن دلخواه شما را اعمال می‌کند.
           </p>
 
-          <div className="rounded-none border-2 border-black bg-paper p-4 text-xs leading-6 text-black space-y-2 shadow-[2px_2px_0px_#000]">
-            <p className="font-black text-sm">نحوه فعال‌سازی در آیفون و آیپد (فقط یک‌بار):</p>
+          <div className="bg-paper p-3.5 rounded-[8px_4px_10px_4px] border border-border text-xs leading-relaxed text-ink-soft space-y-1.5 font-normal">
+            <p className="font-bold text-ink">نحوه فعال‌سازی در آیفون و آیپد (فقط یک‌بار):</p>
             <p>۱. وارد تنظیمات اصلی آیفون (<strong>Settings</strong>) شوید.</p>
             <p>۲. به مسیر <strong>General &gt; Keyboard &gt; Keyboards</strong> بروید.</p>
             <p>۳. گزینه <strong>«Add New Keyboard...»</strong> را بزنید و <strong>«ویراستار (Virastar)»</strong> را انتخاب کنید.</p>
             <p>۴. روی ویراستار کلیک کرده و گزینه <strong>«Allow Full Access»</strong> را روشن کنید (برای فعال شدن هوش مصنوعی و گفتار به متن).</p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2 text-xs font-black text-black border-t-2 border-black pt-3">
-            <span className="rounded-none border-2 border-black bg-emphasis px-2 py-0.5 shadow-[1px_1px_0px_#000]">💡 روش استفاده:</span>
+          <div className="flex flex-wrap items-center gap-2 text-xs text-ink-soft border-t border-border pt-2.5 font-normal">
+            <span className="text-brand font-bold">💡 روش استفاده:</span>
             <span>در هر برنامه روی آیکون کُره زمین (🌐) پایین کیبورد بزنید تا ویراستار بالا بیاید، بنویسید و دکمهٔ «✨ ویرایش با ویراستار» را لمس کنید!</span>
           </div>
         </div>
       </section>
 
-      {/* Themes — 8 Distinct Neo-Brutalist Aesthetic Palettes */}
+      {/* Themes — 8 Sketchbook Palettes */}
       <section className="space-y-4">
-        <div className="flex flex-wrap items-end justify-between gap-2 border-b-3 border-black pb-2">
+        <div className="flex flex-wrap items-end justify-between gap-2 border-b border-border/80 pb-2">
           <div>
             <div className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-none border-2 border-black bg-emphasis text-black font-black text-sm shadow-[2px_2px_0px_#000]">
-                🎨
-              </span>
-              <h2 className="text-xl sm:text-2xl font-black text-ink">پوسته‌های زنده و تعاملی نئوبروتالیسم</h2>
+              <span className="sketch-bracket text-base">[</span>
+              <h2 className="text-lg sm:text-xl font-bold text-ink">پوسته‌های زنده و برگه‌های یادداشت</h2>
+              <span className="sketch-bracket text-base">]</span>
             </div>
-            <p className="mt-1 text-xs sm:text-sm text-ink-soft font-bold">
-              ۸ پالت رنگی با کنتراست شدید، حاشیه‌های ضخیم و سایه‌های سخت هندسی
+            <p className="mt-1 text-xs text-ink-soft font-normal">
+              ۸ پالت رنگی با حس طبیعی کاغذ، دست‌خط، گرافیت مداد و بازخورد صوتی آرامش‌بخش
             </p>
           </div>
           <button
             type="button"
             onClick={toggleAudio}
-            className={`rounded-none border-3 border-black px-3 py-1.5 text-xs font-black shadow-[3px_3px_0px_#000] cursor-pointer transition-none ${
-              audioEnabled ? 'bg-emphasis text-black' : 'bg-white text-black hover:bg-neutral-100'
-            }`}
-            title="روشن یا خاموش کردن صدای لمس کلیدها در تمام بخش‌ها"
+            className={`v-chip text-xs ${audioEnabled ? 'v-chip-active' : ''}`}
+            title="روشن یا خاموش کردن صدای لمس کلیدها"
           >
             <span>{audioEnabled ? '🔊 صدای تعاملی: روشن' : '🔇 صدای تعاملی: خاموش'}</span>
           </button>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-3.5 sm:grid-cols-2">
           {THEMES.map((t) => {
             const isActive = t.id === active
             return (
@@ -663,72 +671,72 @@ export function SettingsScreen() {
                   playTactileSound(t.id, 'special')
                 }}
                 aria-pressed={isActive}
-                className={`rounded-none border-4 border-black p-4 text-start transition-none cursor-pointer relative ${
+                className={`v-card p-4 text-start transition-all cursor-pointer relative ${
                   isActive
-                    ? 'bg-emphasis shadow-[6px_6px_0px_#000] translate-x-[-2px] translate-y-[-2px]'
-                    : 'bg-white shadow-[4px_4px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[6px_6px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-none'
+                    ? 'bg-highlight/50 border-ink shadow-card scale-[1.01]'
+                    : 'hover:border-ink/70 hover:rotate-[-0.3deg]'
                 }`}
               >
                 {isActive && (
-                  <div className="absolute top-0 end-0 bg-black text-emphasis text-[10px] font-black px-3 py-1 border-s-2 border-b-2 border-black uppercase tracking-wider">
-                    پوستهٔ فعال
+                  <div className="absolute top-0 end-0 bg-brand text-white text-[10px] font-bold px-2.5 py-0.5 rounded-bl-[6px] shadow-xs">
+                    فعال
                   </div>
                 )}
 
                 <div className="flex items-start gap-3">
-                  <span className="text-3xl shrink-0 leading-none pt-0.5" aria-hidden="true">
+                  <span className="text-2xl shrink-0 leading-none pt-0.5" aria-hidden="true">
                     {t.icon}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                      <span className="font-black text-base text-black">{t.label}</span>
-                      <span className="rounded-none border-2 border-black bg-white px-2 py-0.5 text-[10px] font-black text-black shadow-[1px_1px_0px_#000]">
+                    <div className="flex flex-wrap items-center gap-1.5 mb-1">
+                      <span className="font-bold text-sm sm:text-base text-ink">{t.label}</span>
+                      <span className="text-[10px] px-2 py-0.5 bg-paper rounded-[4px] border border-border text-ink-soft font-medium">
                         {t.taste}
                       </span>
                     </div>
 
-                    <p className="text-xs leading-5 text-black/80 font-bold mb-2">{t.blurb}</p>
+                    <p className="text-xs leading-relaxed text-ink-soft mb-2 font-normal">{t.blurb}</p>
 
-                    <div className="text-[11px] leading-4 text-black bg-paper border-2 border-black p-2 mb-3 shadow-[1px_1px_0px_#000]">
-                      <span className="font-black">حس فیزیکی: </span>
+                    <div className="text-[11px] leading-relaxed text-ink-soft bg-paper/70 border border-border rounded-[6px] p-2 mb-2 font-normal">
+                      <span className="font-bold text-ink">حس تعاملی: </span>
                       {t.interactiveFeature}
                     </div>
 
-                    {/* Palette Swatches */}
-                    <div className="flex items-center justify-between pt-2 border-t-2 border-black">
+                    {/* Palette Dots */}
+                    <div className="flex items-center justify-between pt-1 border-t border-border/60">
                       <div className="flex items-center gap-1.5">
-                        <span className="text-[10px] font-black text-black uppercase">پالت:</span>
+                        <span className="text-[10px] text-ink-soft">پالت:</span>
                         <div className="flex items-center gap-1">
                           <span
-                            className="w-4 h-4 rounded-none border-2 border-black shadow-[1px_1px_0px_#000] inline-block"
+                            className="w-3.5 h-3.5 rounded-full border border-black/15 shadow-xs inline-block"
                             style={{ backgroundColor: t.palette.paper }}
-                            title="کاغذ زمینه"
+                            title="کاغذ"
                           />
                           <span
-                            className="w-4 h-4 rounded-none border-2 border-black shadow-[1px_1px_0px_#000] inline-block"
+                            className="w-3.5 h-3.5 rounded-full border border-black/15 shadow-xs inline-block"
                             style={{ backgroundColor: t.palette.surface }}
                             title="کارت‌ها"
                           />
                           <span
-                            className="w-4 h-4 rounded-none border-2 border-black shadow-[1px_1px_0px_#000] inline-block"
+                            className="w-3.5 h-3.5 rounded-full border border-black/15 shadow-xs inline-block"
                             style={{ backgroundColor: t.palette.brand }}
-                            title="رنگ اصلی / نشان"
+                            title="نشان"
                           />
                           <span
-                            className="w-4 h-4 rounded-none border-2 border-black shadow-[1px_1px_0px_#000] inline-block"
+                            className="w-3.5 h-3.5 rounded-full border border-black/15 shadow-xs inline-block"
                             style={{ backgroundColor: t.palette.ink }}
-                            title="رنگ نوشته"
+                            title="جوهر"
                           />
                           <span
-                            className="w-4 h-4 rounded-none border-2 border-black shadow-[1px_1px_0px_#000] inline-block"
+                            className="w-3.5 h-3.5 rounded-full border border-black/15 shadow-xs inline-block"
                             style={{ backgroundColor: t.palette.accent }}
-                            title="چاشنی و چاشنی فرعی"
+                            title="چاشنی"
                           />
                         </div>
                       </div>
 
-                      <span className="text-[11px] font-black text-black underline uppercase">
-                        {isActive ? '✓ انتخاب شده' : 'انتخاب پوسته ←'}
+                      <span className="text-[10px] font-bold text-brand underline">
+                        {isActive ? 'پوستهٔ شما' : 'لمس برای انتخاب'}
                       </span>
                     </div>
                   </div>
@@ -739,14 +747,15 @@ export function SettingsScreen() {
         </div>
 
         {/* Live Interactive Sandbox / Theme Playground */}
-        <div className="rounded-none border-4 border-black bg-field p-5 shadow-[6px_6px_0px_#000] text-black space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b-3 border-black pb-3">
+        <div className="v-card p-5 space-y-4 relative">
+          <div className="sketch-tape" aria-hidden="true" />
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2.5">
             <div className="flex items-center gap-2">
-              <span className="text-2xl">✨</span>
+              <span className="text-xl">✏️</span>
               <div>
-                <h3 className="font-black text-base sm:text-lg">آزمایشگاه زندهٔ پوسته و کلیدها</h3>
-                <p className="text-xs text-black/80 font-bold">
-                  حس کلیدها، سایه‌های سخت، رنگ متن و صدای این پوسته را همین‌جا بیازمایید
+                <h3 className="font-bold text-sm sm:text-base text-ink">آزمایشگاه زندهٔ پوسته و قلم</h3>
+                <p className="text-[11px] text-ink-soft font-normal">
+                  حس کلیدها، بافت کاغذ، صدای نگارش و رنگ این پوسته را همین‌جا بیازمایید
                 </p>
               </div>
             </div>
@@ -754,7 +763,7 @@ export function SettingsScreen() {
             <button
               type="button"
               onClick={() => playTactileSound(active, 'special')}
-              className="rounded-none border-2 border-black bg-white px-3 py-1.5 text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-emphasis active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer flex items-center gap-1.5"
+              className="v-btn-ghost text-xs px-2.5 py-1 flex items-center gap-1.5"
             >
               <span>🎵 آزمایش صدای این پوسته</span>
             </button>
@@ -762,8 +771,8 @@ export function SettingsScreen() {
 
           <div className="space-y-3">
             {/* Style selector pills in sandbox */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs font-black text-black">نمونهٔ لحن:</span>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-xs font-bold text-ink">نمونهٔ لحن:</span>
               {[
                 { id: 'rasmi', label: 'رسمی' },
                 { id: 'edari', label: 'اداری' },
@@ -778,10 +787,8 @@ export function SettingsScreen() {
                     setSandboxStyle(s.id)
                     playTactileSound(active, 'tap')
                   }}
-                  className={`rounded-none border-2 border-black px-3 py-1 text-xs font-black transition-none cursor-pointer ${
-                    sandboxStyle === s.id
-                      ? 'bg-emphasis text-black shadow-[3px_3px_0px_#000]'
-                      : 'bg-white text-black shadow-[2px_2px_0px_#000] hover:bg-neutral-100'
+                  className={`v-chip text-xs px-2.5 py-1 ${
+                    sandboxStyle === s.id ? 'v-chip-active' : ''
                   }`}
                 >
                   {s.label}
@@ -797,20 +804,20 @@ export function SettingsScreen() {
                 setSandboxText(e.target.value)
                 playTactileSound(active, 'tap')
               }}
-              className="w-full rounded-none border-3 border-black bg-white p-3 text-sm sm:text-base font-bold text-black shadow-[3px_3px_0px_#000] outline-none resize-none"
+              className="v-field text-sm leading-relaxed resize-none"
               placeholder="اینجا چیزی بنویسید تا حس و رنگ این پوسته را ببینید..."
             />
 
             {/* Interactive Actions */}
             <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => {
                     setSandboxText((prev) => prev + '\u200c')
                     playTactileSound(active, 'special')
                   }}
-                  className="rounded-none border-2 border-black bg-white px-3 py-1.5 text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-emphasis active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
+                  className="v-btn-ghost text-xs px-2.5 py-1"
                   title="افزودن نیم‌فاصله"
                 >
                   [نیم‌فاصله]
@@ -821,7 +828,7 @@ export function SettingsScreen() {
                     setSandboxText((prev) => prev + ' «»')
                     playTactileSound(active, 'tap')
                   }}
-                  className="rounded-none border-2 border-black bg-white px-3 py-1.5 text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-emphasis active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
+                  className="v-btn-ghost text-xs px-2.5 py-1"
                 >
                   «گیومه»
                 </button>
@@ -835,7 +842,7 @@ export function SettingsScreen() {
                   setSandboxText('✨ در حال ویراستاری...')
                   setTimeout(() => setSandboxText(t), 400)
                 }}
-                className="rounded-none border-3 border-black bg-emphasis px-5 py-2 text-xs sm:text-sm font-black text-black shadow-[4px_4px_0px_#000] hover:bg-black hover:text-emphasis active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-none cursor-pointer"
+                className="v-btn-primary text-xs sm:text-sm px-4 py-2"
               >
                 <span>✨ آزمایش کلید اصلی</span>
               </button>
@@ -846,18 +853,18 @@ export function SettingsScreen() {
 
       {/* About */}
       <section className="space-y-4">
-        <div className="flex items-center gap-2 border-b-3 border-black pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-none border-2 border-black bg-emphasis text-black font-black text-sm shadow-[2px_2px_0px_#000]">
-            ℹ️
-          </span>
-          <h2 className="text-xl sm:text-2xl font-black text-ink">درباره و شناسهٔ نرم‌افزار</h2>
+        <div className="flex items-center gap-2 border-b border-border/80 pb-2">
+          <span className="sketch-bracket text-base">[</span>
+          <h2 className="text-lg sm:text-xl font-bold text-ink">درباره و شناسهٔ نرم‌افزار</h2>
+          <span className="sketch-bracket text-base">]</span>
         </div>
 
-        <div className="rounded-none border-4 border-black bg-white p-5 shadow-[6px_6px_0px_#000]">
+        <div className="v-card p-5 space-y-3 relative">
+          <div className="sketch-tape" aria-hidden="true" />
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
-              <p className="text-xl font-black text-black uppercase">ویراستار فارسی (Virastar)</p>
-              <p className="mt-1 text-xs sm:text-sm leading-6 font-bold text-black/80">
+              <p className="text-lg font-bold text-ink">ویراستار فارسی (Virastar)</p>
+              <p className="mt-0.5 text-xs text-ink-soft font-normal">
                 نسخهٔ {faVersion(APP_VERSION)}
                 {newer && <> — نسخهٔ {faVersion(newer)} منتشر شده است.</>}
                 {!newer && checked && <> — همین تازه‌ترین نسخه است.</>}
@@ -868,19 +875,19 @@ export function SettingsScreen() {
                 href={DOWNLOAD}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-none border-3 border-black bg-signal px-6 py-2.5 text-sm font-black text-white shadow-[4px_4px_0px_#000] hover:bg-black hover:text-white transition-none"
+                className="v-btn-primary px-5 py-2 text-xs font-bold"
               >
-                <Star size={16} />
+                <Star size={14} />
                 دریافت نسخهٔ {faVersion(newer)}
               </a>
             )}
           </div>
-          <div className="mt-5 pt-4 border-t-3 border-black flex flex-wrap items-center justify-between gap-2 text-xs font-black text-black">
-            <span className="inline-flex items-center gap-2 rounded-none border-2 border-black bg-emphasis px-3 py-1 shadow-[2px_2px_0px_#000]">
-              <Star size={13} className="text-signal fill-signal" />
+          <div className="mt-3 pt-3 border-t border-border flex flex-wrap items-center justify-between gap-2 text-xs text-ink-soft">
+            <span className="inline-flex items-center gap-1.5 font-bold text-ink">
+              <Star size={12} className="text-brand" />
               ساخته‌شده با ❤️ توسط مراد (Made by Morad)
             </span>
-            <span className="text-black/80">ابزار نگارش، بازنویسی و پیرایش زبان فارسی</span>
+            <span className="font-normal">ابزار نگارش، بازنویسی و پیرایش زبان فارسی</span>
           </div>
         </div>
       </section>
@@ -938,18 +945,17 @@ function OfflineModelsSection({
   return (
     <section className="space-y-4">
       <div>
-        <div className="flex items-center gap-2 border-b-3 border-black pb-2">
-          <span className="flex h-7 w-7 items-center justify-center rounded-none border-2 border-black bg-emphasis text-black font-black text-sm shadow-[2px_2px_0px_#000]">
-            💾
-          </span>
-          <h2 className="text-xl sm:text-2xl font-black text-ink">مرکز دانلود مدل‌های آفلاین</h2>
+        <div className="flex items-center gap-2 border-b border-border/80 pb-2">
+          <span className="sketch-bracket text-base">[</span>
+          <h2 className="text-lg sm:text-xl font-bold text-ink">مرکز دانلود مدل‌های آفلاین</h2>
+          <span className="sketch-bracket text-base">]</span>
         </div>
-        <p className="mt-2 text-xs sm:text-sm leading-6 text-ink-soft font-bold">
+        <p className="mt-1 text-xs text-ink-soft font-normal">
           مدل‌های زیر مستقیماً داخل حافظه مرورگر دستگاه شما دانلود و ذخیره می‌شوند. پس از یک‌بار دانلود، تمام ویرایش‌ها کاملاً آفلاین، بدون اینترنت و با حریم خصوصی ۱۰۰٪ انجام می‌گردد.
         </p>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-1">
+      <div className="grid gap-3.5 sm:grid-cols-1">
         {localModelsList.map((m) => {
           const isSelected = settings.localModel === m.id
           const isInstalled = wasModelInstalled(m.id)
@@ -959,63 +965,59 @@ function OfflineModelsSection({
           return (
             <div
               key={m.id}
-              className={`rounded-none border-4 border-black p-5 transition-none ${
-                isSelected
-                  ? 'bg-emphasis/25 shadow-[8px_8px_0px_#000]'
-                  : 'bg-white shadow-[6px_6px_0px_#000]'
+              className={`v-card p-5 space-y-3 transition-all ${
+                isSelected ? 'border-ink bg-highlight/30 shadow-card' : ''
               }`}
             >
-              <div className="flex flex-wrap items-start justify-between gap-2 border-b-2 border-black pb-3">
+              <div className="flex flex-wrap items-start justify-between gap-2 border-b border-border pb-2.5">
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-black text-base sm:text-lg text-black">{m.name}</span>
-                    <span className="rounded-none border-2 border-black bg-emphasis px-2.5 py-0.5 text-xs font-black text-black shadow-[2px_2px_0px_#000]">
+                    <span className="font-bold text-sm sm:text-base text-ink">{m.name}</span>
+                    <span className="sketch-highlight text-xs font-bold">
                       {m.badge}
                     </span>
-                    <span className="rounded-none border-2 border-black bg-paper px-2 py-0.5 text-xs font-black text-black shadow-[1px_1px_0px_#000]">
+                    <span className="bg-paper px-2 py-0.5 rounded-[4px] border border-border text-xs text-ink-soft">
                       حجم: {m.size}
                     </span>
                   </div>
-                  <p className="mt-2 text-xs sm:text-sm leading-6 text-black/85 font-medium">{m.recommendation}</p>
-                  <p className="mt-1 text-xs leading-6 text-black font-black">
-                    🎯 کاربرد بهینه: <span className="font-medium text-black/80">{m.bestFor}</span>
+                  <p className="mt-1.5 text-xs text-ink-soft font-normal leading-relaxed">{m.recommendation}</p>
+                  <p className="mt-1 text-xs text-ink font-bold">
+                    🎯 کاربرد بهینه: <span className="font-normal text-ink-soft">{m.bestFor}</span>
                   </p>
-                  <p className="text-[11px] text-black/70 font-bold">
+                  <p className="text-[11px] text-ink-soft/80 font-normal">
                     💾 سخت‌افزار مورد نیاز: {m.ram}
                   </p>
                 </div>
               </div>
 
               {isDownloadingThis && (
-                <div className="mt-4 rounded-none border-3 border-black bg-paper p-4 shadow-[3px_3px_0px_#000]">
-                  <div className="flex items-center justify-between text-xs font-black text-black">
-                    <span className="flex items-center gap-2">
-                      <Star size={14} className="text-signal fill-signal" />
+                <div className="bg-paper p-3 rounded-[8px_4px_10px_4px] border border-border">
+                  <div className="flex items-center justify-between text-xs font-bold text-ink">
+                    <span className="flex items-center gap-1.5">
+                      <Star size={13} className="animate-spin text-brand" />
                       در حال دریافت مدل در حافظه دستگاه…
                     </span>
-                    <span className="font-mono text-sm">{faNum(modelStatus.progress)}٪</span>
+                    <span className="font-mono">{faNum(modelStatus.progress)}٪</span>
                   </div>
-                  <div className="mt-2.5 h-4 overflow-hidden rounded-none border-2 border-black bg-white shadow-[2px_2px_0px_#000]">
+                  <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-surface border border-border">
                     <div
-                      className="h-full bg-signal border-e-2 border-black transition-none"
+                      className="h-full bg-brand transition-all duration-300"
                       style={{ width: `${modelStatus.progress}%` }}
                     />
                   </div>
                 </div>
               )}
 
-              <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pt-1">
-                <div className="flex items-center gap-2 text-xs font-black">
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+                <div className="flex items-center gap-2 text-xs">
                   {isSelected ? (
-                    <span className="rounded-none border-2 border-black bg-emphasis px-2.5 py-0.5 text-black shadow-[2px_2px_0px_#000]">
+                    <span className="sketch-highlight font-bold text-xs">
                       ✓ مدل فعال کنونی
                     </span>
                   ) : isInstalled ? (
-                    <span className="rounded-none border border-black bg-paper px-2 py-0.5 text-black">
-                      ذخیره شده در کش دستگاه
-                    </span>
+                    <span className="text-ink-soft text-xs">ذخیره شده در کش دستگاه</span>
                   ) : (
-                    <span className="text-black/60">هنوز دانلود نشده</span>
+                    <span className="text-ink-soft/70 text-xs">هنوز دانلود نشده</span>
                   )}
                 </div>
 
@@ -1024,7 +1026,7 @@ function OfflineModelsSection({
                     <button
                       type="button"
                       onClick={() => void removeModel(m.id)}
-                      className="rounded-none border-2 border-black bg-signal/20 px-3 py-1.5 text-xs font-black text-black shadow-[2px_2px_0px_#000] hover:bg-signal hover:text-white active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
+                      className="v-btn-ghost px-2.5 py-1 text-xs text-brand hover:border-brand"
                       title="پاک کردن از حافظه برای خالی شدن فضای گوشی"
                     >
                       حذف از حافظه
@@ -1040,13 +1042,11 @@ function OfflineModelsSection({
                       }
                     }}
                     disabled={isDownloadingThis}
-                    className={`px-4 py-2 text-xs font-black rounded-none border-3 border-black shadow-[3px_3px_0px_#000] active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none flex items-center gap-2 cursor-pointer ${
-                      isSelected
-                        ? 'bg-emphasis text-black shadow-[4px_4px_0px_#000]'
-                        : 'bg-white text-black hover:bg-emphasis'
+                    className={`v-btn-primary px-3.5 py-1.5 text-xs font-bold ${
+                      isSelected ? 'bg-ink text-paper' : ''
                     }`}
                   >
-                    <Star size={13} className="text-signal fill-signal" />
+                    <Star size={13} />
                     {isSelected
                       ? 'انتخاب شده'
                       : isInstalled

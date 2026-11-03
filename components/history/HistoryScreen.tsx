@@ -60,17 +60,18 @@ export function HistoryScreen() {
   if (entries.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center max-w-lg mx-auto">
-        <div className="rounded-none border-4 border-black bg-emphasis p-8 shadow-[8px_8px_0px_#000] w-full text-center">
-          <div className="w-16 h-16 rounded-none border-3 border-black bg-white flex items-center justify-center text-black mx-auto mb-4 shadow-[4px_4px_0px_#000]">
-            <Star size={36} className="text-signal fill-signal" />
+        <div className="v-card p-8 shadow-card w-full text-center relative">
+          <div className="sketch-tape" aria-hidden="true" />
+          <div className="w-14 h-14 rounded-[10px_5px_12px_6px] border border-border bg-highlight/60 flex items-center justify-center text-brand mx-auto mb-4 shadow-soft">
+            <Star size={28} />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-black mb-2 uppercase">دفتر نگارش خالی است</h1>
-          <p className="text-xs sm:text-sm font-bold leading-6 text-black/85 mb-6">
-            هنوز متنی ذخیره نکرده‌اید. هر متنی را در میز ویرایش تحریر کنید، با دکمهٔ «ثبت در دفتر نگارش» در این دفتر برای همیشه ثبت می‌شود.
+          <h1 className="text-2xl font-bold text-ink mb-2">دفترچهٔ نگارش خالی است</h1>
+          <p className="text-xs sm:text-sm font-normal leading-relaxed text-ink-soft mb-6">
+            هنوز متنی در این دفترچه ثبت نشده است. هر متنی را در میز ویرایش تحریر کنید، با دکمهٔ «ثبت در دفترچه» در اینجا ماندگار می‌شود.
           </p>
           <Link
             href="/edit"
-            className="inline-flex items-center gap-2 rounded-none border-3 border-black bg-signal px-6 py-3 text-sm font-black text-white shadow-[4px_4px_0px_#000] hover:bg-black hover:text-emphasis active:translate-x-[2px] active:translate-y-[2px] active:shadow-none transition-none cursor-pointer uppercase"
+            className="v-btn-primary text-sm inline-flex items-center gap-2"
           >
             <span>✒️ ورود به میز کار و آغاز نگارش</span>
           </Link>
@@ -82,25 +83,30 @@ export function HistoryScreen() {
   return (
     <div className="space-y-6 max-w-5xl mx-auto pb-12">
       {/* Header */}
-      <header className="flex flex-wrap items-center justify-between gap-4 border-b-4 border-black pb-6">
+      <header className="v-card p-6 flex flex-wrap items-center justify-between gap-4 relative">
+        <div className="sketch-tape" aria-hidden="true" />
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-none border-2 border-black bg-emphasis text-black text-xs font-black shadow-[2px_2px_0px_#000] uppercase mb-2">
-            <Star size={13} className="text-signal fill-signal" />
-            <span>بایگانی محلی و امن اسناد</span>
+          <div className="flex flex-wrap items-center gap-2 mb-2">
+            <span className="sketch-blue-note text-xs">
+              ✎ بایگانی محلی دستگاه
+            </span>
+            <span className="sketch-highlight text-xs font-bold">
+              حفظ ۱۰۰٪ حریم شخصی
+            </span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-black text-ink tracking-tight uppercase">دفتر نگارش‌های من</h1>
-          <p className="mt-1 text-xs sm:text-sm text-ink-soft font-bold">
-            {entries.length.toLocaleString('fa-IR')} دست‌نوشتهٔ ثبت‌شده در حافظهٔ آفلاین دستگاه
+          <h1 className="text-2xl sm:text-3xl font-bold text-ink tracking-tight">دفتر نگارش‌های من</h1>
+          <p className="mt-1 text-xs sm:text-sm text-ink-soft font-normal">
+            {entries.length.toLocaleString('fa-IR')} دست‌نوشتهٔ ثبت‌شده در حافظهٔ آفلاین مرورگر
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           {confirming ? (
-            <div className="flex items-center gap-2 p-1.5 bg-signal/20 rounded-none border-3 border-black shadow-[3px_3px_0px_#000]">
+            <div className="flex items-center gap-2 p-1.5 bg-paper rounded-[8px_4px_10px_4px] border border-border">
               <button
                 type="button"
                 onClick={() => setConfirming(false)}
-                className="rounded-none border-2 border-black bg-white px-3 py-1 text-xs font-black text-black hover:bg-neutral-200 cursor-pointer shadow-[2px_2px_0px_#000]"
+                className="px-3 py-1 text-xs font-bold text-ink-soft hover:text-ink cursor-pointer"
               >
                 انصراف
               </button>
@@ -110,7 +116,7 @@ export function HistoryScreen() {
                   clear()
                   setConfirming(false)
                 }}
-                className="rounded-none border-2 border-black bg-signal text-white px-3 py-1 text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-black hover:text-white cursor-pointer"
+                className="v-btn-primary px-3 py-1 text-xs font-bold"
               >
                 تأیید پاک‌کردن همه
               </button>
@@ -119,7 +125,7 @@ export function HistoryScreen() {
             <button
               type="button"
               onClick={() => setConfirming(true)}
-              className="rounded-none border-3 border-black bg-white px-3 py-1.5 text-xs font-black text-signal shadow-[3px_3px_0px_#000] hover:bg-signal hover:text-white transition-none cursor-pointer"
+              className="v-btn-ghost px-3 py-1.5 text-xs font-bold text-brand hover:border-brand"
             >
               پاک کردن همه
             </button>
@@ -134,16 +140,16 @@ export function HistoryScreen() {
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="جست‌وجو در متن نوشته‌ها یا عنوان…"
-            className="w-full rounded-none border-3 border-black bg-white px-4 py-2.5 text-sm font-black text-black shadow-[4px_4px_0px_#000] outline-none focus:shadow-[6px_6px_0px_#000] transition-none"
+            placeholder="جست‌وجو در متن یا عنوان دست‌نوشته‌ها…"
+            className="v-field text-sm py-2.5 px-4"
           />
           {search && (
             <button
               type="button"
               onClick={() => setSearch('')}
-              className="absolute end-3 top-1/2 -translate-y-1/2 rounded-none border-2 border-black bg-emphasis px-2 py-0.5 text-xs font-black text-black shadow-[1px_1px_0px_#000] hover:bg-signal hover:text-white"
+              className="absolute end-3 top-1/2 -translate-y-1/2 text-xs font-bold text-ink-soft hover:text-ink"
             >
-              ✕ پاک کردن جست‌وجو
+              ✕ پاک کردن
             </button>
           )}
         </div>
@@ -159,42 +165,42 @@ export function HistoryScreen() {
           return (
             <li
               key={e.id}
-              className="rounded-none border-4 border-black bg-white shadow-[6px_6px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_#000] transition-none p-5 flex flex-col justify-between"
+              className="v-card p-5 hover:border-ink hover:rotate-[-0.3deg] transition-all flex flex-col justify-between"
             >
               {/* Header */}
-              <div className="flex flex-wrap items-center justify-between gap-3 mb-3 pb-3 border-b-3 border-black">
-                <div className="flex items-center gap-3">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-none border-2 border-black bg-emphasis text-black shadow-[2px_2px_0px_#000]">
-                    <ModeGlyph modeId={e.modeId} size={20} />
+              <div className="flex flex-wrap items-center justify-between gap-3 mb-3 pb-3 border-b border-border">
+                <div className="flex items-center gap-2.5">
+                  <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-[8px_4px_10px_4px] bg-paper border border-border text-brand shadow-soft">
+                    <ModeGlyph modeId={e.modeId} size={18} />
                   </span>
                   <div>
-                    <h3 className="font-black text-base text-ink line-clamp-1">{e.title}</h3>
-                    <p className="text-xs font-bold text-ink-soft">
+                    <h3 className="font-bold text-sm sm:text-base text-ink line-clamp-1">{e.title}</h3>
+                    <p className="text-xs text-ink-soft font-normal">
                       لحن «{mode.label}» · {faDate(e.at)} · {words.toLocaleString('fa-IR')} واژه
                     </p>
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
                   <button
                     type="button"
                     onClick={() => copyEntry(e.id, e.output)}
-                    className="rounded-none border-2 border-black bg-white text-xs px-2.5 py-1 font-black text-black shadow-[2px_2px_0px_#000] hover:bg-field active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none flex items-center gap-1 cursor-pointer"
+                    className="v-btn-ghost text-xs px-2.5 py-1 font-bold flex items-center gap-1"
                   >
-                    {isCopied ? <CheckGlyph size={14} className="text-signal" /> : <CopyGlyph size={14} />}
+                    {isCopied ? <CheckGlyph size={14} className="text-success" /> : <CopyGlyph size={14} />}
                     <span>{isCopied ? 'کپی شد' : 'کپی'}</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => reopen(e)}
-                    className="rounded-none border-2 border-black bg-emphasis text-xs px-3 py-1 font-black text-black shadow-[2px_2px_0px_#000] hover:bg-black hover:text-emphasis active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
+                    className="v-btn-ghost text-xs px-3 py-1 font-bold bg-highlight/50 hover:bg-highlight"
                   >
                     <span>✒️ ویرایش مجدد</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => remove(e.id)}
-                    className="rounded-none border-2 border-black bg-signal/20 text-xs px-2.5 py-1 font-black text-black shadow-[2px_2px_0px_#000] hover:bg-signal hover:text-white active:translate-x-[1px] active:translate-y-[1px] active:shadow-none transition-none cursor-pointer"
+                    className="v-btn-ghost text-xs px-2 py-1 text-brand hover:border-brand"
                     title="حذف این نوشته"
                   >
                     ✕
@@ -203,7 +209,7 @@ export function HistoryScreen() {
               </div>
 
               {/* Text Snippet */}
-              <p className="text-xs sm:text-sm leading-7 text-black font-bold line-clamp-3 bg-paper p-3.5 rounded-none border-2 border-black shadow-[2px_2px_0px_#000]">
+              <p className="text-xs sm:text-sm leading-relaxed text-ink/90 font-normal line-clamp-3 bg-paper p-3 rounded-[8px_4px_10px_4px] border border-border">
                 {e.output}
               </p>
             </li>

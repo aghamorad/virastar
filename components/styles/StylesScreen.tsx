@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import { MODES, type WritingMode } from '@/domain/modes'
 import { ModeGlyph } from '../editor/ModeGlyph'
-import { Star } from '../Star'
 
 const SECTIONS = [
   {
@@ -27,35 +26,44 @@ const SECTIONS = [
 export function StylesScreen() {
   return (
     <div className="space-y-12 max-w-5xl mx-auto pb-12">
-      {/* Neo-Brutalist Strip Header */}
-      <header className="border-b-4 border-black pb-8">
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-none border-2 border-black bg-emphasis text-black text-xs font-black shadow-[2px_2px_0px_#000] uppercase mb-4">
-          <Star size={13} className="text-signal fill-signal" />
-          <span>قلم‌دان ۱۳ لحن و آوای زبان فارسی</span>
+      {/* Sketch Header Scrap */}
+      <header className="v-card p-6 sm:p-8 relative">
+        <div className="sketch-tape" aria-hidden="true" />
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          <span className="sketch-blue-note text-xs">
+            ✎ نگارخانهٔ لحن‌های فارسی
+          </span>
+          <span className="sketch-highlight text-xs font-bold">
+            ۱۳ آوای متمایز نگارش
+          </span>
         </div>
-        <h1 className="text-3xl sm:text-5xl font-black text-ink tracking-tight uppercase leading-tight">
+        <h1 className="text-3xl sm:text-4xl font-black text-ink tracking-tight leading-tight">
           جُنگ و نگارخانهٔ سبک‌های نگارش
         </h1>
-        <p className="mt-3 max-w-2xl text-sm sm:text-base leading-7 text-ink font-bold">
-          هر سبک در ویراستار، یک لحنِ زنده با ساختار نحوی و واژگان گزیده است. ویراستار بدون گم کردن معنای اصلی شما، جامهٔ واژه‌ها را با دقت دگرگون می‌کند.
+        <p className="mt-2.5 max-w-2xl text-sm sm:text-base leading-relaxed text-ink-soft font-normal">
+          هر سبک در ویراستار، یک لحنِ زنده با دستور زبان و واژگان گزیده است. ویراستار بدون گم کردن معنای اصلی شما، جامهٔ واژه‌ها را با دقت دگرگون می‌کند.
         </p>
       </header>
 
       {SECTIONS.map((sec) => {
         const modes = MODES.filter((m) => sec.modeIds.includes(m.id))
         return (
-          <section key={sec.title} className="space-y-5">
-            {/* Ruled Ledger Section Header */}
-            <div className="flex flex-wrap items-baseline justify-between gap-2 border-b-4 border-black pb-3">
-              <div>
-                <h2 className="text-xl sm:text-2xl font-black text-ink flex items-center gap-2">
-                  <span className="text-2xl">{sec.icon}</span>
+          <section key={sec.title} className="space-y-4">
+            {/* Section Header with Drawn Bracket */}
+            <div className="flex flex-wrap items-baseline justify-between gap-2 border-b border-border/80 pb-2">
+              <div className="flex items-center gap-2">
+                <span className="sketch-bracket text-lg">[</span>
+                <h2 className="text-xl sm:text-2xl font-bold text-ink flex items-center gap-2">
+                  <span className="text-xl">{sec.icon}</span>
                   <span>{sec.title}</span>
                 </h2>
-                <p className="text-xs sm:text-sm text-ink-soft mt-1 font-bold">{sec.tagline}</p>
+                <span className="sketch-bracket text-lg">]</span>
+                <p className="text-xs sm:text-sm text-ink-soft hidden md:inline-block font-normal">
+                  — {sec.tagline}
+                </p>
               </div>
-              <span className="rounded-none border-2 border-black bg-white px-2.5 py-0.5 text-xs font-black shadow-[2px_2px_0px_#000]">
-                {modes.length.toLocaleString('fa-IR')} لحن تخصصی
+              <span className="text-xs text-ink-soft bg-paper px-2.5 py-0.5 rounded-[4px] border border-border">
+                {modes.length.toLocaleString('fa-IR')} لحن
               </span>
             </div>
 
@@ -76,36 +84,36 @@ function ModeCard({ mode }: { mode: WritingMode }) {
     <Link
       href={`/edit?mode=${mode.id}`}
       prefetch={false}
-      className="rounded-none border-4 border-black bg-white shadow-[5px_5px_0px_#000] hover:translate-x-[-2px] hover:translate-y-[-2px] hover:shadow-[8px_8px_0px_#000] active:translate-x-[2px] active:translate-y-[2px] active:shadow-[2px_2px_0px_#000] transition-none p-5 flex flex-col justify-between group cursor-pointer"
+      className="v-card p-5 group flex flex-col justify-between hover:border-ink hover:rotate-[-0.5deg] transition-all cursor-pointer shadow-soft"
     >
       <div>
         <div className="flex items-center justify-between gap-2 mb-3">
-          <div className="flex items-center gap-3">
-            <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-none border-3 border-black bg-emphasis text-black shadow-[2px_2px_0px_#000] group-hover:bg-signal group-hover:text-white transition-none">
-              <ModeGlyph modeId={mode.id} size={22} />
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[8px_4px_10px_4px] bg-paper border border-border text-brand group-hover:bg-highlight group-hover:border-ink transition-all shadow-soft">
+              <ModeGlyph modeId={mode.id} size={20} />
             </span>
             <div>
-              <h3 className="text-base font-black text-ink leading-tight">{mode.label}</h3>
-              <p className="text-[11px] font-bold text-ink-soft">{mode.tagline}</p>
+              <h3 className="text-base font-bold text-ink leading-tight">{mode.label}</h3>
+              <p className="text-[11px] text-ink-soft font-normal">{mode.tagline}</p>
             </div>
           </div>
 
-          <span className="rounded-none border-2 border-black bg-field text-black text-[10px] font-black px-2 py-0.5 shadow-[1px_1px_0px_#000] shrink-0">
+          <span className="sketch-highlight text-[10px] font-bold shrink-0">
             {mode.register}
           </span>
         </div>
 
-        <p className="text-xs leading-6 text-black/85 font-medium mb-4">
+        <p className="text-xs leading-relaxed text-ink-soft mb-4 font-normal">
           {mode.description}
         </p>
       </div>
 
-      <div className="pt-3 border-t-3 border-black flex items-center justify-between text-xs font-black text-black">
-        <span className="flex items-center gap-1.5 group-hover:translate-x-[-2px] transition-transform">
-          <Star size={13} className="text-signal fill-signal" />
+      <div className="pt-3 border-t border-border/70 flex items-center justify-between text-xs font-bold text-accent group-hover:text-brand transition-colors">
+        <span className="flex items-center gap-1">
+          <span>✎</span>
           <span>تحریر با این لحن</span>
         </span>
-        <span className="flex h-7 w-7 items-center justify-center rounded-none border-2 border-black bg-signal text-white font-black text-sm shadow-[2px_2px_0px_#000] group-hover:bg-black group-hover:text-emphasis transition-none">
+        <span className="text-sm opacity-60 group-hover:opacity-100 transition-opacity">
           ←
         </span>
       </div>

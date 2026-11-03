@@ -1,277 +1,298 @@
 @import 'tailwindcss';
 
 /* =========================================================================
-   NEO-BRUTALISM DESIGN SYSTEM (designprompts.dev/neo-brutalism)
-   - Cream paper base, heavy black outlines, solid offset shadows
-   - Yellow posters, red signal tiles, violet field bands, white reading ground
-   - Square corners (radius: 0), tight tracking, exposed seams, immediate feedback
-   - Zero gradients, zero blur, zero soft pills
+   SKETCH DESIGN SYSTEM (Working Sheet & Hand-Drawn Craft)
+   - Warm paper ground (#f7f2e7), dark pencil ink (#38352f), muted graphite (#514d44)
+   - Erased-line grey (#b3ac9d), red corrections & emphasis (#9e3a2e)
+   - Blue notes & annotations (#344c69), yellow highlights (#f0dfa0)
+   - Pale paper scraps (#fcf8ef), hand-drawn irregular corner curves
+   - 1.5px fine pencil strokes, soft graphite offset shadows, 100ms organic motion
    ========================================================================= */
 
 :root {
-  --dp-color-ground: #fff5d6;
-  --dp-color-ink: #000000;
-  --dp-color-emphasis: #ffed00;
-  --dp-color-signal: #ff4332;
-  --dp-color-field: #d4bdff;
-  --dp-color-contrast: #ffffff;
+  --dp-color-ground: #f7f2e7;
+  --dp-color-ink: #38352f;
+  --dp-color-ink-muted: #514d44;
+  --dp-color-line: #b3ac9d;
+  --dp-color-accent: #9e3a2e;
+  --dp-color-annotation: #344c69;
+  --dp-color-highlight: #f0dfa0;
+  --dp-color-scrap: #fcf8ef;
 
-  --dp-typography-face: "NeoBrutalismHost", var(--font-vazirmatn), 'Segoe UI', Tahoma, ui-sans-serif, system-ui, sans-serif;
-  --dp-typography-body: 17px;
-  --dp-typography-reading: 16px;
-  --dp-typography-small: 14px;
-  --dp-typography-metadata: 13px;
-  --dp-typography-label: 12px;
-  --dp-typography-reading-weight: 700;
-  --dp-typography-emphasis-weight: 800;
-  --dp-typography-display-weight: 900;
-  --dp-typography-display-tracking: -0.045em;
+  --dp-typography-reading-face: var(--font-vazirmatn), 'Comic Sans MS', 'Chalkboard', cursive, sans-serif;
+  --dp-typography-display-face: var(--font-vazirmatn), 'Comic Sans MS', 'Chalkboard', cursive, sans-serif;
+  --dp-typography-body: 18px;
+  --dp-typography-reading: 17px;
+  --dp-typography-detail: 15px;
 
-  --dp-spacing-gap: 24px;
-  --dp-spacing-gap-compact: 18px;
-  --dp-radius-control: 0px;
-  --dp-border-panel: 4px;
-  --dp-border-divider: 3px;
-  --dp-border-annotation: 2px;
-  --dp-motion-interaction: 0s;
+  --dp-spacing-item-gap: 16px;
+  --dp-radius-control: 9px 4px 17px 5px / 4px 12px 5px 9px;
+  --dp-radius-card: 14px 6px 18px 8px / 8px 16px 8px 14px;
+  --dp-border-fine-stroke: 1.5px;
+  --dp-motion-control: 100ms;
 }
 
 @theme {
   --color-paper: var(--dp-color-ground);
-  --color-paper-deep: var(--dp-color-emphasis);
+  --color-paper-deep: var(--dp-color-scrap);
   --color-ink: var(--dp-color-ink);
-  --color-ink-soft: #262626;
-  --color-brand: var(--dp-color-signal);
-  --color-brand-deep: #cc291b;
-  --color-accent: var(--dp-color-field);
-  --color-success: #15803d;
-  --color-surface: var(--dp-color-contrast);
-  --color-border: #000000;
+  --color-ink-soft: var(--dp-color-ink-muted);
+  --color-brand: var(--dp-color-accent);
+  --color-brand-deep: #7e2d24;
+  --color-accent: var(--dp-color-annotation);
+  --color-highlight: var(--dp-color-highlight);
+  --color-success: #2d6a4f;
+  --color-surface: var(--dp-color-scrap);
+  --color-border: var(--dp-color-line);
   --color-on-brand: #ffffff;
-  --color-star: var(--dp-color-signal);
+  --color-star: var(--dp-color-accent);
 
-  --font-sans: "NeoBrutalismHost", var(--font-vazirmatn), 'Segoe UI', Tahoma, ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-vazirmatn), -apple-system, BlinkMacSystemFont, 'Segoe UI', Tahoma, sans-serif;
 
-  --shadow-card: 6px 6px 0px #000000;
-  --shadow-soft: 4px 4px 0px #000000;
-  --shadow-float: 8px 8px 0px #000000;
+  --shadow-card: 2px 3px 0px rgba(56, 53, 47, 0.16);
+  --shadow-soft: 1px 2px 0px rgba(56, 53, 47, 0.12);
+  --shadow-float: 3px 5px 0px rgba(56, 53, 47, 0.2);
 }
 
 /* =========================================================================
-   THEMES IN NEO-BRUTALISM ARCHITECTURE
+   SKETCHBOOK THEMES
    ========================================================================= */
 
-/* 1. ویراستار اصیل (Authoritative Neo-Brutalist Press Sheet) */
+/* 1. برگهٔ طراحی و یادداشت (Warm Working Sheet - Default) */
 [data-theme='virastar'] {
-  --dp-color-ground: #fff5d6;
-  --dp-color-ink: #000000;
-  --dp-color-emphasis: #ffed00;
-  --dp-color-signal: #ff4332;
-  --dp-color-field: #d4bdff;
-  --dp-color-contrast: #ffffff;
-  --color-paper: #fff5d6;
-  --color-paper-deep: #ffed00;
-  --color-ink: #000000;
-  --color-ink-soft: #222222;
-  --color-brand: #ff4332;
-  --color-brand-deep: #cc291b;
-  --color-accent: #d4bdff;
-  --color-success: #15803d;
-  --color-surface: #ffffff;
-  --color-border: #000000;
+  --dp-color-ground: #f7f2e7;
+  --dp-color-ink: #38352f;
+  --dp-color-ink-muted: #514d44;
+  --dp-color-line: #b3ac9d;
+  --dp-color-accent: #9e3a2e;
+  --dp-color-annotation: #344c69;
+  --dp-color-highlight: #f0dfa0;
+  --dp-color-scrap: #fcf8ef;
+
+  --color-paper: #f7f2e7;
+  --color-paper-deep: #fcf8ef;
+  --color-ink: #38352f;
+  --color-ink-soft: #514d44;
+  --color-brand: #9e3a2e;
+  --color-brand-deep: #7e2d24;
+  --color-accent: #344c69;
+  --color-success: #2d6a4f;
+  --color-surface: #fcf8ef;
+  --color-border: #b3ac9d;
   --color-on-brand: #ffffff;
-  --color-star: #ff4332;
-  --shadow-card: 6px 6px 0px #000000;
-  --shadow-soft: 4px 4px 0px #000000;
-  --shadow-float: 8px 8px 0px #000000;
+  --color-star: #9e3a2e;
+  --shadow-card: 2px 3px 0px rgba(56, 53, 47, 0.16);
+  --shadow-soft: 1px 2px 0px rgba(56, 53, 47, 0.12);
+  --shadow-float: 3px 5px 0px rgba(56, 53, 47, 0.2);
 }
 
-/* 2. شب لاجوردی (Neo-Brutalist Dark Ink) */
+/* 2. دفترچهٔ لاجوردی (Blueprint & Ink Sketch) */
 [data-theme='shabnevis'] {
   color-scheme: dark;
-  --dp-color-ground: #0d0e15;
-  --dp-color-ink: #ffffff;
-  --dp-color-emphasis: #ffed00;
-  --dp-color-signal: #ff4332;
-  --dp-color-field: #c084fc;
-  --dp-color-contrast: #181926;
-  --color-paper: #0d0e15;
-  --color-paper-deep: #ffed00;
-  --color-ink: #ffffff;
-  --color-ink-soft: #cccccc;
-  --color-brand: #ffed00;
-  --color-brand-deep: #e6b800;
-  --color-accent: #c084fc;
+  --dp-color-ground: #1e2430;
+  --dp-color-ink: #f4f0e6;
+  --dp-color-ink-muted: #b0b8c6;
+  --dp-color-line: #3a4659;
+  --dp-color-accent: #e06c53;
+  --dp-color-annotation: #82aaff;
+  --dp-color-highlight: #2f3849;
+  --dp-color-scrap: #252c3b;
+
+  --color-paper: #1e2430;
+  --color-paper-deep: #252c3b;
+  --color-ink: #f4f0e6;
+  --color-ink-soft: #b0b8c6;
+  --color-brand: #e06c53;
+  --color-brand-deep: #c5533c;
+  --color-accent: #82aaff;
   --color-success: #4ade80;
-  --color-surface: #181926;
-  --color-border: #ffffff;
-  --color-on-brand: #000000;
-  --color-star: #ffed00;
-  --shadow-card: 6px 6px 0px #ffffff;
-  --shadow-soft: 4px 4px 0px #ffffff;
-  --shadow-float: 8px 8px 0px #ffed00;
+  --color-surface: #252c3b;
+  --color-border: #3a4659;
+  --color-on-brand: #ffffff;
+  --color-star: #e06c53;
+  --shadow-card: 2px 3px 0px rgba(0, 0, 0, 0.35);
+  --shadow-soft: 1px 2px 0px rgba(0, 0, 0, 0.25);
+  --shadow-float: 3px 5px 0px rgba(0, 0, 0, 0.45);
 }
 
-/* 3. فیروزه نیشابور (Neo-Brutalist Electric Teal) */
+/* 3. فیروزه و آبرنگ (Teal Watercolor Sketch) */
 [data-theme='firouzeh'] {
-  --dp-color-ground: #e0f7f5;
-  --dp-color-ink: #000000;
-  --dp-color-emphasis: #00f0d4;
-  --dp-color-signal: #ff4332;
-  --dp-color-field: #ffd700;
-  --dp-color-contrast: #ffffff;
-  --color-paper: #e0f7f5;
-  --color-paper-deep: #00f0d4;
-  --color-ink: #000000;
-  --color-ink-soft: #1a2e2b;
-  --color-brand: #00a896;
-  --color-brand-deep: #028090;
-  --color-accent: #ffd700;
-  --color-success: #15803d;
+  --dp-color-ground: #f2f8f7;
+  --dp-color-ink: #203331;
+  --dp-color-ink-muted: #425b58;
+  --dp-color-line: #9ec5c0;
+  --dp-color-accent: #0d766e;
+  --dp-color-annotation: #1e40af;
+  --dp-color-highlight: #d1fae5;
+  --dp-color-scrap: #ffffff;
+
+  --color-paper: #f2f8f7;
+  --color-paper-deep: #ffffff;
+  --color-ink: #203331;
+  --color-ink-soft: #425b58;
+  --color-brand: #0d766e;
+  --color-brand-deep: #0f5853;
+  --color-accent: #1e40af;
+  --color-success: #059669;
   --color-surface: #ffffff;
-  --color-border: #000000;
+  --color-border: #9ec5c0;
   --color-on-brand: #ffffff;
-  --color-star: #00a896;
-  --shadow-card: 6px 6px 0px #000000;
-  --shadow-soft: 4px 4px 0px #000000;
-  --shadow-float: 8px 8px 0px #000000;
+  --color-star: #0d766e;
+  --shadow-card: 2px 3px 0px rgba(32, 51, 49, 0.14);
+  --shadow-soft: 1px 2px 0px rgba(32, 51, 49, 0.1);
+  --shadow-float: 3px 5px 0px rgba(32, 51, 49, 0.18);
 }
 
-/* 4. گلستان و زعفران (Neo-Brutalist Pop Rose) */
+/* 4. گل سرخ و یادداشت کهن (Rose & Sepia Notebook) */
 [data-theme='golestan'] {
-  --dp-color-ground: #ffeef4;
-  --dp-color-ink: #000000;
-  --dp-color-emphasis: #ff3385;
-  --dp-color-signal: #ffed00;
-  --dp-color-field: #c084fc;
-  --dp-color-contrast: #ffffff;
-  --color-paper: #ffeef4;
-  --color-paper-deep: #ff3385;
-  --color-ink: #000000;
-  --color-ink-soft: #2e1220;
-  --color-brand: #ff3385;
-  --color-brand-deep: #db2777;
-  --color-accent: #ffed00;
-  --color-success: #15803d;
-  --color-surface: #ffffff;
-  --color-border: #000000;
+  --dp-color-ground: #faf4ee;
+  --dp-color-ink: #3d2b27;
+  --dp-color-ink-muted: #614a44;
+  --dp-color-line: #d6c1b4;
+  --dp-color-accent: #b84a5d;
+  --dp-color-annotation: #4a3853;
+  --dp-color-highlight: #fce7dc;
+  --dp-color-scrap: #fffaf5;
+
+  --color-paper: #faf4ee;
+  --color-paper-deep: #fffaf5;
+  --color-ink: #3d2b27;
+  --color-ink-soft: #614a44;
+  --color-brand: #b84a5d;
+  --color-brand-deep: #973848;
+  --color-accent: #4a3853;
+  --color-success: #2d6a4f;
+  --color-surface: #fffaf5;
+  --color-border: #d6c1b4;
   --color-on-brand: #ffffff;
-  --color-star: #ff3385;
-  --shadow-card: 6px 6px 0px #000000;
-  --shadow-soft: 4px 4px 0px #000000;
-  --shadow-float: 8px 8px 0px #000000;
+  --color-star: #b84a5d;
+  --shadow-card: 2px 3px 0px rgba(61, 43, 39, 0.14);
+  --shadow-soft: 1px 2px 0px rgba(61, 43, 39, 0.1);
+  --shadow-float: 3px 5px 0px rgba(61, 43, 39, 0.18);
 }
 
-/* 5. ترمه یزد (Neo-Brutalist Imperial Carmine) */
+/* 5. زعفران و قلم‌نی (Ochre & Bamboo Pen) */
 [data-theme='termeh'] {
-  --dp-color-ground: #fff2db;
-  --dp-color-ink: #000000;
-  --dp-color-emphasis: #fbbf24;
-  --dp-color-signal: #b91c1c;
-  --dp-color-field: #8b5cf6;
-  --dp-color-contrast: #ffffff;
-  --color-paper: #fff2db;
-  --color-paper-deep: #fbbf24;
-  --color-ink: #000000;
-  --color-ink-soft: #2b1812;
-  --color-brand: #b91c1c;
-  --color-brand-deep: #991b1b;
-  --color-accent: #fbbf24;
-  --color-success: #15803d;
-  --color-surface: #ffffff;
-  --color-border: #000000;
-  --color-on-brand: #ffffff;
-  --color-star: #b91c1c;
-  --shadow-card: 6px 6px 0px #000000;
-  --shadow-soft: 4px 4px 0px #000000;
-  --shadow-float: 8px 8px 0px #000000;
-}
+  --dp-color-ground: #f9f5eb;
+  --dp-color-ink: #382e1e;
+  --dp-color-ink-muted: #574c37;
+  --dp-color-line: #c9bfa8;
+  --dp-color-accent: #b45309;
+  --dp-color-annotation: #2d4a43;
+  --dp-color-highlight: #fef08a;
+  --dp-color-scrap: #fefdfa;
 
-/* 6. سایبر طهران (Neo-Brutalist Cyberpunk) */
-[data-theme='cyber-tehran'] {
-  color-scheme: dark;
-  --dp-color-ground: #07090e;
-  --dp-color-ink: #00ff9d;
-  --dp-color-emphasis: #00ff9d;
-  --dp-color-signal: #ff0055;
-  --dp-color-field: #a855f7;
-  --dp-color-contrast: #10141f;
-  --color-paper: #07090e;
-  --color-paper-deep: #00ff9d;
-  --color-ink: #f0fdf4;
-  --color-ink-soft: #86efac;
-  --color-brand: #00ff9d;
-  --color-brand-deep: #059669;
-  --color-accent: #ff0055;
-  --color-success: #00ff9d;
-  --color-surface: #10141f;
-  --color-border: #00ff9d;
-  --color-on-brand: #000000;
-  --color-star: #00ff9d;
-  --shadow-card: 6px 6px 0px #00ff9d;
-  --shadow-soft: 4px 4px 0px #00ff9d;
-  --shadow-float: 8px 8px 0px #ff0055;
-}
-
-/* 7. مینیمال برفی (Neo-Brutalist Stark Mono) */
-[data-theme='minimal-barfi'] {
-  --dp-color-ground: #ffffff;
-  --dp-color-ink: #000000;
-  --dp-color-emphasis: #ffed00;
-  --dp-color-signal: #000000;
-  --dp-color-field: #e2e8f0;
-  --dp-color-contrast: #ffffff;
-  --color-paper: #ffffff;
-  --color-paper-deep: #f1f5f9;
-  --color-ink: #000000;
-  --color-ink-soft: #334155;
-  --color-brand: #000000;
-  --color-brand-deep: #1e293b;
-  --color-accent: #ffed00;
-  --color-success: #15803d;
-  --color-surface: #ffffff;
-  --color-border: #000000;
-  --color-on-brand: #ffffff;
-  --color-star: #000000;
-  --shadow-card: 6px 6px 0px #000000;
-  --shadow-soft: 4px 4px 0px #000000;
-  --shadow-float: 8px 8px 0px #000000;
-}
-
-/* 8. کافه نادری (Neo-Brutalist Kraft & Espresso) */
-[data-theme='cafe-naderi'] {
-  --dp-color-ground: #eedfc5;
-  --dp-color-ink: #1e130a;
-  --dp-color-emphasis: #eab308;
-  --dp-color-signal: #b45309;
-  --dp-color-field: #84cc16;
-  --dp-color-contrast: #fbf5eb;
-  --color-paper: #eedfc5;
-  --color-paper-deep: #eab308;
-  --color-ink: #1e130a;
-  --color-ink-soft: #452a17;
+  --color-paper: #f9f5eb;
+  --color-paper-deep: #fefdfa;
+  --color-ink: #382e1e;
+  --color-ink-soft: #574c37;
   --color-brand: #b45309;
   --color-brand-deep: #92400e;
-  --color-accent: #84cc16;
-  --color-success: #15803d;
-  --color-surface: #fbf5eb;
-  --color-border: #1e130a;
+  --color-accent: #2d4a43;
+  --color-success: #2d6a4f;
+  --color-surface: #fefdfa;
+  --color-border: #c9bfa8;
   --color-on-brand: #ffffff;
   --color-star: #b45309;
-  --shadow-card: 6px 6px 0px #1e130a;
-  --shadow-soft: 4px 4px 0px #1e130a;
-  --shadow-float: 8px 8px 0px #1e130a;
+  --shadow-card: 2px 3px 0px rgba(56, 46, 30, 0.14);
+  --shadow-soft: 1px 2px 0px rgba(56, 46, 30, 0.1);
+  --shadow-float: 3px 5px 0px rgba(56, 46, 30, 0.18);
+}
+
+/* 6. مداد گرافیتی شبانه (Graphite & Neon Lead) */
+[data-theme='cyber-tehran'] {
+  color-scheme: dark;
+  --dp-color-ground: #1c1e22;
+  --dp-color-ink: #e8ecef;
+  --dp-color-ink-muted: #9aa1ad;
+  --dp-color-line: #3e444e;
+  --dp-color-accent: #34d399;
+  --dp-color-annotation: #60a5fa;
+  --dp-color-highlight: #28303a;
+  --dp-color-scrap: #242830;
+
+  --color-paper: #1c1e22;
+  --color-paper-deep: #242830;
+  --color-ink: #e8ecef;
+  --color-ink-soft: #9aa1ad;
+  --color-brand: #34d399;
+  --color-brand-deep: #10b981;
+  --color-accent: #60a5fa;
+  --color-success: #34d399;
+  --color-surface: #242830;
+  --color-border: #3e444e;
+  --color-on-brand: #0f172a;
+  --color-star: #34d399;
+  --shadow-card: 2px 3px 0px rgba(0, 0, 0, 0.35);
+  --shadow-soft: 1px 2px 0px rgba(0, 0, 0, 0.25);
+  --shadow-float: 3px 5px 0px rgba(0, 0, 0, 0.45);
+}
+
+/* 7. طرح دستی مینیمال (Minimal Pure Sketch) */
+[data-theme='minimal-barfi'] {
+  --dp-color-ground: #fafafa;
+  --dp-color-ink: #2b2927;
+  --dp-color-ink-muted: #524f4b;
+  --dp-color-line: #c4c0b8;
+  --dp-color-accent: #9e3a2e;
+  --dp-color-annotation: #344c69;
+  --dp-color-highlight: #fef3c7;
+  --dp-color-scrap: #ffffff;
+
+  --color-paper: #fafafa;
+  --color-paper-deep: #ffffff;
+  --color-ink: #2b2927;
+  --color-ink-soft: #524f4b;
+  --color-brand: #9e3a2e;
+  --color-brand-deep: #7e2d24;
+  --color-accent: #344c69;
+  --color-success: #2d6a4f;
+  --color-surface: #ffffff;
+  --color-border: #c4c0b8;
+  --color-on-brand: #ffffff;
+  --color-star: #9e3a2e;
+  --shadow-card: 2px 3px 0px rgba(43, 41, 39, 0.12);
+  --shadow-soft: 1px 2px 0px rgba(43, 41, 39, 0.08);
+  --shadow-float: 3px 5px 0px rgba(43, 41, 39, 0.16);
+}
+
+/* 8. کاغذ کاهی و قهوه (Kraft Paper & Coffee) */
+[data-theme='cafe-naderi'] {
+  --dp-color-ground: #eedfc5;
+  --dp-color-ink: #352518;
+  --dp-color-ink-muted: #543d2b;
+  --dp-color-line: #bda68c;
+  --dp-color-accent: #8c3325;
+  --dp-color-annotation: #2e3d36;
+  --dp-color-highlight: #dfca9a;
+  --dp-color-scrap: #f7edd9;
+
+  --color-paper: #eedfc5;
+  --color-paper-deep: #f7edd9;
+  --color-ink: #352518;
+  --color-ink-soft: #543d2b;
+  --color-brand: #8c3325;
+  --color-brand-deep: #6f261b;
+  --color-accent: #2e3d36;
+  --color-success: #2e3d36;
+  --color-surface: #f7edd9;
+  --color-border: #bda68c;
+  --color-on-brand: #ffffff;
+  --color-star: #8c3325;
+  --shadow-card: 2px 3px 0px rgba(53, 37, 24, 0.15);
+  --shadow-soft: 1px 2px 0px rgba(53, 37, 24, 0.1);
+  --shadow-float: 3px 5px 0px rgba(53, 37, 24, 0.2);
 }
 
 /* Aliases for legacy saved sessions */
-[data-theme='cafe-tehran'] { --color-paper: #eedfc5; --color-border: #1e130a; }
-[data-theme='johar-benafsh'] { --color-paper: #ffeef4; --color-border: #000000; }
-[data-theme='mashin-tahrir'] { --color-paper: #eedfc5; --color-border: #1e130a; }
-[data-theme='gramophone'] { --color-paper: #fff2db; --color-border: #000000; }
-[data-theme='ruzname'] { --color-paper: #eedfc5; --color-border: #1e130a; }
+[data-theme='cafe-tehran'] { --color-paper: #eedfc5; --color-border: #bda68c; }
+[data-theme='johar-benafsh'] { --color-paper: #faf4ee; --color-border: #d6c1b4; }
+[data-theme='mashin-tahrir'] { --color-paper: #eedfc5; --color-border: #bda68c; }
+[data-theme='gramophone'] { --color-paper: #f9f5eb; --color-border: #c9bfa8; }
+[data-theme='ruzname'] { --color-paper: #eedfc5; --color-border: #bda68c; }
 
 /* =========================================================================
-   BASE NEO-BRUTALIST STYLING
+   BASE SKETCH STYLING
    ========================================================================= */
 
 @layer base {
@@ -283,18 +304,19 @@
     background-color: var(--color-paper);
     color: var(--color-ink);
     min-height: 100dvh;
-    font-family: var(--dp-typography-face);
-    transition: none; /* Neo-brutalist interaction is immediate */
+    font-family: var(--font-sans);
+    line-height: 1.7;
+    letter-spacing: 0.01em;
   }
 
   ::selection {
-    background-color: var(--dp-color-emphasis);
-    color: #000000;
+    background-color: var(--dp-color-highlight);
+    color: var(--dp-color-ink);
   }
 }
 
 /* =========================================================================
-   NEO-BRUTALIST COMPONENTS (0px Radius, Thick Outlines, Solid Hard Shadows)
+   SKETCH COMPONENTS (Hand-Drawn Curves, Fine Stroke, Soft Offsets)
    ========================================================================= */
 
 /* Primary Action Button */
@@ -304,65 +326,65 @@
   justify-content: center;
   gap: 0.5rem;
   border-radius: var(--dp-radius-control);
-  border: var(--dp-border-divider) solid var(--color-border);
-  background-color: var(--dp-color-signal);
+  border: var(--dp-border-fine-stroke) solid var(--dp-color-ink);
+  background-color: var(--dp-color-accent);
   color: #ffffff;
-  font-weight: 900;
-  font-size: 1rem;
-  padding: 0.75rem 1.5rem;
-  box-shadow: 4px 4px 0px var(--color-border);
+  font-weight: 800;
+  font-size: 0.95rem;
+  padding: 0.65rem 1.4rem;
+  box-shadow: 2px 3px 0px var(--dp-color-ink);
   cursor: pointer;
   user-select: none;
-  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  transition: transform var(--dp-motion-control) ease, box-shadow var(--dp-motion-control) ease;
 }
 .v-btn-primary:hover:not(:disabled) {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0px var(--color-border);
+  transform: translateY(-1.5px) rotate(-0.5deg);
+  box-shadow: 3px 4.5px 0px var(--dp-color-ink);
 }
 .v-btn-primary:active:not(:disabled) {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px var(--color-border);
+  transform: translateY(1.5px);
+  box-shadow: 1px 1px 0px var(--dp-color-ink);
 }
 .v-btn-primary:disabled {
-  opacity: 0.4;
+  opacity: 0.45;
   cursor: not-allowed;
   transform: none;
-  box-shadow: 2px 2px 0px var(--color-border);
+  box-shadow: 1px 1px 0px var(--dp-color-ink);
 }
 .v-btn-primary:focus-visible {
-  outline: 3px solid #000000;
-  outline-offset: 2px;
+  outline: 2px dashed var(--dp-color-annotation);
+  outline-offset: 3px;
 }
 
 /* Ghost / Secondary Button */
-.v-btn-ghost {
+.v-btn-ghost, .v-btn-secondary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
   border-radius: var(--dp-radius-control);
-  border: var(--dp-border-divider) solid var(--color-border);
-  background-color: var(--color-surface);
-  color: var(--color-ink);
-  font-weight: 800;
+  border: var(--dp-border-fine-stroke) solid var(--dp-color-line);
+  background-color: var(--dp-color-scrap);
+  color: var(--dp-color-ink);
+  font-weight: 700;
   padding: 0.5rem 1rem;
   font-size: 0.875rem;
-  box-shadow: 3px 3px 0px var(--color-border);
+  box-shadow: 1.5px 2px 0px rgba(56, 53, 47, 0.12);
   cursor: pointer;
-  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  transition: transform var(--dp-motion-control) ease, border-color var(--dp-motion-control) ease, box-shadow var(--dp-motion-control) ease;
 }
-.v-btn-ghost:hover:not(:disabled) {
-  background-color: var(--dp-color-emphasis);
-  color: #000000;
-  transform: translate(-2px, -2px);
-  box-shadow: 5px 5px 0px var(--color-border);
+.v-btn-ghost:hover:not(:disabled), .v-btn-secondary:hover:not(:disabled) {
+  background-color: var(--dp-color-highlight);
+  border-color: var(--dp-color-ink);
+  transform: translateY(-1px);
+  box-shadow: 2px 3px 0px rgba(56, 53, 47, 0.18);
 }
-.v-btn-ghost:active:not(:disabled) {
-  transform: translate(2px, 2px);
-  box-shadow: 1px 1px 0px var(--color-border);
+.v-btn-ghost:active:not(:disabled), .v-btn-secondary:active:not(:disabled) {
+  transform: translateY(1px);
+  box-shadow: 1px 1px 0px rgba(56, 53, 47, 0.1);
 }
-.v-btn-ghost:focus-visible {
-  outline: 3px solid #000000;
+.v-btn-ghost:focus-visible, .v-btn-secondary:focus-visible {
+  outline: 2px dashed var(--dp-color-annotation);
   outline-offset: 2px;
 }
 
@@ -372,42 +394,40 @@
   align-items: center;
   gap: 0.35rem;
   border-radius: var(--dp-radius-control);
-  border: var(--dp-border-annotation) solid var(--color-border);
-  background-color: var(--color-surface);
-  color: var(--color-ink);
-  padding: 0.4rem 0.85rem;
-  font-size: 0.875rem;
-  font-weight: 800;
-  box-shadow: 2px 2px 0px var(--color-border);
+  border: var(--dp-border-fine-stroke) solid var(--dp-color-line);
+  background-color: var(--dp-color-scrap);
+  color: var(--dp-color-ink);
+  padding: 0.35rem 0.85rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  box-shadow: 1px 1.5px 0px rgba(56, 53, 47, 0.1);
   cursor: pointer;
   user-select: none;
-  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  transition: transform var(--dp-motion-control) ease, background-color var(--dp-motion-control) ease;
 }
 .v-chip:hover {
-  background-color: var(--dp-color-emphasis);
-  color: #000000;
-  transform: translate(-1px, -1px);
-  box-shadow: 3px 3px 0px var(--color-border);
+  background-color: var(--dp-color-highlight);
+  border-color: var(--dp-color-ink);
+  transform: translateY(-1px);
 }
 .v-chip:active {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0px var(--color-border);
+  transform: translateY(1px);
 }
 .v-chip-active {
-  background-color: var(--dp-color-emphasis);
-  color: #000000;
-  border-color: var(--color-border);
-  box-shadow: 3px 3px 0px var(--color-border);
-  font-weight: 900;
+  background-color: var(--dp-color-highlight);
+  color: var(--dp-color-ink);
+  border-color: var(--dp-color-ink);
+  box-shadow: 1.5px 2px 0px rgba(56, 53, 47, 0.2);
+  font-weight: 800;
 }
 
-/* Panels & Cards */
+/* Panels & Cards (Paper Scraps) */
 .v-card, .v-folio {
-  border-radius: var(--dp-radius-control);
-  border: var(--dp-border-panel) solid var(--color-border);
-  background-color: var(--color-surface);
-  color: var(--color-ink);
-  box-shadow: 6px 6px 0px var(--color-border);
+  border-radius: var(--dp-radius-card);
+  border: var(--dp-border-fine-stroke) solid var(--dp-color-line);
+  background-color: var(--dp-color-scrap);
+  color: var(--dp-color-ink);
+  box-shadow: 2px 3px 0px rgba(56, 53, 47, 0.12);
   position: relative;
 }
 
@@ -415,18 +435,20 @@
 .v-field {
   width: 100%;
   border-radius: var(--dp-radius-control);
-  border: var(--dp-border-divider) solid var(--color-border);
-  background-color: var(--color-surface);
-  color: var(--color-ink);
-  padding: 0.85rem 1rem;
-  font-weight: 700;
+  border: var(--dp-border-fine-stroke) solid var(--dp-color-line);
+  background-color: var(--dp-color-scrap);
+  color: var(--dp-color-ink);
+  padding: 0.75rem 1rem;
+  font-weight: 600;
   outline: none;
-  box-shadow: 3px 3px 0px var(--color-border);
+  box-shadow: inset 1px 1px 3px rgba(56, 53, 47, 0.05);
+  transition: border-color var(--dp-motion-control) ease, box-shadow var(--dp-motion-control) ease;
 }
 .v-field:focus {
+  border-color: var(--dp-color-annotation);
+  outline: 2px dashed var(--dp-color-annotation);
+  outline-offset: 2px;
   background-color: #ffffff;
-  outline: 3px solid var(--color-border);
-  box-shadow: 5px 5px 0px var(--color-border);
 }
 
 /* Header Masthead */
@@ -434,22 +456,25 @@
   position: sticky;
   top: 0;
   z-index: 40;
-  border-bottom: var(--dp-border-panel) solid var(--color-border);
+  border-bottom: var(--dp-border-fine-stroke) solid var(--dp-color-line);
   background-color: var(--color-paper);
+  backdrop-filter: blur(8px);
 }
 
 .v-link {
   color: var(--color-ink);
-  font-weight: 800;
-  border: 2px solid transparent;
+  font-weight: 700;
+  border-radius: var(--dp-radius-control);
+  border: var(--dp-border-fine-stroke) solid transparent;
   padding: 0.35rem 0.75rem;
+  transition: all var(--dp-motion-control) ease;
 }
 .v-link:hover,
 .v-link[aria-current='page'] {
-  background-color: var(--dp-color-emphasis);
-  border-color: var(--color-border);
-  color: #000000;
-  box-shadow: 2px 2px 0px var(--color-border);
+  background-color: var(--dp-color-highlight);
+  border-color: var(--dp-color-line);
+  color: var(--dp-color-ink);
+  box-shadow: 1px 2px 0px rgba(56, 53, 47, 0.1);
 }
 
 /* Bottom Nav */
@@ -458,166 +483,142 @@
   bottom: 0;
   inset-inline: 0;
   z-index: 40;
-  border-top: var(--dp-border-panel) solid var(--color-border);
+  border-top: var(--dp-border-fine-stroke) solid var(--dp-color-line);
   background-color: var(--color-paper);
 }
 
 /* =========================================================================
-   NEO-BRUTALIST SPECIFIC PATTERNS & TOKENS
+   SKETCH SPECIFIC PATTERNS (Tape, Highlighting, Notes, Brackets)
    ========================================================================= */
 
-/* Oversized Headline Strip */
-.nb-strip-yellow {
-  background-color: var(--dp-color-emphasis);
-  color: #000000;
-  border: var(--dp-border-divider) solid #000000;
-  box-shadow: 4px 4px 0px #000000;
-  font-weight: 900;
-  padding: 0.5rem 1rem;
-  display: inline-block;
+/* Translucent Tape Strip */
+.sketch-tape {
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  transform: translateX(-50%) rotate(-1deg);
+  width: 76px;
+  height: 18px;
+  background: rgba(240, 223, 160, 0.65);
+  border-left: 1px dashed rgba(179, 172, 157, 0.7);
+  border-right: 1px dashed rgba(179, 172, 157, 0.7);
+  pointer-events: none;
+  z-index: 10;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
-.nb-strip-black {
-  background-color: #000000;
-  color: #ffffff;
-  border: var(--dp-border-divider) solid #000000;
-  box-shadow: 4px 4px 0px #000000;
-  font-weight: 900;
-  padding: 0.5rem 1rem;
-  display: inline-block;
-}
-
-.nb-strip-red {
-  background-color: var(--dp-color-signal);
-  color: #ffffff;
-  border: var(--dp-border-divider) solid #000000;
-  box-shadow: 4px 4px 0px #000000;
-  font-weight: 900;
-  padding: 0.5rem 1rem;
-  display: inline-block;
-}
-
-.nb-strip-violet {
-  background-color: var(--dp-color-field);
-  color: #000000;
-  border: var(--dp-border-divider) solid #000000;
-  box-shadow: 4px 4px 0px #000000;
-  font-weight: 900;
-  padding: 0.5rem 1rem;
-  display: inline-block;
-}
-
-/* Master Brutalist Seal Button */
+/* Master Sketch Action Button */
 .v-seal-master {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.75rem;
-  padding: 1rem 2rem;
+  gap: 0.65rem;
+  padding: 0.85rem 1.85rem;
   border-radius: var(--dp-radius-control);
-  font-weight: 900;
-  font-size: 1.15rem;
-  background-color: var(--dp-color-emphasis);
-  color: #000000;
-  border: var(--dp-border-panel) solid #000000;
-  box-shadow: 6px 6px 0px #000000;
+  font-weight: 800;
+  font-size: 1.05rem;
+  background-color: var(--dp-color-accent);
+  color: #ffffff;
+  border: var(--dp-border-fine-stroke) solid var(--dp-color-ink);
+  box-shadow: 2px 3.5px 0px var(--dp-color-ink);
   cursor: pointer;
   user-select: none;
-  transition: transform 0.05s ease, box-shadow 0.05s ease;
+  transition: transform var(--dp-motion-control) ease, box-shadow var(--dp-motion-control) ease;
 }
 .v-seal-master:hover:not(:disabled) {
-  transform: translate(-3px, -3px);
-  box-shadow: 9px 9px 0px #000000;
-  background-color: #ffe600;
+  transform: translateY(-2px) rotate(-0.5deg);
+  box-shadow: 3.5px 5px 0px var(--dp-color-ink);
+  background-color: #8c3228;
 }
 .v-seal-master:active:not(:disabled) {
-  transform: translate(3px, 3px);
-  box-shadow: 3px 3px 0px #000000;
+  transform: translateY(1.5px);
+  box-shadow: 1px 1px 0px var(--dp-color-ink);
 }
 .v-seal-master:disabled {
-  opacity: 0.4;
+  opacity: 0.45;
   cursor: not-allowed;
   transform: none;
-  box-shadow: 3px 3px 0px #000000;
+  box-shadow: 1px 1px 0px var(--dp-color-ink);
 }
 
-/* Ruled Ledger Section */
-.nb-ledger {
-  border: var(--dp-border-panel) solid #000000;
-  background-color: var(--color-surface);
-  box-shadow: 6px 6px 0px #000000;
-}
-.nb-ledger-row {
-  border-bottom: var(--dp-border-divider) solid #000000;
-}
-.nb-ledger-row:last-child {
-  border-bottom: none;
+/* Highlighter Strips */
+.sketch-highlight {
+  background-color: var(--dp-color-highlight);
+  color: var(--dp-color-ink);
+  padding: 2px 8px;
+  border-radius: 4px 10px 4px 8px / 6px 4px 9px 4px;
+  display: inline-block;
 }
 
-/* Violet Band / Explanation Container */
-.nb-violet-band {
-  background-color: var(--dp-color-field);
-  border: var(--dp-border-panel) solid #000000;
-  box-shadow: 6px 6px 0px #000000;
-  color: #000000;
-  padding: 1.25rem;
+/* Annotation Blue Note Badge */
+.sketch-blue-note {
+  color: var(--dp-color-annotation);
+  background-color: rgba(52, 76, 105, 0.08);
+  border-right: 3px solid var(--dp-color-annotation);
+  border-radius: 4px 8px 8px 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
-/* Red Signal Tile */
-.nb-signal-tile {
-  background-color: var(--dp-color-signal);
-  color: #ffffff;
-  border: var(--dp-border-divider) solid #000000;
-  box-shadow: 4px 4px 0px #000000;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+/* Red Correction Accent */
+.sketch-red-note {
+  color: var(--dp-color-accent);
+  background-color: rgba(158, 58, 46, 0.08);
+  border-right: 3px solid var(--dp-color-accent);
+  border-radius: 4px 8px 8px 4px;
+  padding: 0.4rem 0.8rem;
+  font-size: 0.85rem;
+  font-weight: 700;
 }
 
-/* Gemstone status indicator in brutalist style */
+/* Gemstone status indicator in sketch style */
 .v-gem-status {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem 0.85rem;
+  gap: 0.45rem;
+  padding: 0.35rem 0.8rem;
   border-radius: var(--dp-radius-control);
-  font-size: 0.75rem;
-  font-weight: 900;
-  border: var(--dp-border-annotation) solid #000000;
-  background-color: var(--dp-color-contrast);
-  box-shadow: 2px 2px 0px #000000;
-  color: #000000;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border: var(--dp-border-fine-stroke) solid var(--dp-color-line);
+  background-color: var(--dp-color-scrap);
+  box-shadow: 1px 2px 0px rgba(56, 53, 47, 0.1);
+  color: var(--dp-color-ink);
 }
 
 /* Drafting Ruler Toolbar */
 .v-ruler-toolbar {
-  background-color: var(--dp-color-emphasis);
-  border-top: var(--dp-border-divider) solid #000000;
-  color: #000000;
+  background-color: var(--dp-color-scrap);
+  border-top: var(--dp-border-fine-stroke) solid var(--dp-color-line);
+  color: var(--dp-color-ink);
 }
 
-/* Editorial Marginalia in Neo-Brutalism */
+/* Editorial Marginalia in Sketch style */
 .v-marginalia-diff-del {
-  background-color: var(--dp-color-signal);
-  color: #ffffff;
+  color: var(--dp-color-accent);
   text-decoration: line-through;
-  padding: 1px 5px;
-  border: 1px solid #000000;
+  text-decoration-color: var(--dp-color-accent);
+  text-decoration-thickness: 1.5px;
+  padding: 1px 4px;
   margin: 0 2px;
-  font-weight: 800;
+  font-weight: 600;
+  background-color: rgba(158, 58, 46, 0.08);
+  border-radius: 3px;
 }
 .v-marginalia-diff-add {
-  background-color: var(--dp-color-emphasis);
-  color: #000000;
-  font-weight: 900;
+  background-color: var(--dp-color-highlight);
+  color: var(--dp-color-ink);
+  font-weight: 700;
   padding: 1px 5px;
-  border: 2px solid #000000;
-  box-shadow: 2px 2px 0px #000000;
+  border-bottom: 1.5px dashed var(--dp-color-accent);
   margin: 0 2px;
+  border-radius: 3px;
 }
 
-/* Rotated clipping badge */
-.nb-badge-tilted {
-  display: inline-block;
-  transform: rotate(-1.5deg);
+/* Hand-drawn brackets */
+.sketch-bracket {
+  color: var(--dp-color-annotation);
+  font-weight: 800;
+  user-select: none;
 }

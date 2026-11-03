@@ -3,7 +3,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { MODES, getMode, type WritingMode } from '@/domain/modes'
 import { runEdit, type EditResult } from '@/domain/engine'
-import { restoreModel } from '@/domain/engines/browser'
 import { useSettings } from '@/hooks/useSettings'
 import { useHistory } from '@/hooks/useHistory'
 import { useDictation } from '@/hooks/useDictation'
@@ -142,7 +141,7 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
     return () => window.removeEventListener('keydown', onKey)
   })
 
-  // Pick up a handed-off text (from history) when the editor opens fresh.
+  // Pick up handed-off text
   useEffect(() => {
     const draft = readDraft()
     if (draft && !input) {
@@ -277,13 +276,15 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
   return (
     <div className={`space-y-6 max-w-6xl mx-auto ${zenMode ? 'max-w-4xl' : ''}`}>
       {/* Top Banner & Zen Mode Toggle */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b-4 border-black pb-3 bg-white p-3 shadow-[4px_4px_0px_#000]">
+      <div className="flex flex-wrap items-center justify-between gap-3 border border-border bg-surface p-3 rounded-[10px_4px_12px_6px] shadow-soft">
         <div className="flex items-center gap-2">
-          <span className="bg-black text-[#ffed00] font-black px-2.5 py-1 text-sm border-2 border-black">
-            میز تحریر نئوبروتال
+          <span className="sketch-bracket text-base">[</span>
+          <span className="text-sm font-bold text-ink">
+            میز نگارش و یادداشت‌برداری ویراستار
           </span>
-          <span className="text-xs font-black text-black hidden sm:inline-block">
-            کارگاه پیرایش زبان فارسی بدون لکنت و غلط املایی
+          <span className="sketch-bracket text-base">]</span>
+          <span className="text-xs text-ink-soft hidden sm:inline-block">
+            · پیرایش روان، درست‌نویسی و بازآفرینی زبان فارسی
           </span>
         </div>
 
@@ -293,10 +294,8 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
             setZenMode(!zenMode)
             playTactileSound(activeTheme, 'tap')
           }}
-          className={`border-3 border-black px-3.5 py-1 text-xs font-black transition-all cursor-pointer ${
-            zenMode
-              ? 'bg-[#ffed00] text-black shadow-[3px_3px_0px_#000]'
-              : 'bg-white text-black shadow-[2px_2px_0px_#000] hover:bg-[#ffed00]'
+          className={`v-btn-ghost text-xs px-3 py-1 font-bold ${
+            zenMode ? 'bg-highlight border-ink font-extrabold' : ''
           }`}
         >
           <span>{zenMode ? '🪶 خروج از حالت خلوت' : '🪶 حالت تمرکز و خلوت'}</span>
@@ -305,29 +304,31 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
 
       {/* Stylus Chest (قلم‌دان سبک‌ها) */}
       {!zenMode && (
-        <section className="border-4 border-black bg-white p-4 sm:p-5 shadow-[6px_6px_0px_#000] space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b-3 border-black pb-3">
+        <section className="v-card p-4 sm:p-5 space-y-4 relative">
+          <div className="sketch-tape" aria-hidden="true" />
+
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border pb-3">
             <div className="flex items-center gap-2">
-              <span className="bg-[#ff4332] text-white px-2 py-0.5 text-xs font-black border-2 border-black shadow-[2px_2px_0px_#000]">
-                سبک‌ها
+              <span className="sketch-blue-note text-xs font-bold">
+                قلم‌دان
               </span>
-              <span className="font-black text-sm sm:text-base text-black">
-                قلم‌دان سیزده لحن زبان فارسی
+              <span className="font-bold text-sm sm:text-base text-ink">
+                سیزده لحن و آوای زبان فارسی
               </span>
             </div>
 
             {/* Drawer Tabs */}
-            <div className="flex items-center gap-1.5 bg-[#fff5d6] p-1 border-2 border-black shadow-[2px_2px_0px_#000]">
+            <div className="flex items-center gap-1.5 bg-paper p-1 border border-border rounded-[8px_4px_10px_4px]">
               <button
                 type="button"
                 onClick={() => {
                   setQalamdanCategory('divan')
                   playTactileSound(activeTheme, 'tap')
                 }}
-                className={`px-3 py-1 text-xs font-black border-2 transition-all cursor-pointer ${
+                className={`px-3 py-1 text-xs font-bold rounded-[6px_3px_8px_3px] transition-all cursor-pointer ${
                   qalamdanCategory === 'divan'
-                    ? 'bg-[#ffed00] text-black border-black shadow-[2px_2px_0px_#000]'
-                    : 'bg-white text-black border-transparent hover:border-black'
+                    ? 'bg-highlight text-ink border border-ink shadow-soft font-extrabold'
+                    : 'text-ink-soft hover:text-ink'
                 }`}
               >
                 دیوان و دفتر (اداری)
@@ -338,13 +339,13 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                   setQalamdanCategory('adab')
                   playTactileSound(activeTheme, 'tap')
                 }}
-                className={`px-3 py-1 text-xs font-black border-2 transition-all cursor-pointer ${
+                className={`px-3 py-1 text-xs font-bold rounded-[6px_3px_8px_3px] transition-all cursor-pointer ${
                   qalamdanCategory === 'adab'
-                    ? 'bg-[#ffed00] text-black border-black shadow-[2px_2px_0px_#000]'
-                    : 'bg-white text-black border-transparent hover:border-black'
+                    ? 'bg-highlight text-ink border border-ink shadow-soft font-extrabold'
+                    : 'text-ink-soft hover:text-ink'
                 }`}
               >
-                ادبستان و شعر
+                ادبستان و اندیشه
               </button>
               <button
                 type="button"
@@ -352,19 +353,19 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                   setQalamdanCategory('kooche')
                   playTactileSound(activeTheme, 'tap')
                 }}
-                className={`px-3 py-1 text-xs font-black border-2 transition-all cursor-pointer ${
+                className={`px-3 py-1 text-xs font-bold rounded-[6px_3px_8px_3px] transition-all cursor-pointer ${
                   qalamdanCategory === 'kooche'
-                    ? 'bg-[#ffed00] text-black border-black shadow-[2px_2px_0px_#000]'
-                    : 'bg-white text-black border-transparent hover:border-black'
+                    ? 'bg-highlight text-ink border border-ink shadow-soft font-extrabold'
+                    : 'text-ink-soft hover:text-ink'
                 }`}
               >
-                کوچه و بازار (طنز)
+                کوچه و بازار (صمیمانه)
               </button>
             </div>
           </div>
 
           {/* Drawer Modes Grid */}
-          <div className="grid gap-2.5 grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
+          <div className="grid gap-2 grid-cols-2 sm:grid-cols-3 md:grid-cols-5">
             {drawerModes.map((m) => {
               const isActive = m.id === modeId
               return (
@@ -375,17 +376,17 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                     setModeId(m.id)
                     playTactileSound(activeTheme, 'tap')
                   }}
-                  className={`flex flex-col items-start p-3 text-start transition-all cursor-pointer border-3 border-black ${
+                  className={`flex flex-col items-start p-2.5 text-start transition-all cursor-pointer border rounded-[8px_4px_10px_4px] ${
                     isActive
-                      ? 'bg-[#ffed00] text-black shadow-[4px_4px_0px_#000] translate-x-[-2px] translate-y-[-2px]'
-                      : 'bg-white text-black hover:bg-[#d4bdff] shadow-[2px_2px_0px_#000]'
+                      ? 'bg-highlight text-ink border-ink shadow-soft font-extrabold'
+                      : 'bg-paper text-ink border-border hover:border-ink/60 hover:bg-paper-deep'
                   }`}
                 >
                   <div className="flex items-center gap-1.5 w-full mb-1">
-                    <ModeGlyph modeId={m.id} size={18} className="text-black" />
-                    <span className="font-black text-xs sm:text-sm truncate text-black">{m.label}</span>
+                    <ModeGlyph modeId={m.id} size={16} className="text-brand" />
+                    <span className="font-bold text-xs sm:text-sm truncate text-ink">{m.label}</span>
                   </div>
-                  <span className="text-[10px] leading-4 text-black/80 font-bold line-clamp-1">
+                  <span className="text-[10px] leading-4 text-ink-soft line-clamp-1 font-normal">
                     {m.tagline}
                   </span>
                 </button>
@@ -394,9 +395,11 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
           </div>
 
           {/* Active Style Strip */}
-          <div className="border-t-3 border-black pt-3 flex flex-wrap items-center justify-between gap-2 text-xs font-black bg-[#d4bdff] p-3 border-2 border-black shadow-[3px_3px_0px_#000]">
-            <p className="text-black">
-              لحن فعال: <span className="bg-black text-white px-2 py-0.5">{mode.label}</span> — {mode.description}
+          <div className="border-t border-border pt-3 flex flex-wrap items-center justify-between gap-2 text-xs text-ink bg-paper p-2.5 rounded-[8px_4px_10px_4px] border border-border">
+            <p className="flex items-center gap-1.5">
+              <span className="text-brand font-bold">لحن انتخابی:</span>
+              <span className="sketch-highlight font-bold">{mode.label}</span>
+              <span className="text-ink-soft">— {mode.description}</span>
             </p>
             <button
               type="button"
@@ -405,24 +408,27 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                 setInput(sample.text)
                 playTactileSound(activeTheme, 'special')
               }}
-              className="bg-white text-black border-2 border-black px-2.5 py-1 hover:bg-[#ffed00] shadow-[2px_2px_0px_#000] cursor-pointer"
+              className="v-btn-ghost text-xs px-2.5 py-1"
             >
-              <span>✨ درج متن نمونه</span>
+              <span>✎ درج متن نمونه</span>
             </button>
           </div>
         </section>
       )}
 
-      {/* The Dual Neo-Brutalist Panels */}
+      {/* The Dual Sketch Sheets */}
       <div className="grid gap-6 lg:grid-cols-2 items-start">
-        {/* Panel 1: Raw Draft */}
-        <section className="border-4 border-black bg-white shadow-[6px_6px_0px_#000] flex flex-col">
+        {/* Panel 1: Raw Draft Sheet */}
+        <section className="v-card flex flex-col relative">
+          <div className="sketch-tape" aria-hidden="true" />
+
           {/* Header Strip */}
-          <div className="flex items-center justify-between px-4 py-3 border-b-3 border-black bg-[#fff5d6]">
+          <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-paper/60 rounded-t-[14px_6px_0px_0px]">
             <div className="flex items-center gap-2">
-              <span className="bg-black text-white px-2 py-0.5 text-xs font-black">۰۱</span>
-              <span className="font-black text-sm text-black uppercase">برگ پیش‌نویس</span>
-              <span className="text-xs font-black bg-white px-2 py-0.5 border border-black shadow-[1px_1px_0px_#000]">
+              <span className="sketch-bracket text-sm">[</span>
+              <span className="font-bold text-sm text-ink">برگ پیش‌نویس</span>
+              <span className="sketch-bracket text-sm">]</span>
+              <span className="text-xs text-ink-soft bg-surface px-2 py-0.5 border border-border rounded-[4px]">
                 {faNum(words)} واژه
               </span>
             </div>
@@ -440,7 +446,7 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                 <button
                   type="button"
                   onClick={handleClear}
-                  className="v-btn-ghost text-xs px-2 py-1 bg-[#ff4332] text-white hover:bg-black"
+                  className="v-btn-ghost text-xs px-2 py-1 text-brand hover:border-brand"
                   title="پاک کردن متن"
                 >
                   پاک کردن
@@ -458,13 +464,13 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
               value={input}
               onChange={(e) => setInput(e.target.value)}
               placeholder="اینجا بنویسید… هر نوشته‌ای، از پیام کاری تا مقاله یا نامه رسمی"
-              className="w-full flex-1 bg-transparent text-base sm:text-lg leading-8 outline-none resize-none text-black font-bold placeholder:text-black/40 min-h-[220px]"
+              className="w-full flex-1 bg-transparent text-base sm:text-lg leading-relaxed outline-none resize-none text-ink font-medium placeholder:text-ink-soft/40 min-h-[220px]"
             />
 
             {!input && (
-              <div className="mt-4 pt-4 border-t-3 border-black border-dashed">
-                <p className="text-xs font-black text-black mb-2 uppercase">
-                  نمونه‌های شروع سریع:
+              <div className="mt-4 pt-4 border-t border-dashed border-border">
+                <p className="text-xs font-bold text-accent mb-2">
+                  ✎ نمونه‌های شروع سریع برای امتحان:
                 </p>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {PROMPT_SUGGESTIONS.map((item, idx) => (
@@ -476,10 +482,10 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                         setModeId(item.modeId)
                         playTactileSound(activeTheme, 'special')
                       }}
-                      className="p-2.5 text-start bg-[#fff5d6] border-2 border-black shadow-[2px_2px_0px_#000] hover:bg-[#ffed00] hover:shadow-[3px_3px_0px_#000] transition-all cursor-pointer"
+                      className="p-2.5 text-start bg-paper border border-border rounded-[8px_4px_10px_4px] hover:border-ink hover:bg-highlight/30 transition-all cursor-pointer"
                     >
-                      <span className="block text-xs font-black text-black">{item.title}</span>
-                      <span className="block text-[11px] font-bold text-black/70 truncate">{item.text}</span>
+                      <span className="block text-xs font-bold text-ink">{item.title}</span>
+                      <span className="block text-[11px] text-ink-soft truncate font-normal">{item.text}</span>
                     </button>
                   ))}
                 </div>
@@ -488,48 +494,48 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
           </div>
 
           {/* Drafting Ruler Toolbar */}
-          <div className="v-ruler-toolbar p-3 border-t-3 border-black flex flex-wrap items-center justify-between gap-2">
+          <div className="v-ruler-toolbar p-3 border-t border-border flex flex-wrap items-center justify-between gap-2 rounded-b-[0px_0px_18px_8px]">
             <div className="flex flex-wrap items-center gap-1.5">
               <button
                 type="button"
                 onClick={() => insertAtCursor('\u200c')}
-                className="bg-white text-black border-2 border-black px-3 py-1 text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-black hover:text-white transition-all cursor-pointer"
+                className="bg-surface text-ink border border-border px-3 py-1 text-xs font-bold rounded-[6px_3px_8px_3px] shadow-soft hover:bg-highlight hover:border-ink transition-all cursor-pointer"
                 title="نیم‌فاصله استاندارد فارسی"
               >
-                نیم‌فاصله
+                [نیم‌فاصله]
               </button>
               <button
                 type="button"
                 onClick={() => insertAtCursor('«»')}
-                className="bg-white text-black border-2 border-black px-2.5 py-1 text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-black hover:text-white cursor-pointer"
+                className="bg-surface text-ink border border-border px-2.5 py-1 text-xs font-bold rounded-[6px_3px_8px_3px] shadow-soft hover:bg-highlight hover:border-ink cursor-pointer"
               >
                 « »
               </button>
               <button
                 type="button"
                 onClick={() => insertAtCursor('،')}
-                className="bg-white text-black border-2 border-black px-2.5 py-1 text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-black hover:text-white cursor-pointer"
+                className="bg-surface text-ink border border-border px-2.5 py-1 text-xs font-bold rounded-[6px_3px_8px_3px] shadow-soft hover:bg-highlight hover:border-ink cursor-pointer"
               >
                 ،
               </button>
               <button
                 type="button"
                 onClick={() => insertAtCursor('؛')}
-                className="bg-white text-black border-2 border-black px-2.5 py-1 text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-black hover:text-white cursor-pointer"
+                className="bg-surface text-ink border border-border px-2.5 py-1 text-xs font-bold rounded-[6px_3px_8px_3px] shadow-soft hover:bg-highlight hover:border-ink cursor-pointer"
               >
                 ؛
               </button>
               <button
                 type="button"
                 onClick={() => insertAtCursor('؟')}
-                className="bg-white text-black border-2 border-black px-2.5 py-1 text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-black hover:text-white cursor-pointer"
+                className="bg-surface text-ink border border-border px-2.5 py-1 text-xs font-bold rounded-[6px_3px_8px_3px] shadow-soft hover:bg-highlight hover:border-ink cursor-pointer"
               >
                 ؟
               </button>
               <button
                 type="button"
                 onClick={() => insertAtCursor('.')}
-                className="bg-white text-black border-2 border-black px-2.5 py-1 text-xs font-black shadow-[2px_2px_0px_#000] hover:bg-black hover:text-white cursor-pointer"
+                className="bg-surface text-ink border border-border px-2.5 py-1 text-xs font-bold rounded-[6px_3px_8px_3px] shadow-soft hover:bg-highlight hover:border-ink cursor-pointer"
               >
                 .
               </button>
@@ -540,8 +546,10 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                 <button
                   type="button"
                   onClick={toggleDictation}
-                  className={`border-2 border-black px-3 py-1 text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0px_#000] ${
-                    dictation.listening ? 'bg-[#ff4332] text-white animate-pulse' : 'bg-white text-black hover:bg-black hover:text-white'
+                  className={`border px-3 py-1 text-xs font-bold rounded-[6px_3px_8px_3px] flex items-center gap-1.5 cursor-pointer shadow-soft ${
+                    dictation.listening
+                      ? 'bg-brand text-white border-brand animate-pulse'
+                      : 'bg-surface text-ink border-border hover:border-ink'
                   }`}
                 >
                   <MicGlyph size={14} />
@@ -555,8 +563,10 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                   setShowKeyboard(!showKeyboard)
                   playTactileSound(activeTheme, 'special')
                 }}
-                className={`border-2 border-black px-3 py-1 text-xs font-black flex items-center gap-1.5 cursor-pointer shadow-[2px_2px_0px_#000] ${
-                  showKeyboard ? 'bg-black text-white' : 'bg-white text-black hover:bg-black hover:text-white'
+                className={`border px-3 py-1 text-xs font-bold rounded-[6px_3px_8px_3px] flex items-center gap-1.5 cursor-pointer shadow-soft ${
+                  showKeyboard
+                    ? 'bg-ink text-paper border-ink'
+                    : 'bg-surface text-ink border-border hover:border-ink'
                 }`}
               >
                 <span>⌨️</span>
@@ -567,7 +577,7 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
 
           {/* Virtual Keyboard */}
           {showKeyboard && (
-            <div className="p-3 border-t-3 border-black bg-[#fff5d6]">
+            <div className="p-3 border-t border-border bg-paper">
               <PersianKeyboard
                 onInsert={insertAtCursor}
                 onBackspace={backspaceAtCursor}
@@ -579,25 +589,25 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
           )}
         </section>
 
-        {/* Panel 2: Master Output Desk */}
+        {/* Panel 2: Refined Output Desk */}
         <section className="flex flex-col gap-4">
-          {/* Master Seal Action Button */}
+          {/* Master Action Button */}
           <button
             type="button"
             onClick={handleEdit}
             disabled={busy || !input.trim()}
-            className="v-seal-master w-full justify-center bg-[#ff4332] text-white hover:bg-black shadow-[6px_6px_0px_#000] text-lg font-black"
+            className="v-seal-master w-full justify-center text-base sm:text-lg"
           >
             {busy ? (
               <>
-                <Star size={22} className="animate-spin text-yellow-300" />
+                <Star size={20} className="animate-spin text-highlight" />
                 <span>در حال پیرایش متن…</span>
               </>
             ) : (
               <>
-                <span>⚡</span>
+                <span>✎</span>
                 <span>مهر و پیرایش متن ({mode.label})</span>
-                <span className="hidden sm:inline-block mr-2 text-xs bg-black text-white px-2 py-0.5 border border-white font-mono">
+                <span className="hidden sm:inline-block mr-2 text-xs bg-black/20 text-white px-2 py-0.5 rounded-[4px] font-mono">
                   ⌘↵
                 </span>
               </>
@@ -605,19 +615,22 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
           </button>
 
           {/* Refined Master Card */}
-          <div ref={resultRef} className="border-4 border-black bg-white shadow-[6px_6px_0px_#000] min-h-[340px] flex flex-col justify-between">
+          <div ref={resultRef} className="v-card min-h-[340px] flex flex-col justify-between relative">
+            <div className="sketch-tape" aria-hidden="true" />
+
             {result ? (
               <div className="flex flex-col h-full">
                 {/* Result Header */}
-                <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b-3 border-black bg-[#d4bdff]">
+                <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-3 border-b border-border bg-paper/60 rounded-t-[14px_6px_0px_0px]">
                   <div className="flex items-center gap-2">
-                    <span className="bg-black text-white px-2 py-0.5 text-xs font-black">۰۲</span>
-                    <span className="font-black text-sm text-black uppercase">نسخه پیراسته</span>
-                    <span className="bg-[#ffed00] text-black text-xs px-2 py-0.5 font-black border border-black shadow-[1px_1px_0px_#000]">
+                    <span className="sketch-bracket text-sm">[</span>
+                    <span className="font-bold text-sm text-ink">نسخهٔ پیراسته</span>
+                    <span className="sketch-bracket text-sm">]</span>
+                    <span className="sketch-highlight text-xs font-bold">
                       {mode.label}
                     </span>
-                    <span className="text-xs font-black text-black">
-                      ({faNum(result.changed)} تغییر)
+                    <span className="text-xs text-ink-soft">
+                      ({faNum(result.changed)} دگرگونی)
                     </span>
                   </div>
 
@@ -627,11 +640,11 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                       setShowDiff(!showDiff)
                       playTactileSound(activeTheme, 'tap')
                     }}
-                    className={`border-2 border-black px-3 py-1 text-xs font-black shadow-[2px_2px_0px_#000] transition-all cursor-pointer ${
-                      showDiff ? 'bg-black text-white' : 'bg-white text-black hover:bg-[#ffed00]'
+                    className={`v-btn-ghost text-xs px-2.5 py-1 ${
+                      showDiff ? 'bg-highlight border-ink font-extrabold' : ''
                     }`}
                   >
-                    {showDiff ? 'متن یکدست' : 'نمایش تفاوت‌ها'}
+                    {showDiff ? 'متن یکدست' : 'نمایش خط‌خوردگی‌ها'}
                   </button>
                 </div>
 
@@ -640,20 +653,20 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                   {showDiff ? (
                     <DiffText original={input} modified={result.output} />
                   ) : (
-                    <p dir="rtl" className="whitespace-pre-wrap text-base sm:text-lg leading-8 font-black text-black select-text">
+                    <p dir="rtl" className="whitespace-pre-wrap text-base sm:text-lg leading-relaxed font-bold text-ink select-text">
                       {result.output}
                     </p>
                   )}
 
                   {result.notes.length > 0 && (
-                    <div className="mt-4 pt-3 border-t-3 border-black">
-                      <p className="text-xs font-black text-black mb-1.5 uppercase">
-                        یادداشت‌های ویراستار:
+                    <div className="mt-4 pt-3 border-t border-border">
+                      <p className="text-xs font-bold text-accent mb-1.5 flex items-center gap-1">
+                        <span>✎</span> یادداشت‌های پیرایشگر:
                       </p>
                       <ul className="space-y-1">
                         {result.notes.map((n, i) => (
-                          <li key={i} className="text-xs font-bold text-black/80 flex items-start gap-1.5">
-                            <span className="text-[#ff4332] font-black">▪</span>
+                          <li key={i} className="text-xs text-ink-soft flex items-start gap-1.5 font-normal">
+                            <span className="text-brand font-bold">·</span>
                             <span>{n}</span>
                           </li>
                         ))}
@@ -663,13 +676,13 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                 </div>
 
                 {/* Action Buttons Ribbon */}
-                <div className="flex flex-wrap items-center gap-2 p-3 border-t-3 border-black bg-[#fff5d6]">
+                <div className="flex flex-wrap items-center gap-2 p-3 border-t border-border bg-paper/60">
                   <button
                     type="button"
                     onClick={handleCopy}
-                    className="v-btn-ghost flex-1 py-2 text-xs font-black flex items-center justify-center gap-1.5"
+                    className="v-btn-ghost flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5"
                   >
-                    {copied ? <CheckGlyph size={16} className="text-green-700" /> : <CopyGlyph size={16} />}
+                    {copied ? <CheckGlyph size={15} className="text-success" /> : <CopyGlyph size={15} />}
                     <span>{copied ? 'رونویسی شد!' : 'رونویسی (کپی)'}</span>
                     <span className="hidden sm:inline-block text-[10px] opacity-60 font-mono">⌘⇧C</span>
                   </button>
@@ -677,26 +690,26 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                   <button
                     type="button"
                     onClick={handleSave}
-                    className="v-btn-ghost flex-1 py-2 text-xs font-black flex items-center justify-center gap-1.5"
+                    className="v-btn-ghost flex-1 py-2 text-xs font-bold flex items-center justify-center gap-1.5"
                   >
-                    {saved ? <CheckGlyph size={16} className="text-green-700" /> : <SaveGlyph size={16} />}
-                    <span>{saved ? 'ثبت شد!' : 'ثبت در نوشته‌ها'}</span>
+                    {saved ? <CheckGlyph size={15} className="text-success" /> : <SaveGlyph size={15} />}
+                    <span>{saved ? 'ثبت شد!' : 'ثبت در دفترچه'}</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={handleShare}
-                    className="v-btn-ghost py-2 px-3 text-xs font-black flex items-center justify-center gap-1.5"
+                    className="v-btn-ghost py-2 px-3 text-xs font-bold flex items-center justify-center gap-1.5"
                     title="فرستادن به پیام‌رسان‌ها"
                   >
-                    <ShareGlyph size={16} />
+                    <ShareGlyph size={15} />
                     <span className="hidden sm:inline">ارسال</span>
                   </button>
                 </div>
 
                 {/* Fast Re-Style Ribbon */}
-                <div className="p-3 bg-[#ffed00] border-t-3 border-black flex flex-wrap items-center gap-2 text-xs font-black">
-                  <span className="text-black">پیرایش سریع به لحنی دیگر:</span>
+                <div className="p-3 bg-highlight/30 border-t border-border flex flex-wrap items-center gap-2 text-xs font-bold rounded-b-[0px_0px_18px_8px]">
+                  <span className="text-ink-soft">پیرایش سریع به لحنی دیگر:</span>
                   {[
                     { id: 'rasmi', label: 'رسمی' },
                     { id: 'edari', label: 'اداری' },
@@ -714,7 +727,7 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
                           playTactileSound(activeTheme, 'special')
                           setTimeout(() => handleEdit(), 100)
                         }}
-                        className="px-2.5 py-1 bg-white text-black border-2 border-black shadow-[2px_2px_0px_#000] hover:bg-black hover:text-white cursor-pointer font-black"
+                        className="px-2.5 py-1 bg-surface text-ink border border-border rounded-[6px_3px_8px_3px] shadow-soft hover:bg-highlight hover:border-ink cursor-pointer font-bold"
                       >
                         {s.label}
                       </button>
@@ -723,29 +736,29 @@ export function EditorScreen({ initialMode }: { initialMode?: string }) {
               </div>
             ) : busy && liveOutput ? (
               <div className="p-6 flex flex-col items-center justify-center text-center h-full min-h-[300px]">
-                <span className="text-3xl font-black mb-3">⚡</span>
-                <p className="font-black text-xl text-black mb-2">در حال بازآفرینی متن…</p>
-                <div className="w-full p-4 border-3 border-black bg-[#fff5d6] text-start shadow-[3px_3px_0px_#000]">
-                  <p className="text-sm font-mono font-bold text-black">{liveOutput}</p>
+                <span className="text-3xl mb-3">✎</span>
+                <p className="font-bold text-lg text-ink mb-2">در حال بازآفرینی متن بر برگه…</p>
+                <div className="w-full p-4 border border-border bg-paper rounded-[10px_5px_12px_6px] text-start shadow-soft">
+                  <p className="text-sm font-sans leading-relaxed text-ink font-medium">{liveOutput}</p>
                 </div>
               </div>
             ) : (
               <div className="p-8 flex flex-col items-center justify-center text-center h-full min-h-[300px]">
-                <div className="w-16 h-16 bg-[#ffed00] border-3 border-black flex items-center justify-center text-2xl font-black shadow-[4px_4px_0px_#000] mb-4">
-                  ⚡
+                <div className="w-14 h-14 bg-highlight/60 border border-border rounded-[10px_5px_12px_6px] flex items-center justify-center text-xl font-bold shadow-soft mb-3 text-brand">
+                  ✎
                 </div>
-                <h3 className="font-black text-xl text-black mb-2">
-                  برگ دوم در انتظار متن شما
+                <h3 className="font-bold text-lg text-ink mb-1.5">
+                  برگ دوم در انتظار متن شماست
                 </h3>
-                <p className="text-xs sm:text-sm font-bold text-black/80 max-w-sm mb-4">
-                  متن خود را در برگ یکم بنویسید و دکمهٔ «مهر و پیرایش متن» را بزنید تا نسخه اصلاح‌شده پدیدار شود.
+                <p className="text-xs sm:text-sm text-ink-soft max-w-sm mb-4 leading-relaxed font-normal">
+                  متن خود را در برگ پیش‌نویس بنویسید و دکمهٔ «مهر و پیرایش متن» را بزنید تا نسخه پیراسته پدیدار شود.
                 </p>
                 <div className="flex flex-wrap justify-center gap-2">
-                  <span className="border-2 border-black bg-[#fff5d6] px-3 py-1 text-xs font-black shadow-[2px_2px_0px_#000]">
-                    ✓ تصحیح نشانه‌گذاری و ویرگول
+                  <span className="border border-border bg-paper px-2.5 py-1 text-xs text-ink-soft rounded-[6px_3px_8px_3px] shadow-soft">
+                    ✓ رفع غلط‌های املایی و تایپی
                   </span>
-                  <span className="border-2 border-black bg-[#d4bdff] px-3 py-1 text-xs font-black shadow-[2px_2px_0px_#000]">
-                    ✓ نیم‌فاصله‌های استاندارد
+                  <span className="border border-border bg-paper px-2.5 py-1 text-xs text-ink-soft rounded-[6px_3px_8px_3px] shadow-soft">
+                    ✓ تنظیم نیم‌فاصله‌ها و ویرگول
                   </span>
                 </div>
               </div>
@@ -766,13 +779,13 @@ function DiffText({ original, modified }: { original: string; modified: string }
   )
   const tokens = modified.split(/(\s+)/)
   return (
-    <p dir="rtl" className="whitespace-pre-wrap text-base sm:text-lg leading-8 text-black font-black">
+    <p dir="rtl" className="whitespace-pre-wrap text-base sm:text-lg leading-relaxed text-ink font-medium">
       {tokens.map((token, idx) => {
         if (!token.trim()) return <span key={idx}>{token}</span>
         const cleanToken = token.trim().replace(/[.,!؟،؛]/g, '')
         const isChanged = !origTokens.has(cleanToken)
         return isChanged ? (
-          <mark key={idx} className="v-marginalia-diff-add not-italic font-black">
+          <mark key={idx} className="v-marginalia-diff-add not-italic">
             {token}
           </mark>
         ) : (
